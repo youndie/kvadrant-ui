@@ -11,10 +11,14 @@ import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.node.DelegatableNode
+import androidx.compose.ui.node.LayoutAwareModifierNode
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.unit.Constraints
@@ -96,7 +100,8 @@ private class TiltNode(
     private val maxDepression: Dp,
     private val animatePress: Boolean,
 ) : Modifier.Node(),
-    LayoutModifierNode {
+    LayoutModifierNode,
+    LayoutAwareModifierNode {
     /** Where the finger is, or was. Kept after release so the plane has somewhere to return from. */
     private var pressPosition: Offset? by mutableStateOf(null)
 
@@ -109,6 +114,37 @@ private class TiltNode(
 
     private var returning: Job? = null
     private var pressing: Job? = null
+
+    /**
+     * Where the screen's centre is, in this element's own fractional coordinates.
+     *
+     * **One camera over the whole screen, which is what Metro tilted under.** `graphicsLayer` gives
+     * every element its own camera at its own centre, and B-26 asked what that costs: rendered side
+     * by side, a grid under per-element cameras is nine identically deformed copies of one shape,
+     * while a grid under one camera bends as a single sheet — the tiles near the axis barely skewed
+     * and the outer ones leaning progressively. The second is the picture anyone who used the phone
+     * remembers, and `tilt_camera_per_layer` / `tilt_camera_shared` are the two frames.
+     *
+     * No new number: the distance is still [KvadrantCamera.Distance], the same one a per-layer
+     * camera used. Only the axis moved, and it moved from a place nobody chose to the place the
+     * original had it.
+     *
+     * Null until the element has been placed, and centred while it is — an element that has never
+     * been laid out has no position to be off-axis from.
+     */
+    private var origin: TransformOrigin by mutableStateOf(TransformOrigin.Center)
+
+    override fun onPlaced(coordinates: LayoutCoordinates) {
+        val root = coordinates.findRootCoordinates()
+        val size = coordinates.size
+        if (size.width == 0 || size.height == 0) return
+        val topLeft = root.localPositionOf(coordinates, Offset.Zero)
+        origin =
+            TransformOrigin(
+                (root.size.width / 2f - topLeft.x) / size.width,
+                (root.size.height / 2f - topLeft.y) / size.height,
+            )
+    }
 
     override fun onAttach() {
         coroutineScope.launch {
@@ -187,6 +223,7 @@ private class TiltNode(
                 val depthPx = this@TiltNode.cameraDistance.toPx()
                 placeable.placeWithLayer(0, 0) {
                     this.cameraDistance = kvadrantCameraUnits(this@TiltNode.cameraDistance)
+                    this.transformOrigin = this@TiltNode.origin
                     // Both negated. `tiltFor` reproduces `TiltEffect.cs` exactly, and Silverlight's
                     // `PlaneProjection` turns the opposite way from `graphicsLayer` on both axes:
                     // applied as written, the corner under the finger comes *towards* the eye, which

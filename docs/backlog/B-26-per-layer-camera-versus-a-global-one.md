@@ -1,7 +1,7 @@
 ---
 id: B-26
 title: "A per-layer camera is not the global one Metro tilted under"
-status: open
+status: done
 priority: P1
 size: M
 stage: stage-1-core
@@ -9,6 +9,22 @@ blocked_by: []
 ---
 
 # B-26 — A per-layer camera is not the global one Metro tilted under
+
+**Done, and the eye was right both times.** The two stills the item asked for are
+`tilt_camera_per_layer` and `tilt_camera_shared`: nine tiles, the same angles, one camera each versus
+one camera over the grid. Per element they are nine identically deformed copies of one shape; shared,
+the grid bends as a single sheet, the middle barely skewed and the outer tiles leaning progressively.
+Displacing the axis by one tile changes 3 505 pixels of a 24 279-pixel tile, so "the difference is
+not visible" — the outcome the item allowed for — was not available.
+
+The fix is the axis, not the distance. `TiltNode` sets `transformOrigin` to the root's centre in its
+own coordinates, and `KvadrantCamera.Distance` is untouched: **no new number**, so this is canon
+rather than a deviation and AC 3 does not apply.
+
+**Nothing existing caught the change, and that is the item's second finding.** Not one test or golden
+moved, because every fixture that presses something centres it in the frame — where a shared axis and
+an element's own axis are the same point. `SharedCameraTest` is the off-centre fixture that was
+missing, and three goldens moved once it existed.
 
 Raised from the demo, twice, by eye: *"как будто сила, насколько элементы вдавливаются, зависит от
 их размера"*, and after the measurement said otherwise — *"всё равно как будто на больших карточках
