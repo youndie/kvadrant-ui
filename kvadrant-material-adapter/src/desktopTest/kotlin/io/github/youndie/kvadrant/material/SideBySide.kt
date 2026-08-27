@@ -56,15 +56,20 @@ private fun Pairs(colors: KvadrantColors) {
                 Card(Modifier.fillMaxWidth()) {
                     Text("card", Modifier.padding(9.dp), style = MaterialTheme.typography.bodyMedium)
                 }
+
+                KvadrantText("material, wrapped", style = KvadrantTheme.typography.subtle)
+                KvadrantMaterialButton(onClick = {}) { Text("готово") }
+                KvadrantMaterialSwitch(checked = true, onCheckedChange = {})
+                KvadrantMaterialSlider(value = 0.4f, onValueChange = {})
             }
         }
     }
 }
 
-@ViddikScreenshot(name = "pairs dark", group = "adapter", width = 420, height = 660)
+@ViddikScreenshot(name = "pairs dark", group = "adapter", width = 420, height = 880)
 @Composable
 internal fun PairsDark(): Unit = Pairs(KvadrantColors.dark())
 
-@ViddikScreenshot(name = "pairs light", group = "adapter", width = 420, height = 660)
+@ViddikScreenshot(name = "pairs light", group = "adapter", width = 420, height = 880)
 @Composable
 internal fun PairsLight(): Unit = Pairs(KvadrantColors.light())

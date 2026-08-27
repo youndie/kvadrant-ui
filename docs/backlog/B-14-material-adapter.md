@@ -1,7 +1,7 @@
 ---
 id: B-14
 title: "KvadrantMaterialAdapter and the ripple shim"
-status: wip
+status: done
 priority: P0
 size: M
 stage: stage-2-release
@@ -92,8 +92,16 @@ ramp, all six `Shapes` slots `RectangleShape`, `LocalRippleConfiguration provide
   The test written for this was deleted rather than kept green. It passed because its positive
   control was `bare > 1` against a metric that returns 14 for any button — a control that cannot
   fail is not a control, and a test that passes for the wrong reason is worse than no test.
-- AC: wrappers for the three components the picture shows as foreign — button, switch, slider. That
-  is the ~10 category and it is the rest of this item, and the ripple measurement above strengthens
-  the case: a Material `Button` takes neither the theme's shape nor its indication, so a wrapper is
-  not a convenience for it but the only route.
+- AC met, with a limit the picture states: `KvadrantMaterialButton`, `KvadrantMaterialSwitch` and
+  `KvadrantMaterialSlider` exist, and the third group of `adapter_pairs_*` is those three beside the
+  unwrapped ones. **The button becomes a Metro button** — square, bordered, flat — and
+  `WrapperTest` holds it there, verified by removing the shape and watching it read 75 against 79.
+  **The switch and the slider only change colour.** Both draw their geometry from their own
+  internals with no shape parameter and no theme slot to reach, so a stadium track stays a stadium
+  track. That is the honest ceiling of a wrapper, and it is the argument for
+  `KvadrantToggleSwitch` and `KvadrantSlider` rather than for more wrapping.
+
+**Done.** What is left is named rather than pending: the ripple criterion above, which cannot be
+measured here and says so, and whatever the eleven replaced components turn out to need — which is
+not this item, because the replacements are the library itself.
 - Anchors (to be created): `kvadrant-material-adapter/src/commonMain/kotlin/`
