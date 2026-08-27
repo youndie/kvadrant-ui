@@ -77,8 +77,10 @@ pip install pyyaml
 make check
 ```
 
-`make check` guards the documentation tree and is exactly what CI runs; `./gradlew check` guards the
-code. `make report` is non-blocking and stays non-green on purpose:
+`make check` guards the documentation tree, `./gradlew check` guards the code, and **both run only
+here.** This repository has no remote and no CI run has ever happened, so a green gate means green on
+one machine. The workflow now carries a `gradle` job as well as the documentation one; it is written
+and unproven. Treat "the gate is green" accordingly — B-04. `make report` is non-blocking and stays non-green on purpose:
 the research anchors point at artefacts outside this repository, so `code_anchors.py` reports them
 as absent, and there are no BDD scenarios while there is no behaviour to describe.
 

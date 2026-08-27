@@ -66,6 +66,33 @@ jobs:
 
       - run: make check
 
+  # The code gate. It was missing entirely: this workflow ran `make check` and nothing else, so the
+  # tests, ktlint, the screenshot suite, the ABI dump and `noMaterialInTheCore` all lived on one
+  # laptop. A guard that runs in one place reports on whichever branch its owner happens to be
+  # standing on.
+  #
+  # **Never executed.** This repository has no remote, so nothing here has ever run — see B-04. The
+  # job is written to be right rather than proven right, and the first push is where it gets tested.
+  # Two things to expect there: Java 25 has to be available from `setup-java`, and the screenshot
+  # suite renders in a real Skiko window, which needs the runner to have one.
+  gradle:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # The same one target a contributor runs. `check` carries the tests on both renderers, ktlint,
+      # `viddikVerify`, `checkKotlinAbi` and `noMaterialInTheCore`; naming them separately here is
+      # how the CI set and the local set start to differ.
+      - run: ./gradlew check --no-daemon
+
       # Default branch only. `status: draft` is legal in a pull request, where it means "this
       # branch will make it true", and a defect the moment it merges.
       - if: github.ref == 'refs/heads/main' && github.event_name == 'push'

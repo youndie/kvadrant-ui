@@ -21,6 +21,17 @@ already changed public signatures twice without noticing — `TiltIndication.cam
 B-07. Both were right; neither was *declared*, and with a dump in the tree both would have arrived
 as a diff a reviewer had to approve.
 
+**There is no CI, and that is the finding.** The workflow ran `make check` and nothing else — the
+tests, ktlint, the screenshot suite, the ABI dump and `noMaterialInTheCore` were never in it, so
+every "the gate is green" in this repository means *green on one laptop*. A `gradle` job is added
+now, and it has still never executed, because **the repository has no remote**: twenty-eight commits,
+all local. Until there is one, the workflow file is a plan.
+
+Two things stand between it and working, and both are worth knowing before it is trusted: Java 25
+must be available from `setup-java`, and the screenshot suite renders in a real Skiko window, which
+needs a runner that can give it one. Neither is checked. There is also a known account constraint —
+GitHub-hosted minutes are not paid for — so the runner question may not be answered by pushing.
+
 **Done.** Kotlin's own `abiValidation` is on and `checkKotlinAbi` was already wired into `check` by
 the plugin — verified by adding a public function and watching the gate print the added line, not by
 reading that it should. The reference dump is `kvadrant-core/api/desktop/kvadrant-core.api`, 448
