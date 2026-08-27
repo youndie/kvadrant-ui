@@ -189,6 +189,10 @@ public fun KvadrantFlipTile(
     intervalMillis: Long = DEFAULT_FLIP_INTERVAL_MILLIS,
     jitter: Float = DEFAULT_FLIP_JITTER,
     seed: Int = 0,
+    // A Start tile is the thing you tap to launch an application, so a live one that cannot be
+    // tapped is not a Start tile. Both of these went out without it, and the Start screen of the
+    // demo had two dead rectangles on it before anyone noticed.
+    onClick: () -> Unit = {},
     front: @Composable BoxScope.() -> Unit = {},
     back: @Composable BoxScope.() -> Unit = {},
 ) {
@@ -210,7 +214,7 @@ public fun KvadrantFlipTile(
         label = "flip",
     )
 
-    KvadrantTile(size, modifier, color) {
+    KvadrantTile(size, modifier, color, onClick = onClick) {
         Box(
             Modifier.fillMaxSize().graphicsLayer {
                 rotationX = rotation
@@ -287,6 +291,8 @@ public fun KvadrantCycleTile(
     intervalMillis: Long = DEFAULT_FLIP_INTERVAL_MILLIS,
     jitter: Float = DEFAULT_FLIP_JITTER,
     seed: Int = 0,
+    /** @see KvadrantFlipTile */
+    onClick: () -> Unit = {},
 ) {
     require(faces.size <= MAX_CYCLE_FACES) {
         "a cycle tile shows at most $MAX_CYCLE_FACES faces; got ${faces.size}"
@@ -308,7 +314,7 @@ public fun KvadrantCycleTile(
         label = "cycle",
     )
 
-    KvadrantTile(size, modifier, color) {
+    KvadrantTile(size, modifier, color, onClick = onClick) {
         // One face leaves upwards as the next arrives from below, which is how the phone's picture
         // tiles moved — never a crossfade.
         val current = slide.toInt().coerceIn(0, faces.lastIndex)

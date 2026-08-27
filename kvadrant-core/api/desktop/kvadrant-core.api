@@ -28,8 +28,8 @@ public final class io/github/youndie/kvadrant/components/ComposableSingletons$Kv
 	public fun <init> ()V
 	public final fun getLambda$-1098392044$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1630951281$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$-1870422394$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$-773438384$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1955317340$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$570316050$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ControlsKt {
@@ -117,8 +117,8 @@ public final class io/github/youndie/kvadrant/components/KvadrantTileKt {
 	public static final field DEFAULT_FLIP_INTERVAL_MILLIS J
 	public static final field DEFAULT_FLIP_JITTER F
 	public static final field MAX_CYCLE_FACES I
-	public static final fun KvadrantCycleTile-hYmLsZ8 (Ljava/util/List;Landroidx/compose/ui/Modifier;Lio/github/youndie/kvadrant/components/TileSize;JJFILandroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantFlipTile-lVb_Clg (Lio/github/youndie/kvadrant/components/TileSize;Landroidx/compose/ui/Modifier;JJFILkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantCycleTile-8r3B23s (Ljava/util/List;Landroidx/compose/ui/Modifier;Lio/github/youndie/kvadrant/components/TileSize;JJFILkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantFlipTile-IkByU14 (Lio/github/youndie/kvadrant/components/TileSize;Landroidx/compose/ui/Modifier;JJFILkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantIconicTile-lVb_Clg (Landroidx/compose/ui/Modifier;Lio/github/youndie/kvadrant/components/TileSize;JILjava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantTile-FU0evQE (Lio/github/youndie/kvadrant/components/TileSize;Landroidx/compose/ui/Modifier;JLkotlin/jvm/functions/Function0;Landroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantTileBadge (Landroidx/compose/foundation/layout/BoxScope;ILandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
@@ -142,6 +142,8 @@ public final class io/github/youndie/kvadrant/components/KvadrantTurnstileFeathe
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantTurnstileKt {
+	public static final field KVADRANT_TURNSTILE_IN_MILLIS I
+	public static final field KVADRANT_TURNSTILE_OUT_MILLIS I
 	public static final fun KvadrantTurnstile (ZLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 }
 

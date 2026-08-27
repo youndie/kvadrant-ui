@@ -65,5 +65,18 @@ public fun KvadrantTurnstile(
 
 private const val IN_ANGLE = -80f
 private const val OUT_ANGLE = 50f
-private const val IN_MILLIS = 350
-private const val OUT_MILLIS = 250
+
+/**
+ * How long the turnstile takes, in and out — 350 ms and 250 ms, the original's asymmetry.
+ *
+ * Public because a caller has to keep the leaving content composed for exactly this long. A page
+ * removed the moment its flag flips has nothing to animate, and hard-coding 250 at the call site
+ * duplicates a number that lives here.
+ */
+public const val KVADRANT_TURNSTILE_IN_MILLIS: Int = 350
+
+/** @see KVADRANT_TURNSTILE_IN_MILLIS */
+public const val KVADRANT_TURNSTILE_OUT_MILLIS: Int = 250
+
+private const val IN_MILLIS = KVADRANT_TURNSTILE_IN_MILLIS
+private const val OUT_MILLIS = KVADRANT_TURNSTILE_OUT_MILLIS

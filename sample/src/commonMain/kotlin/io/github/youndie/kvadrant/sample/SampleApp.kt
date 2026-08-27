@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import io.github.youndie.kvadrant.components.KVADRANT_TURNSTILE_OUT_MILLIS
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
 import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
@@ -63,6 +64,7 @@ import io.github.youndie.kvadrant.theme.KvadrantTypography
 import io.github.youndie.kvadrant.theme.accessible
 import io.github.youndie.kvadrant.theme.scaled
 import io.github.youndie.kvadrant.theme.scaledToWidth
+import kotlinx.coroutines.delay
 
 private val Layout =
     listOf(
@@ -96,6 +98,22 @@ public fun KvadrantSampleApp() {
     // play: it is a *page* transition, not something a Pivot does between its own items — the phone
     // slid those sideways. Without a page to enter, `KvadrantTurnstile` was code nobody called.
     var openTile by remember { mutableStateOf<String?>(null) }
+    // Whether the page is on screen *at all*, which is not the same as whether it is open. Keeping
+    // the exit animated means keeping its content composed, and without this the page stayed
+    // composed for the rest of the run: a full-screen tree behind everything, forever.
+    //
+    // It is **not** what stopped the tiles responding. That was two live tiles shipped with no
+    // `onClick` to give. This was a guess that happened to be a real improvement, and the test
+    // written to prove it passed on the defect — which is how the guess was caught.
+    var pageOnScreen by remember { mutableStateOf(false) }
+    LaunchedEffect(openTile) {
+        if (openTile != null) {
+            pageOnScreen = true
+        } else {
+            delay(KVADRANT_TURNSTILE_OUT_MILLIS.toLong())
+            pageOnScreen = false
+        }
+    }
     var dialog by remember { mutableStateOf(false) }
     var toast by remember { mutableStateOf(false) }
 
@@ -222,19 +240,21 @@ public fun KvadrantSampleApp() {
                     // The page, over the screen, entering and leaving on the turnstile. Nothing
                     // needs to hold the other half composed here — the screen underneath is always
                     // there — which is the second thing an overlay buys over a row in a column.
-                    KvadrantTurnstile(
-                        visible = openTile != null,
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        // The *last* name, kept after `openTile` goes null, so the page still has
-                        // something to draw while it turns away. Reading `openTile` directly means
-                        // the content vanishes on the frame the flag flips and the turnstile
-                        // animates an empty box — which is why going in was animated and coming
-                        // back was not. B-15 records this exact trap; I wrote it down and then
-                        // walked into it.
-                        val name = remember { mutableStateOf("") }
-                        openTile?.let { name.value = it }
-                        Showcase(name.value, cyrillic, onBack = { openTile = null })
+                    if (pageOnScreen) {
+                        KvadrantTurnstile(
+                            visible = openTile != null,
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
+                            // The *last* name, kept after `openTile` goes null, so the page still has
+                            // something to draw while it turns away. Reading `openTile` directly means
+                            // the content vanishes on the frame the flag flips and the turnstile
+                            // animates an empty box — which is why going in was animated and coming
+                            // back was not. B-15 records this exact trap; I wrote it down and then
+                            // walked into it.
+                            val name = remember { mutableStateOf("") }
+                            openTile?.let { name.value = it }
+                            Showcase(name.value, cyrillic, onBack = { openTile = null })
+                        }
                     }
                 }
             }
@@ -267,6 +287,7 @@ private fun StartPage(
                 KvadrantFlipTile(
                     size,
                     color = colours[index],
+                    onClick = { onOpen("погода") },
                     front = { TileLabel("4", cyrillic) },
                     back = { TileLabel("18°", cyrillic) },
                 )
@@ -292,6 +313,7 @@ private fun StartPage(
                         ),
                     size = size,
                     color = colours[index],
+                    onClick = { onOpen("расписание") },
                 )
             }
 
