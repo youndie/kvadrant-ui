@@ -84,5 +84,7 @@ as absent, and there are no BDD scenarios while there is no behaviour to describ
 
 ## Language
 
-Documentation and code are in **English**. The primary research brief that this tree is derived from
-is in Russian and lives outside the repository — research §0 names it.
+Documentation and code are in **English**. The primary research brief this tree is derived from is
+in Russian and sits in [reference/](reference/), vendored rather than maintained — it is evidence,
+and evidence does not get amended. Where it turned out to be wrong, the correction lives in research
+and names what the brief said; five such corrections so far, listed at the end of research §0.

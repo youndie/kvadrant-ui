@@ -1,0 +1,357 @@
+{
+  "$schema": "informal — machine-readable дамп токенов Metro для генерации Kotlin-констант",
+  "version": "0.1-draft",
+  "generatedFor": "MetroTheme / Compose Multiplatform",
+  "notes": [
+    "Все размеры в исходных логических пикселях Metro. Множитель px -> dp/sp = 0.75.",
+    "confidence: verified | derived | unverified — см. 02-metro-spec.md.",
+    "light-тема НЕ является инверсией dark: foreground 87% чёрного, subtle 40%, disabled 30%."
+  ],
+
+  "scale": {
+    "pxToDp": 0.75,
+    "justification": [
+      "20 px (PhoneFontSizeNormal) * 0.75 = 15 sp = ровно официальные 15 pt",
+      "32 px (status bar) * 0.75 = 24 dp = стандартная высота статус-бара Android",
+      "Win8-рампа 56/26.667/14.667/12 px * 0.75 = 42/20/11/9 pt = ровно официальная рампа"
+    ]
+  },
+
+  "color": {
+    "dark": {
+      "foreground":              { "argb": "#FFFFFFFF", "alpha": 1.0,   "confidence": "verified" },
+      "background":              { "argb": "#FF000000", "alpha": 1.0,   "confidence": "verified" },
+      "contrastForeground":      { "argb": "#FF000000", "alpha": 1.0,   "confidence": "verified" },
+      "contrastBackground":      { "argb": "#FFFFFFFF", "alpha": 1.0,   "confidence": "verified" },
+      "disabled":                { "argb": "#66FFFFFF", "alpha": 0.40,  "confidence": "verified" },
+      "subtle":                  { "argb": "#99FFFFFF", "alpha": 0.60,  "confidence": "verified" },
+      "chrome":                  { "argb": "#FF1F1F1F", "alpha": 1.0,   "confidence": "verified" },
+      "semitransparent":         { "argb": "#AA000000", "alpha": 0.667, "confidence": "verified" },
+      "border":                  { "argb": "#BFFFFFFF", "alpha": 0.75,  "confidence": "verified" },
+      "inactive":                { "argb": "#33FFFFFF", "alpha": 0.20,  "confidence": "verified" },
+      "textBox":                 { "argb": "#BFFFFFFF", "alpha": 0.75,  "confidence": "verified" },
+      "textBoxEditBackground":   { "argb": "#FFFFFFFF", "alpha": 1.0,   "confidence": "verified" },
+      "textBoxReadOnly":         { "argb": "#77000000", "alpha": 0.467, "confidence": "verified" }
+    },
+    "light": {
+      "foreground":              { "argb": "#DE000000", "alpha": 0.87,  "confidence": "verified", "note": "НЕ чистый чёрный" },
+      "background":              { "argb": "#FFFFFFFF", "alpha": 1.0,   "confidence": "verified" },
+      "contrastForeground":      { "argb": "#FFFFFFFF", "alpha": 1.0,   "confidence": "verified" },
+      "contrastBackground":      { "argb": "#DE000000", "alpha": 0.87,  "confidence": "verified" },
+      "disabled":                { "argb": "#4D000000", "alpha": 0.30,  "confidence": "verified" },
+      "subtle":                  { "argb": "#66000000", "alpha": 0.40,  "confidence": "verified" },
+      "chrome":                  { "argb": "#FFDDDDDD", "alpha": 1.0,   "confidence": "verified" },
+      "semitransparent":         { "argb": "#AAFFFFFF", "alpha": 0.667, "confidence": "verified" },
+      "border":                  { "argb": "#BFFFFFFF", "alpha": 0.75,  "confidence": "unverified", "note": "в дампе совпадает с dark — перепроверить" },
+      "inactive":                { "argb": "#33000000", "alpha": 0.20,  "confidence": "verified" },
+      "textBox":                 { "argb": "#26000000", "alpha": 0.15,  "confidence": "verified" },
+      "textBoxEditBackground":   { "argb": "#00000000", "alpha": 0.0,   "confidence": "verified" },
+      "textBoxReadOnly":         { "argb": "#2E000000", "alpha": 0.18,  "confidence": "verified" }
+    }
+  },
+
+  "accents": {
+    "rule": "contrastOn(accent) = if (luminance >= 0.5) black else white",
+    "note": "Правило переводит в чёрный ТОЛЬКО yellow. lime/amber/orange/teal/pink/green остаются с контрастом < 3:1 — см. открытый вопрос об a11y.",
+    "items": [
+      { "name": "lime",     "hex": "#A4C400", "luminance": 0.474, "onColor": "white", "contrast": 2.03, "wcagAA": false, "confidence": "derived" },
+      { "name": "green",    "hex": "#60A917", "luminance": 0.309, "onColor": "white", "contrast": 2.93, "wcagAA": false, "confidence": "derived" },
+      { "name": "emerald",  "hex": "#008A00", "luminance": 0.182, "onColor": "white", "contrast": 4.52, "wcagAA": true,  "confidence": "derived" },
+      { "name": "teal",     "hex": "#00ABA9", "luminance": 0.320, "onColor": "white", "contrast": 2.84, "wcagAA": false, "confidence": "derived" },
+      { "name": "cyan",     "hex": "#1BA1E2", "luminance": 0.312, "onColor": "white", "contrast": 2.90, "wcagAA": false, "confidence": "verified", "default": true },
+      { "name": "cobalt",   "hex": "#0050EF", "luminance": 0.120, "onColor": "white", "contrast": 5.98, "wcagAA": true,  "confidence": "derived" },
+      { "name": "indigo",   "hex": "#6A00FF", "luminance": 0.103, "onColor": "white", "contrast": 6.86, "wcagAA": true,  "confidence": "derived" },
+      { "name": "violet",   "hex": "#AA00FF", "luminance": 0.158, "onColor": "white", "contrast": 5.05, "wcagAA": true,  "confidence": "derived" },
+      { "name": "pink",     "hex": "#F472D0", "luminance": 0.358, "onColor": "white", "contrast": 2.57, "wcagAA": false, "confidence": "derived" },
+      { "name": "magenta",  "hex": "#D80073", "luminance": 0.158, "onColor": "white", "contrast": 5.04, "wcagAA": true,  "confidence": "derived" },
+      { "name": "crimson",  "hex": "#A20025", "luminance": 0.078, "onColor": "white", "contrast": 8.20, "wcagAA": true,  "confidence": "derived" },
+      { "name": "red",      "hex": "#E51400", "luminance": 0.172, "onColor": "white", "contrast": 4.73, "wcagAA": true,  "confidence": "verified" },
+      { "name": "orange",   "hex": "#FA6800", "luminance": 0.302, "onColor": "white", "contrast": 2.98, "wcagAA": false, "confidence": "derived" },
+      { "name": "amber",    "hex": "#F0A30A", "luminance": 0.447, "onColor": "white", "contrast": 2.11, "wcagAA": false, "confidence": "derived", "note": "худший случай" },
+      { "name": "yellow",   "hex": "#E3C800", "luminance": 0.577, "onColor": "black", "contrast": 12.5, "wcagAA": true,  "confidence": "derived", "note": "единственный с чёрным текстом" },
+      { "name": "brown",    "hex": "#825A2C", "luminance": 0.122, "onColor": "white", "contrast": 5.91, "wcagAA": true,  "confidence": "derived" },
+      { "name": "olive",    "hex": "#6D8764", "luminance": 0.215, "onColor": "white", "contrast": 3.98, "wcagAA": false, "confidence": "derived" },
+      { "name": "steel",    "hex": "#647687", "luminance": 0.174, "onColor": "white", "contrast": 4.68, "wcagAA": true,  "confidence": "derived" },
+      { "name": "mauve",    "hex": "#76608A", "luminance": 0.141, "onColor": "white", "contrast": 5.42, "wcagAA": true,  "confidence": "derived" },
+      { "name": "taupe",    "hex": "#87794E", "luminance": 0.194, "onColor": "white", "contrast": 4.31, "wcagAA": false, "confidence": "derived" }
+    ],
+    "wp7Legacy": {
+      "confidence": "verified",
+      "items": [
+        { "name": "blue",     "hex": "#1BA1E2" }, { "name": "orange",  "hex": "#F09609" },
+        { "name": "green",    "hex": "#339933" }, { "name": "red",     "hex": "#E51400" },
+        { "name": "veridian", "hex": "#00ABA9" }, { "name": "pink",    "hex": "#E671B8" },
+        { "name": "purple",   "hex": "#A200FF" }, { "name": "brown",   "hex": "#996600" },
+        { "name": "lime",     "hex": "#8CBF26" }, { "name": "magenta", "hex": "#FF0097" }
+      ]
+    }
+  },
+
+  "typography": {
+    "windowsPhone": {
+      "fontFamilies": {
+        "normal":   "Segoe WP",
+        "light":    "Segoe WP Light",
+        "semiLight":"Segoe WP SemiLight",
+        "semiBold": "Segoe WP Semibold",
+        "note": "PhoneFontFamilyBlack как ресурса не существует"
+      },
+      "sizesPx": {
+        "small": 18.667, "normal": 20, "medium": 22.667, "mediumLarge": 25.333,
+        "large": 32, "extraLarge": 42.667, "extraExtraLarge": 72, "huge": 186.667
+      },
+      "styles": [
+        { "name": "normal",      "sizePx": 20,      "family": "normal",    "foreground": "foreground", "margin": "12,0" },
+        { "name": "subtle",      "sizePx": 20,      "family": "normal",    "foreground": "subtle",     "margin": "12,0" },
+        { "name": "small",       "sizePx": 18.667,  "family": "normal",    "foreground": "subtle",     "margin": "12,0" },
+        { "name": "large",       "sizePx": 32,      "family": "semiLight", "foreground": "foreground", "margin": "12,0" },
+        { "name": "extraLarge",  "sizePx": 42.667,  "family": "semiLight", "foreground": "foreground", "margin": "12,0" },
+        { "name": "title1",      "sizePx": 72,      "family": "semiLight", "foreground": "foreground", "margin": "12,0" },
+        { "name": "title2",      "sizePx": 32,      "family": "semiLight", "foreground": "foreground", "margin": "12,0", "aliasOf": "large" },
+        { "name": "title3",      "sizePx": 22.667,  "family": "semiLight", "foreground": "foreground", "margin": "12,0" },
+        { "name": "groupHeader", "sizePx": 32,      "family": "semiLight", "foreground": "subtle",     "margin": "12,0" },
+        { "name": "accent",      "sizePx": 20,      "family": "semiBold",  "foreground": "accent",     "margin": "12,0" },
+        { "name": "contrast",    "sizePx": 20,      "family": "semiBold",  "foreground": "contrastForeground", "margin": "12,0" },
+        { "name": "huge",        "sizePx": 186.667, "family": "light",     "foreground": "foreground", "margin": "12,0" }
+      ],
+      "lineHeight": "не задан ни в одном стиле — LineStackingStrategy = MaxHeight, берётся из метрик шрифта",
+      "fontWeight": "не задан ни в одном стиле — вес выбирается семейством"
+    },
+    "windows8": {
+      "fontFamily": "Segoe UI",
+      "baselineGridPx": 20,
+      "openTypeFeatures": ["StylisticSet20", "DiscretionaryLigatures", "CaseSensitiveForms"],
+      "styles": [
+        { "name": "header",    "sizePx": 56,     "sizePt": 42, "weight": "Light",    "lineHeightPx": 40, "translate": [-2, 8] },
+        { "name": "subheader", "sizePx": 26.667, "sizePt": 20, "weight": "Light",    "lineHeightPx": 30, "translate": [-1, 6] },
+        { "name": "title",     "sizePx": 14.667, "sizePt": 11, "weight": "SemiBold", "lineHeightPx": 20, "translate": [-1, 4] },
+        { "name": "subtitle",  "sizePx": 14.667, "sizePt": 11, "weight": "Normal",   "lineHeightPx": 20, "translate": [-1, 4] },
+        { "name": "body",      "sizePx": 14.667, "sizePt": 11, "weight": "SemiLight","lineHeightPx": 20, "translate": [-1, 4] },
+        { "name": "caption",   "sizePx": 12,     "sizePt": 9,  "weight": "Normal",   "lineHeightPx": 20, "translate": [-1, 4] }
+      ]
+    }
+  },
+
+  "metrics": {
+    "windowsPhone": {
+      "canvasPx": [480, 800],
+      "pageMarginPx": 12,
+      "effectiveTextMarginPx": 24,
+      "statusBarPortraitPx": 32,
+      "statusBarLandscapePx": 72,
+      "appBarHeightPx": 72,
+      "appBarMiniHeightPx": 30,
+      "appBarIconPx": 48,
+      "appBarGlyphPx": 26,
+      "appBarMaxIcons": 4,
+      "appBarMaxMenuItems": 5,
+      "keyboardPortraitPx": 336,
+      "keyboardLandscapePx": 256,
+      "borderThicknessPx": 3,
+      "touchTargetMinPx": 34,
+      "touchTargetMaxPx": 26,
+      "touchTargetGapPx": 8,
+      "touchElementRatio": 0.6,
+      "thickness": {
+        "horizontalMargin": "12,0",
+        "verticalMargin": "0,12",
+        "margin": "12",
+        "touchTargetOverhang": "12",
+        "touchTargetLargeOverhang": "12,20",
+        "textBoxInnerMargin": "1,2",
+        "passwordBoxInnerMargin": "3,2"
+      },
+      "titlePanelMargin": "12,17,0,28",
+      "pageTitleMargin": "9,-7,0,0",
+      "contentPanelMargin": "12,0,12,0"
+    },
+    "windows8": {
+      "gridUnitPx": 20,
+      "gridSubUnitPx": 5,
+      "headerBaselinePx": 100,
+      "leftMarginPx": 120,
+      "contentTopPx": 140,
+      "bottomMarginRangePx": [50, 130],
+      "listColumnGapPx": 40,
+      "hardEdgedColumnGapPx": 10,
+      "itemVerticalPaddingPx": 20,
+      "hardEdgedVerticalPaddingPx": 10,
+      "groupGapPx": 80,
+      "backButtonPx": 48,
+      "backButtonMargin": "36,0,36,36",
+      "snappedWidthPx": 320,
+      "minWindowWidth81Px": 500,
+      "optInNarrowWidthPx": 320,
+      "scalingPlateaus": [80, 100, 140, 180],
+      "appBarHeightWithLabelsPx": 88,
+      "appBarThemeMinHeightPx": 68,
+      "appBarButtonFullSizePx": 100,
+      "appBarButtonCompactPx": 60,
+      "settingsPaneWidthPx": 346,
+      "settingsFlyoutNarrowPx": 346,
+      "settingsFlyoutWidePx": 646,
+      "flyoutMaxWidthPx": 450,
+      "flyoutMaxHeightPx": 718,
+      "menuFlyoutItemHeightPx": 42
+    }
+  },
+
+  "tiles": {
+    "windowsPhone8": {
+      "gapPx": 12,
+      "gapConfidence": "derived",
+      "sizes": {
+        "small":  { "logicalPx": [99, 99],   "assetPx": [159, 159], "assetPaddingPx": 43 },
+        "medium": { "logicalPx": [210, 210], "assetPx": [336, 336], "assetPaddingPx": 101, "titleMaxChars": 19 },
+        "wide":   { "logicalPx": [432, 210], "assetPx": [691, 336], "assetPaddingPx": [279, 101], "titleMaxChars": 39 }
+      },
+      "scaleFactors": { "wvga": 1.0, "wxga": 1.6, "hd720p": 1.5 },
+      "iconic": { "small": [110, 110], "medium": [202, 202], "smallBestFit": [70, 110], "mediumBestFit": [130, 202] },
+      "wp7Legacy": [173, 173],
+      "backContentMaxChars": { "medium": "3x13", "wide": "3x27" },
+      "flipTiming": "не специфицировано и не контролируемо приложением (random interval); очередь 5, FIFO"
+    },
+    "windows8": {
+      "gapPx": 10,
+      "gapConfidence": "derived",
+      "startRowPitchPx": 160,
+      "maxRows": 6,
+      "sizes100": {
+        "square70x70":   [70, 70],
+        "square150x150": [150, 150],
+        "wide310x150":   [310, 150],
+        "square310x310": [310, 310],
+        "square30x30":   [30, 30],
+        "storeLogo":     [50, 50],
+        "badge":         [24, 24],
+        "splash":        [620, 300]
+      },
+      "since81": ["square70x70", "square310x310"],
+      "assetLimits": { "maxPx": [1024, 1024], "maxBytes": 204800 }
+    }
+  },
+
+  "motion": {
+    "curves": {
+      "metroPrimary":     { "cubicBezier": [0.1, 0.9, 0.2, 1],                    "usage": "~80% библиотеки WinJS" },
+      "exit":             { "cubicBezier": [0.3825, 0.0025, 0.8775, -0.1075],     "usage": "continuumForwardOut" },
+      "slideInOvershoot": { "cubicBezier": [0.17, 0.79, 0.215, 1.0025] },
+      "opacitySnapIn":    { "cubicBezier": [0, 2, 0, 2] },
+      "opacitySnapOut":   { "cubicBezier": [1, -0.42, 0.995, -0.425] },
+      "addToList":        { "cubicBezier": [0.11, 0.5, 0.24, 0.96] },
+      "wpExponentialOut6": { "formula": "(1 - exp(-6t)) / (1 - exp(-6))", "note": "канон WP, cubic-bezier-эквивалента нет" },
+      "wpExponentialIn15": { "formula": "exp(15*(t-1)) нормированная", "usage": "Swivel ForwardOut, ToggleSwitch snap" }
+    },
+    "winjsDurationsMs": {
+      "fadeIn": 250, "fadeOut": 167, "pointerDown": 167, "pointerUp": 167,
+      "enterPage": 1000, "enterPageOpacity": 170, "exitPage": 117,
+      "enterContent": 550, "reposition": 367, "addToList": 120, "deleteFromList": 120,
+      "showEdgeUI": 367, "hideEdgeUI": 367, "showPanel": 550, "hidePanel": 550,
+      "showPopup": 367, "hidePopup": 83, "dragBetween": 200, "swipe": 300,
+      "resizeGrow": 350, "resizeShrink": 120
+    },
+    "winjsValues": {
+      "pointerDownScale": 0.975,
+      "enterPageTranslateYPx": 28,
+      "edgeUITranslateYPx": -70,
+      "panelTranslateXPx": 364,
+      "popupTranslateYPx": 50,
+      "addToListScale": 0.85
+    },
+    "winjsStaggerMs": {
+      "enterPage": { "step": 83, "cap": 333 },
+      "reposition": { "step": 33, "cap": 250 },
+      "turnstile": { "step": 50, "cap": 1000 }
+    },
+    "wpToolkit": {
+      "turnstile": {
+        "forwardIn":   { "rotationY": [-80, 0],  "durationMs": 350, "easing": "ExponentialOut6" },
+        "forwardOut":  { "rotationY": [0, 50],   "durationMs": 250, "easing": "ExponentialIn6" },
+        "backwardIn":  { "rotationY": [50, 0],   "durationMs": 350, "easing": "ExponentialOut6" },
+        "backwardOut": { "rotationY": [0, -80],  "durationMs": 250, "easing": "ExponentialIn6" },
+        "centerOfRotationX": 0
+      },
+      "turnstileFeather": {
+        "staggerMs": { "forwardIn": 40, "backwardOut": 40, "forwardOut": 50, "backwardIn": 50 },
+        "centerOfRotationX": -0.2,
+        "axis": "общая ось через вертикальный центр экрана"
+      },
+      "slide": {
+        "distancePx": 200, "easing": "ExponentialOut6",
+        "durationsMs": { "leftRightIn": 500, "leftRightOut": 300, "upDownIn": 350, "upDownOut": 250 }
+      },
+      "swivel": {
+        "forwardIn":  { "rotationX": [-45, 0], "durationMs": 350, "easing": "ExponentialOut6" },
+        "forwardOut": { "rotationX": [0, 90],  "durationMs": 250, "easing": "ExponentialIn15" },
+        "backwardOut":{ "rotationX": [0, 60],  "durationMs": 250, "easing": "ExponentialIn6" }
+      },
+      "rotate": { "durationMs": 250, "easing": "ExponentialExp1", "opacityEasing": "SineOut" },
+      "roll":   { "phases": [{ "deg": [0, 45], "ms": 300, "easing": "ExponentialOut6" }, { "deg": [45, 90], "ms": 300, "easing": "linear" }] }
+    },
+    "tilt": {
+      "maxAngleRad": 0.3,
+      "maxAngleDeg": 17.188,
+      "maxDepressionPx": 25,
+      "returnDelayMs": 200,
+      "returnDurationMs": 100,
+      "formula": {
+        "m": "abs(nx - 0.5) + abs(ny - 0.5)",
+        "angle": "m * 0.3 рад",
+        "depression": "(1 - m) * 25",
+        "rotationY": "angle * xContrib * -sign(nx - 0.5)",
+        "rotationX": "angle * (1 - xContrib) * sign(ny - 0.5)",
+        "offsetZ": "-depression"
+      },
+      "gotchas": [
+        "нажатие вниз НЕ анимируется — свойства ставятся мгновенно",
+        "анимируется только возврат",
+        "Scale не используется, только PlaneProjection"
+      ]
+    },
+    "progressBarIndeterminate": {
+      "dotCount": 5,
+      "dotShape": "rectangle",
+      "dotSizePx": [4, 4],
+      "cycleMs": 4400,
+      "beginTimesMs": [0, 200, 400, 600, 800],
+      "keyframes": [
+        { "atMs": 0,    "xPercent": 0,   "easing": "none" },
+        { "atMs": 500,  "xPercent": 33,  "easing": "ExponentialExp1" },
+        { "atMs": 2000, "xPercent": 66,  "easing": "linear" },
+        { "atMs": 2500, "xPercent": 100, "easing": "ExponentialExp1" }
+      ]
+    }
+  },
+
+  "controls": {
+    "toggleSwitch": {
+      "hitAreaPx": [136, 95], "trackPx": [89, 34], "offFillPx": [77, 20], "thumbPx": [28, 38],
+      "thumbMargin": "-4,0", "travelPx": 69, "snapMs": 50, "easing": "ExponentialOut15", "disabledOpacity": 0.3
+    },
+    "listPicker": { "itemCountThreshold": 5, "expandMs": 200, "easing": "ExponentialInOut4", "modes": ["Normal", "Expanded", "Full"] },
+    "contextMenu": { "backgroundScale": [1.0, 0.94], "durationMs": 420, "easing": "ExponentialInOut", "blur": false },
+    "datePicker": { "openRotationX": [-50, 0], "openMs": 200, "closeRotationX": [0, 90], "closeMs": 200, "loopingSelectorPx": [148, 148], "itemMarginPx": 6, "numberSizePx": 54, "labelSizePx": 20 },
+    "longListSelector": { "jumpCellPx": [113, 113], "jumpMarginPx": 6, "jumpLetterPx": 48, "groupSquarePx": [62, 62], "groupBorderPx": 2, "groupMargin": "0,0,18,0", "applyThreshold": 8 },
+    "messageBox": { "buttons": ["OK", "OKCancel"], "positiveSide": "left", "note": "в Windows 8 наоборот — безопасный выбор справа" },
+    "semanticZoom": { "minZoomFactor": 0.5, "maxZoomFactor": 1.0, "maxZoomedOutPages": 3, "buttonPx": [21, 21], "buttonFadeAfterMs": 3000 }
+  },
+
+  "timings": {
+    "scrollIndicatorFadeMs": 1000,
+    "statusBarIndicatorFadeMs": 8000,
+    "toastMs": 10000,
+    "passwordMaskMs": 2000,
+    "holdApproxMs": 1100
+  },
+
+  "openGaps": [
+    "все числовые метрики хедера Pivot",
+    "Panorama: FontSize/Margin заголовка панорамы, peek следующей секции, коэффициент параллакса",
+    "позиция Title и пузыря счётчика на WP-плитке",
+    "внутренние отступы плиток Windows 8/8.1",
+    "высота строки меню ApplicationBar и кегль подписей",
+    "line-height и числовые веса в ui-dark.css WinJS",
+    "тайминги Continuum в WP8 Silverlight",
+    "длительность перехода Semantic Zoom"
+  ]
+}

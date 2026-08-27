@@ -37,8 +37,12 @@ An inherited fact is **a hypothesis with a good address**, not a fact of this do
 not bureaucracy: applying it to the one thing everything else stands on — the dependency versions —
 is what produced the correction in §1.2, on a row the brief marked as verified.
 
-The primary brief is deliberately **outside this repository** (it is in Russian, this tree is in
-English, and it is a snapshot of one pass rather than a living document):
+The primary brief lives in [`reference/metro-compose-brief/`](../../reference/metro-compose-brief/),
+vendored so that the addresses below keep resolving. It is **not** part of this documentation tree
+and is not maintained: it is in Russian, this tree is in English, and it is a snapshot of one pass
+rather than a living document. It is also wrong in the places listed at the end of §0, and it stays
+wrong — the corrections belong here, and editing the brief to agree with them would destroy the only
+record of what was believed at the start.
 
 | Brief document | What it holds |
 |---|---|
@@ -50,8 +54,11 @@ English, and it is a snapshot of one pass rather than a living document):
 | `metro-compose-brief/06-roadmap.md` | phases, three spikes, the open decisions |
 | `metro-compose-brief/references/metro-tokens.json` | machine-readable dump of every token |
 
-Its current location is a session output directory that will not survive, which is a defect in an
-address rather than a detail — [B-20](../backlog/B-20-durable-home-for-the-brief.md).
+**Corrections to the brief so far**, each one a place where an inherited fact did not survive being
+re-checked: §1.2 the Material version matrix, §1.6 the tilt's 0.975 prediction and the per-backend
+camera claim, §1.6c the ×0.75 multiplier's stated justification, §1.7 the font stack, §1.10 the
+list-item type size. Five, out of a document whose numbers are mostly right — which is the argument
+for the rule above rather than against the brief.
 
 ---
 

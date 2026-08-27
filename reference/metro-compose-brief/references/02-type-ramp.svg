@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 720" width="1240" height="720" font-family="Segoe UI, Selawik, Inter, sans-serif">
+  <rect width="1240" height="720" fill="#000000"/>
+  <text x="20" y="40" fill="#FFFFFF" font-size="30" font-weight="300">Type ramp — реальные кегли</text>
+  <text x="20" y="62" fill="#99FFFFFF" font-size="13">Слева Windows Phone 8 (Segoe WP), справа Windows 8 / WinRT (Segoe UI) на 20px baseline grid. Все размеры в исходных px.</text>
+
+  <!-- ================= WP column ================= -->
+  <text x="20" y="100" fill="#1BA1E2" font-size="18" font-weight="600">WINDOWS PHONE 8</text>
+  <line x1="20" y1="110" x2="600" y2="110" stroke="#33FFFFFF" stroke-width="1"/>
+
+  <text x="20" y="180" fill="#FFFFFF" font-size="72" font-weight="200">Title1</text>
+  <text x="330" y="160" fill="#99FFFFFF" font-size="13">PhoneTextTitle1Style</text>
+  <text x="330" y="178" fill="#66FFFFFF" font-size="12">72 px / 54 pt · SemiLight</text>
+  <text x="330" y="194" fill="#66FFFFFF" font-size="12">= PhoneFontSizeExtraExtraLarge</text>
+
+  <text x="20" y="235" fill="#FFFFFF" font-size="42.667" font-weight="200">ExtraLarge</text>
+  <text x="330" y="222" fill="#99FFFFFF" font-size="13">PhoneTextExtraLargeStyle</text>
+  <text x="330" y="240" fill="#66FFFFFF" font-size="12">42.667 px / 32 pt · SemiLight</text>
+
+  <text x="20" y="280" fill="#FFFFFF" font-size="32" font-weight="200">Large / Title2</text>
+  <text x="330" y="268" fill="#99FFFFFF" font-size="13">PhoneTextLargeStyle = Title2Style</text>
+  <text x="330" y="286" fill="#66FFFFFF" font-size="12">32 px / 24 pt · SemiLight</text>
+
+  <text x="20" y="318" fill="#99FFFFFF" font-size="32" font-weight="200">GroupHeader</text>
+  <text x="330" y="312" fill="#99FFFFFF" font-size="13">PhoneTextGroupHeaderStyle</text>
+  <text x="330" y="328" fill="#66FFFFFF" font-size="12">32 px, SemiLight, Subtle 60%</text>
+
+  <text x="20" y="352" fill="#FFFFFF" font-size="25.333">MediumLarge</text>
+  <text x="330" y="352" fill="#66FFFFFF" font-size="12">PhoneFontSizeMediumLarge · 25.333 px / 19 pt</text>
+
+  <text x="20" y="384" fill="#FFFFFF" font-size="22.667" font-weight="200">Title3 / Medium</text>
+  <text x="330" y="384" fill="#66FFFFFF" font-size="12">PhoneTextTitle3Style · 22.667 px / 17 pt · SemiLight</text>
+
+  <text x="20" y="412" fill="#FFFFFF" font-size="20">Normal — базовый текст</text>
+  <text x="330" y="412" fill="#66FFFFFF" font-size="12">PhoneTextNormalStyle · 20 px / 15 pt · Regular</text>
+
+  <text x="20" y="438" fill="#99FFFFFF" font-size="20">Subtle — тот же кегль, 60%</text>
+  <text x="330" y="438" fill="#66FFFFFF" font-size="12">PhoneTextSubtleStyle · 20 px, Subtle</text>
+
+  <text x="20" y="462" fill="#99FFFFFF" font-size="18.667">Small — вторичный, subtle</text>
+  <text x="330" y="462" fill="#66FFFFFF" font-size="12">PhoneTextSmallStyle · 18.667 px / 14 pt</text>
+
+  <text x="20" y="488" fill="#1BA1E2" font-size="20" font-weight="600">Accent — SemiBold на акценте</text>
+  <text x="330" y="488" fill="#66FFFFFF" font-size="12">PhoneTextAccentStyle · 20 px · SemiBold</text>
+
+  <rect x="20" y="505" width="560" height="1" fill="#33FFFFFF"/>
+  <text x="20" y="528" fill="#66FFFFFF" font-size="12">Huge: 186.667 px / 140 pt, Light — вне масштаба схемы (используется в часах экрана блокировки).</text>
+  <text x="20" y="548" fill="#66FFFFFF" font-size="12">Ни один стиль WP не задаёт LineHeight и FontWeight: вес выбирается семейством,</text>
+  <text x="20" y="566" fill="#66FFFFFF" font-size="12">интерлиньяж берётся из метрик шрифта (LineStackingStrategy = MaxHeight).</text>
+  <text x="20" y="590" fill="#66FFFFFF" font-size="12">Margin у всех стилей: 12,0.  px &#8594; sp: множитель 0.75 (20 px = 15 sp = 15 pt).</text>
+
+  <!-- ================= Win8 column ================= -->
+  <text x="640" y="100" fill="#1BA1E2" font-size="18" font-weight="600">WINDOWS 8 / WinRT — 20px baseline grid</text>
+  <line x1="640" y1="110" x2="1220" y2="110" stroke="#33FFFFFF" stroke-width="1"/>
+
+  <g stroke="#1AFFFFFF" stroke-width="1">
+    <line x1="640" y1="140" x2="1220" y2="140"/><line x1="640" y1="160" x2="1220" y2="160"/>
+    <line x1="640" y1="180" x2="1220" y2="180"/><line x1="640" y1="200" x2="1220" y2="200"/>
+    <line x1="640" y1="220" x2="1220" y2="220"/><line x1="640" y1="240" x2="1220" y2="240"/>
+    <line x1="640" y1="260" x2="1220" y2="260"/><line x1="640" y1="280" x2="1220" y2="280"/>
+    <line x1="640" y1="300" x2="1220" y2="300"/><line x1="640" y1="320" x2="1220" y2="320"/>
+    <line x1="640" y1="340" x2="1220" y2="340"/><line x1="640" y1="360" x2="1220" y2="360"/>
+    <line x1="640" y1="380" x2="1220" y2="380"/><line x1="640" y1="400" x2="1220" y2="400"/>
+    <line x1="640" y1="420" x2="1220" y2="420"/><line x1="640" y1="440" x2="1220" y2="440"/>
+    <line x1="640" y1="460" x2="1220" y2="460"/><line x1="640" y1="480" x2="1220" y2="480"/>
+    <line x1="640" y1="500" x2="1220" y2="500"/><line x1="640" y1="520" x2="1220" y2="520"/>
+  </g>
+
+  <text x="648" y="180" fill="#FFFFFF" font-size="56" font-weight="300">Header</text>
+  <text x="1000" y="160" fill="#99FFFFFF" font-size="13">HeaderTextBlockStyle</text>
+  <text x="1000" y="178" fill="#66FFFFFF" font-size="12">56 px / 42 pt · Light · LH 40</text>
+  <text x="1000" y="194" fill="#66FFFFFF" font-size="12">Translate(-2, 8) · Stylistic Set 20</text>
+
+  <text x="648" y="240" fill="#FFFFFF" font-size="26.667" font-weight="300">Subheader</text>
+  <text x="1000" y="232" fill="#99FFFFFF" font-size="13">SubheaderTextBlockStyle</text>
+  <text x="1000" y="250" fill="#66FFFFFF" font-size="12">26.667 px / 20 pt · Light · LH 30</text>
+
+  <text x="648" y="280" fill="#FFFFFF" font-size="14.667" font-weight="600">Title — SemiBold, не Bold</text>
+  <text x="1000" y="280" fill="#66FFFFFF" font-size="12">14.667 px / 11 pt · LH 20</text>
+
+  <text x="648" y="320" fill="#FFFFFF" font-size="14.667">Subtitle — навигация</text>
+  <text x="1000" y="320" fill="#66FFFFFF" font-size="12">14.667 px / 11 pt · Normal · LH 20</text>
+
+  <text x="648" y="360" fill="#FFFFFF" font-size="14.667" font-weight="300">Body — SemiLight, основной текст страницы</text>
+  <text x="1000" y="360" fill="#66FFFFFF" font-size="12">14.667 px / 11 pt · SemiLight · LH 20</text>
+
+  <text x="648" y="400" fill="#99FFFFFF" font-size="12">Caption — третичный текст, 12 px = 9 pt (не 12 pt)</text>
+  <text x="1000" y="400" fill="#66FFFFFF" font-size="12">12 px / 9 pt · Normal · LH 20</text>
+
+  <text x="648" y="450" fill="#66FFFFFF" font-size="12">Юнит сетки = 20 &#215; 20 px, субюнит = 5 &#215; 5 px, 16 субюнитов в юните.</text>
+  <text x="648" y="470" fill="#66FFFFFF" font-size="12">BaselineTextStyle: LineHeight 20, LineStackingStrategy = BlockLineHeight,</text>
+  <text x="648" y="490" fill="#66FFFFFF" font-size="12">RenderTransform = Translate(-1, 4) — принудительная посадка на сетку.</text>
+  <text x="648" y="510" fill="#66FFFFFF" font-size="12">Обязательны: StylisticSet20, DiscretionaryLigatures, CaseSensitiveForms.</text>
+
+  <rect x="640" y="540" width="580" height="150" fill="#141414" stroke="#33FFFFFF"/>
+  <text x="656" y="566" fill="#FFFFFF" font-size="15" font-weight="600">В Compose</text>
+  <text x="656" y="590" fill="#99FFFFFF" font-size="12" font-family="monospace">PlatformTextStyle(includeFontPadding = false)</text>
+  <text x="656" y="610" fill="#99FFFFFF" font-size="12" font-family="monospace">LineHeightStyle(alignment = Center, trim = Trim.Both)</text>
+  <text x="656" y="634" fill="#66FFFFFF" font-size="12">Для WP-рампы lineHeight оставляем Unspecified — так же, как в оригинале.</text>
+  <text x="656" y="652" fill="#66FFFFFF" font-size="12">Для Win8-рампы lineHeight задаём явно (40 / 30 / 20 px &#215; 0.75).</text>
+  <text x="656" y="674" fill="#E51400" font-size="12">Selawik не содержит кириллицы &#8594; fallback Inter/Noto для не-латиницы.</text>
+</svg>

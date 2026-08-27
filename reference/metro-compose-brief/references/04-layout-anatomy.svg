@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 940" width="1240" height="940" font-family="Segoe UI, Selawik, Inter, sans-serif">
+  <rect width="1240" height="940" fill="#0A0A0A"/>
+  <text x="20" y="38" fill="#FFFFFF" font-size="30" font-weight="300">Анатомия страницы</text>
+  <text x="20" y="60" fill="#99FFFFFF" font-size="13">Слева — страница Windows Phone 8, 480 &#215; 800 в масштабе 1:1. Справа — «силуэт» Windows 8, масштаб 0.45.</text>
+
+  <!-- ===================== WP PAGE 1:1 ===================== -->
+  <rect x="40" y="80" width="480" height="800" fill="#000000" stroke="#4DFFFFFF"/>
+
+  <!-- status bar -->
+  <rect x="40" y="80" width="480" height="32" fill="#1F1F1F"/>
+  <text x="52" y="102" fill="#99FFFFFF" font-size="13">status bar — 32 px (portrait) / 72 px (landscape)</text>
+
+  <!-- TitlePanel -->
+  <rect x="52" y="129" width="456" height="24" fill="#0F0F0F"/>
+  <text x="52" y="147" fill="#FFFFFF" font-size="20">MY APPLICATION</text>
+  <text x="49" y="215" fill="#FFFFFF" font-size="72" font-weight="200">page</text>
+
+  <!-- content -->
+  <rect x="52" y="252" width="456" height="556" fill="none" stroke="#1BA1E2" stroke-dasharray="6 4"/>
+  <text x="66" y="282" fill="#1BA1E2" font-size="14" font-weight="600">ContentPanel — Margin 12,0,12,0</text>
+  <text x="66" y="304" fill="#99FFFFFF" font-size="13">Эффективный отступ текста = 24 px:</text>
+  <text x="66" y="324" fill="#99FFFFFF" font-size="13">12 (ContentPanel) + 12 (PhoneHorizontalMargin в стиле)</text>
+
+  <rect x="64" y="352" width="432" height="72" fill="#141414"/>
+  <text x="78" y="380" fill="#FFFFFF" font-size="20">Элемент списка</text>
+  <text x="78" y="404" fill="#99FFFFFF" font-size="18.667">вторичная строка, Subtle 60 %</text>
+
+  <rect x="64" y="436" width="432" height="72" fill="#141414"/>
+  <text x="78" y="464" fill="#FFFFFF" font-size="20">Тач-таргет &#8805; 34 px (9 мм)</text>
+  <text x="78" y="488" fill="#99FFFFFF" font-size="18.667">зазор между таргетами &#8805; 8 px (2 мм)</text>
+
+  <text x="66" y="560" fill="#66FFFFFF" font-size="13">TitlePanel: Margin 12,17,0,28</text>
+  <text x="66" y="580" fill="#66FFFFFF" font-size="13">ApplicationTitle: PhoneTextNormalStyle, 20 px</text>
+  <text x="66" y="600" fill="#66FFFFFF" font-size="13">PageTitle: PhoneTextTitle1Style, 72 px, Margin 9,-7,0,0</text>
+  <text x="66" y="628" fill="#66FFFFFF" font-size="13">Клавиатура перекрывает 336 px (portrait) / 256 px (landscape)</text>
+  <text x="66" y="648" fill="#66FFFFFF" font-size="13">Полоса подсказок клавиатуры — 65 px</text>
+
+  <!-- ApplicationBar -->
+  <rect x="40" y="808" width="480" height="72" fill="#1F1F1F"/>
+  <circle cx="120" cy="844" r="24" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="220" cy="844" r="24" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="320" cy="844" r="24" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="420" cy="844" r="24" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="108" y="832" width="24" height="24" fill="#FFFFFF" opacity="0.35"/>
+  <text x="52" y="800" fill="#F0A30A" font-size="13">ApplicationBar — 72 px fixed, mini 30 px</text>
+
+  <text x="40" y="906" fill="#66FFFFFF" font-size="12">Иконка 48&#215;48, рисунок 26&#215;26 по центру, белый на прозрачном — круг рисует сам бар. &#8804; 4 иконки, &#8804; 5 пунктов меню.</text>
+  <text x="40" y="926" fill="#66FFFFFF" font-size="12">Текст пунктов меню принудительно в lowercase. Кнопок без иконки не бывает: «No text-only buttons are permitted».</text>
+
+  <!-- dimension: 12 px margin -->
+  <line x1="40" y1="264" x2="52" y2="264" stroke="#E51400" stroke-width="2"/>
+  <text x="24" y="260" fill="#E51400" font-size="11">12</text>
+
+  <!-- ===================== WIN8 SILHOUETTE 0.45 ===================== -->
+  <text x="600" y="100" fill="#1BA1E2" font-size="17" font-weight="600">WINDOWS 8 «SILHOUETTE» — масштаб 0.45</text>
+  <rect x="600" y="110" width="615" height="346" fill="#000000" stroke="#4DFFFFFF"/>
+
+  <!-- left margin band -->
+  <rect x="600" y="110" width="54" height="346" fill="#1BA1E2" opacity="0.12"/>
+  <line x1="654" y1="110" x2="654" y2="456" stroke="#1BA1E2" stroke-dasharray="4 3"/>
+  <text x="606" y="440" fill="#1BA1E2" font-size="11" transform="rotate(-90 606 440)">120 px · 6 units</text>
+
+  <!-- header baseline -->
+  <line x1="600" y1="155" x2="1215" y2="155" stroke="#E51400" stroke-dasharray="4 3"/>
+  <text x="1050" y="150" fill="#E51400" font-size="11">baseline 100 px от верха</text>
+  <text x="654" y="155" fill="#FFFFFF" font-size="25" font-weight="300">Page header</text>
+
+  <!-- content region -->
+  <line x1="600" y1="173" x2="1215" y2="173" stroke="#F0A30A" stroke-dasharray="4 3"/>
+  <text x="1050" y="186" fill="#F0A30A" font-size="11">контент от 140 px</text>
+
+  <!-- group columns -->
+  <rect x="654" y="185" width="130" height="120" fill="#141414"/>
+  <rect x="654" y="313" width="130" height="60" fill="#141414"/>
+  <rect x="820" y="185" width="130" height="120" fill="#141414"/>
+  <rect x="820" y="313" width="130" height="60" fill="#141414"/>
+  <rect x="986" y="185" width="130" height="188" fill="#141414"/>
+  <line x1="784" y1="330" x2="820" y2="330" stroke="#60A917" stroke-width="2"/>
+  <text x="770" y="348" fill="#60A917" font-size="11">80 px между группами</text>
+
+  <text x="600" y="486" fill="#99FFFFFF" font-size="13">Юнит = 20 &#215; 20 px · субюнит = 5 &#215; 5 px · 16 субюнитов в юните</text>
+  <text x="600" y="508" fill="#66FFFFFF" font-size="12">Back-кнопка 48&#215;48, Margin 36,0,36,36 &#8594; 36 + 48 + 36 = 120: поле силуэта сходится.</text>
+  <text x="600" y="528" fill="#66FFFFFF" font-size="12">Между колонками списков 40 px · между hard-edged колонками 10 px.</text>
+  <text x="600" y="548" fill="#66FFFFFF" font-size="12">Вертикальный паддинг между элементами: 20 px (tile + text) / 10 px (hard-edged).</text>
+  <text x="600" y="568" fill="#66FFFFFF" font-size="12">Нижнее поле при горизонтальном панинге: 50…130 px.</text>
+
+  <rect x="600" y="592" width="615" height="132" fill="#111111" stroke="#33FFFFFF"/>
+  <text x="614" y="616" fill="#FFFFFF" font-size="14" font-weight="600">View states</text>
+  <text x="614" y="640" fill="#99FFFFFF" font-size="12">Win 8.0: FullScreenLandscape / Filled / Snapped (320 px) / FullScreenPortrait.</text>
+  <text x="614" y="660" fill="#99FFFFFF" font-size="12">Snap доступен только при ширине окна &#8805; 1366. Минимум для Store — 1024 &#215; 768.</text>
+  <text x="614" y="680" fill="#99FFFFFF" font-size="12">Win 8.1: min width 500 px, opt-in 320 px через &lt;ApplicationView MinWidth="width320"/&gt;.</text>
+  <text x="614" y="700" fill="#99FFFFFF" font-size="12">При &lt; 500 px: левое поле 20 px вместо 120, header 20 pt вместо 42 pt, back 30&#215;30.</text>
+
+  <rect x="600" y="740" width="615" height="112" fill="#111111" stroke="#33FFFFFF"/>
+  <text x="614" y="764" fill="#FFFFFF" font-size="14" font-weight="600">Пересчёт в Compose (&#215; 0.75)</text>
+  <text x="614" y="788" fill="#99FFFFFF" font-size="12" font-family="monospace">pageMargin 12 px &#8594; 9 dp · appBar 72 px &#8594; 54 dp · statusBar 32 px &#8594; 24 dp</text>
+  <text x="614" y="808" fill="#99FFFFFF" font-size="12" font-family="monospace">gridUnit 20 px &#8594; 15 dp · silhouette 120 px &#8594; 90 dp · tileGap 12 px &#8594; 9 dp</text>
+  <text x="614" y="832" fill="#E51400" font-size="12">Конфликт: тач-таргет Metro 34 px = 25.5 dp против нормы 48 dp — расширять хит-область.</text>
+</svg>
