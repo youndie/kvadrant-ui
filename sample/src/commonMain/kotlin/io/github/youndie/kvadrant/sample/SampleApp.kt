@@ -241,8 +241,18 @@ public fun KvadrantSampleApp() {
                     // needs to hold the other half composed here — the screen underneath is always
                     // there — which is the second thing an overlay buys over a row in a column.
                     if (pageOnScreen) {
+                        // `false` on the frame the turnstile is first composed, flipped by an
+                        // effect on the next one. Handing it `openTile != null` directly means it
+                        // is born already open — state and target agree, `updateTransition` has
+                        // nothing to run, and the page appears with no animation at all. This is the
+                        // same trap the feather on the mail page works around, three screens up in
+                        // the same file, and it arrived here with the gate that keeps the page
+                        // composed for its exit.
+                        var shown by remember { mutableStateOf(false) }
+                        LaunchedEffect(openTile) { shown = openTile != null }
+
                         KvadrantTurnstile(
-                            visible = openTile != null,
+                            visible = shown,
                             modifier = Modifier.fillMaxSize(),
                         ) {
                             // The *last* name, kept after `openTile` goes null, so the page still has
