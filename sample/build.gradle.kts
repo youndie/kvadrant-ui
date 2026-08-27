@@ -34,6 +34,10 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
+            // The system back gesture. `androidx.compose.ui.backhandler.BackHandler` ships in its
+            // own artefact rather than in `compose.ui`, and it is multiplatform: the gesture on
+            // Android, inert on the desktop, so the shared screen needs no per-platform branch.
+            implementation("org.jetbrains.compose.ui:ui-backhandler:${libs.versions.compose.multiplatform.get()}")
         }
         val desktopMain by getting
         desktopMain.dependencies {

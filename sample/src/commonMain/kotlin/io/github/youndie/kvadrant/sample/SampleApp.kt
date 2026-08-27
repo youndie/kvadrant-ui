@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantAppBar
@@ -84,6 +85,7 @@ private val Layout =
  * layout is. The slider then moves that derived scale, which is what it was always for.
  */
 @Composable
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 public fun KvadrantSampleApp() {
     var dark by remember { mutableStateOf(true) }
     var accessible by remember { mutableStateOf(false) }
@@ -94,6 +96,14 @@ public fun KvadrantSampleApp() {
     // play: it is a *page* transition, not something a Pivot does between its own items — the phone
     // slid those sideways. Without a page to enter, `KvadrantTurnstile` was code nobody called.
     var openTile by remember { mutableStateOf<String?>(null) }
+
+    // The system back gesture. Without it the page is an overlay that swallows back, and B-30 names
+    // that as the single most reliable way to make an application feel foreign on Android — it was
+    // written there as a reason to avoid an overlay, and then this demo grew one anyway.
+    //
+    // `androidx.compose.ui.backhandler.BackHandler` is multiplatform: it is the gesture on Android
+    // and inert on the desktop, so the shared screen needs no per-platform branch.
+    BackHandler(enabled = openTile != null) { openTile = null }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base
