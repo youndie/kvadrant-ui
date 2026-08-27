@@ -35,6 +35,14 @@ kotlin {
         withHostTest {}
     }
 
+    // Every public symbol here is currently unpinned: a renamed parameter, a `val` turned into a
+    // function, a removed default are all invisible to `check` and all break a consumer at link
+    // time. This library has already changed its public signatures twice without noticing —
+    // `TiltIndication.cameraDistance` went Float to Dp, and the font functions became @Composable.
+    // Both were right; neither arrived as a diff somebody had to approve.
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation {}
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)

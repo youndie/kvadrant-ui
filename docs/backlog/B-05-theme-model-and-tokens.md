@@ -10,6 +10,27 @@ blocked_by: [B-04]
 
 # B-05 — KvadrantTheme: colours, typography, metrics, motion
 
+**Audited. The theme is built; one acceptance criterion is met differently from how it was written
+and one is not met at all.**
+
+`KvadrantColorsTest` does not do what the AC below asks — it never opens `metro-tokens.json` — but
+what it does instead is worth more than a literal transcription check for the accents. It pins nine
+of the twenty-one by *name* through a luminance computation (`lime, green, teal, cyan, pink, orange,
+amber, olive, taupe` are the ones below WCAG AA at their authentic text colour) and pins `yellow` as
+the single accent the luminance rule flips to black text. A wrong hex moves a ratio and moves a
+name out of that list, so the values are guarded — indirectly, and by a check that also explains
+itself. The fear the AC was written against — deriving one palette from the other — is addressed
+head-on by `the_light_theme_is_not_an_inversion_of_the_dark_one`.
+
+**What is genuinely unguarded is the semantic slots.** `background`, `chrome`, `inactive`,
+`onAccent` and the rest have no value assertion anywhere; only `foreground` and `border` do. A typo
+in `chrome` would pass every test in this repository and show up as a screenshot diff *if* a fixture
+happens to use it.
+
+Field-by-field against the dump is not reachable while the dump lives outside the repository — that
+is [B-06](B-06-token-generator.md) and [B-20](B-20-durable-home-for-the-brief.md), and it is the
+reason the AC has stood unmet rather than an oversight.
+
 Four `@Immutable data class`es behind four `internal staticCompositionLocalOf` locals, a public
 `KvadrantTheme` accessor object with `@Composable @ReadOnlyComposable` getters, and a scoped
 `KvadrantThemeConfiguration` for overriding inside a subtree — the shape

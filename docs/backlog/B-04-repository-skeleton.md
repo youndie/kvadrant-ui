@@ -9,6 +9,31 @@ stage: stage-1-core
 
 # B-04 — Skeleton: modules, targets, version catalog, CI, snapshot publishing
 
+**Audited. Two of the five criteria below belong to other items, one is unmet, and it is the one
+that matters most for a library.**
+
+**There is no binary-compatibility validation of any kind** — no `abiValidation`, no
+`binary-compatibility-validator`, nothing in `.github/workflows/check.yaml`. Every public symbol
+here is currently unpinned: a parameter renamed, a `val` turned into a function, a default removed
+are all invisible to `./gradlew check` and all break a consumer at link time. This library has
+already changed public signatures twice without noticing — `TiltIndication.cameraDistance` went from
+`Float` to `Dp` under B-25, and `kvadrantLatin()`/`kvadrantCyrillic()` became `@Composable` under
+B-07. Both were right; neither was *declared*, and with a dump in the tree both would have arrived
+as a diff a reviewer had to approve.
+
+**Done.** Kotlin's own `abiValidation` is on and `checkKotlinAbi` was already wired into `check` by
+the plugin — verified by adding a public function and watching the gate print the added line, not by
+reading that it should. The reference dump is `kvadrant-core/api/desktop/kvadrant-core.api`, 448
+lines, and it holds `kvadrantLatin (Landroidx/compose/runtime/Composer;I)` — which is exactly the
+signature change B-07 made in silence.
+
+**Named limitation:** the dump covers the desktop JVM ABI only. Nothing is unguarded by that today
+because there is no `androidMain` source at all — the Android target compiles `commonMain` and
+nothing else — but the first `actual` written there will be outside the dump, and this paragraph is
+what should stop that going unnoticed.
+
+The Material criteria below are [B-14](B-14-material-adapter.md)'s and should be read there.
+
 Seven Gradle modules with strictly one-way dependencies — `kvadrant-resources ← kvadrant-core ←
 kvadrant-material-adapter ← sample-gallery`, and `kvadrant-icons ← kvadrant-core` — convention
 plugins in `build-logic`, targets `androidTarget` / `jvm("desktop")` / three iOS / `wasmJs`, a

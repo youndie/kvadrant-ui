@@ -45,6 +45,11 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   across operating systems, and it rules out fixtures whose point is a *missing* font — the host
   supplies one and the golden records the recording machine.
 - **Style is in `.editorconfig`**, not in the build script.
+- **The public ABI is pinned.** `check` runs `checkKotlinAbi` against
+  `kvadrant-core/api/desktop/kvadrant-core.api`. A deliberate API change means running
+  `./gradlew :kvadrant-core:updateKotlinAbi` and committing the diff, so a reviewer sees it. The
+  dump is desktop-only; there is no `androidMain` source yet, and the first one will need this
+  revisited.
 
 ## Rules that are easy to get wrong here
 
