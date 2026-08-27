@@ -34,6 +34,11 @@ import kotlin.math.roundToInt
  *
  * This composable covers the first two. [KvadrantListPickerMode.Full] is a navigation decision — it
  * needs somewhere to navigate to — so the control reports it and the caller acts.
+ *
+ * **Nothing in this repository acts on it yet**, which means a picker with six options is a control
+ * that cannot be opened at all. Worth knowing before reaching for one: on the phone, Full was the
+ * *common* case — Settings went to a page far more often than anything unfolded in place — so what
+ * is built here is the exception. [B-30](../../../../../../../docs/backlog/B-30-list-picker-full-mode.md).
  */
 @Composable
 public fun KvadrantListPicker(
