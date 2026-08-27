@@ -6,12 +6,13 @@
 
 PY ?= python3
 
-.PHONY: check gate report fix help
+.PHONY: check gate report fix screenshots help
 
 help:
 	@echo "make check   - the gate: blocking checks, exactly what CI runs"
 	@echo "make report  - non-blocking reports: BDD coverage, code anchors"
 	@echo "make fix     - regenerate the backlog index, fill in missing coverage-map lines"
+	@echo "make screenshots - record the suite twice and name any image that moved (B-31)"
 
 check: gate report
 
@@ -31,3 +32,9 @@ report:
 fix:
 	$(PY) scripts/backlog_index.py
 	$(PY) scripts/coverage_map.py --fix
+
+# Deliberately outside `check`. It records the whole suite twice, and a gate that takes a minute to
+# say nothing is a gate people stop running. Run it after adding a fixture, and before trusting a
+# claim that no golden moved. ROUNDS=5 raises the number of recordings compared.
+screenshots:
+	$(PY) scripts/screenshot_determinism.py --rounds $(or $(ROUNDS),2)

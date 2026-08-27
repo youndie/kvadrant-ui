@@ -696,6 +696,31 @@ says the desktop renderer is unchanged and nothing more.
 of the Compose version, coupled to it in both directions, and forcing it means running a renderer
 the Compose runtime above it was not built against. The only version this project pins is CMP's.
 
+**Consequence 3 — determinism is a property to be measured, not assumed.**
+[B-31](../backlog/B-31-screenshot-suite-is-not-deterministic.md) recorded six of the sixty-eight
+goldens changing between two recordings of unchanged source, by about 147 pixels of 280 000 — 0.052 %
+against viddik's 0.05 % tolerance, so those fixtures passed and failed at random. A suite that fails
+at random teaches its readers that a red run means nothing, and after that a real regression is
+invisible.
+
+`scripts/screenshot_determinism.py` (`make screenshots`, `ROUNDS=n`) records the suite n times and
+names every image that moved. It is **not** in `make check`: it records everything twice, and a gate
+that takes a minute to say nothing is a gate people stop running. Run it after adding a fixture, and
+before believing a claim that no golden moved.
+
+| Fact | Where verified |
+|---|---|
+| Ten consecutive recordings of the current suite produce byte-identical images | `make screenshots ROUNDS=4`, twice, plus six by hand |
+| The script detects a fixture that genuinely varies | a temporary fixture keyed on `System.nanoTime()` was added, flagged as the only non-deterministic image, and removed |
+| The mechanism the item suspected is not present: `KvadrantToast(visible = true)` has nothing to animate on its first composition, and `StartScreen`'s `LaunchedEffect` does nothing when no tile is pressed | the fixture sources |
+
+**So the flake is real in the record and not reproducible now, and those are different claims.**
+Nothing was fixed; what exists is a way to tell. Anything that would explain it — the tilt camera
+becoming a `Dp`, the font family gaining instanced weights — landed between the observation and the
+attempt to reproduce it, and none of them is a mechanism anybody has demonstrated. The honest
+position is a guard, a lowered priority, and the trigger written into the item: if
+`make screenshots` ever names an image, that image's fixture holds something moving.
+
 ### 1.10 Confirmed absences — things that do not exist, though the internet says otherwise
 
 *(inherited, ✅)*

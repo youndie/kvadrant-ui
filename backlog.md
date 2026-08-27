@@ -45,7 +45,6 @@ item must never move its file.
 | [B-04](docs/backlog/B-04-repository-skeleton.md) `[~]` | Skeleton: modules, targets, version catalog, CI, snapshot publishing | P0 | M | - |
 | [B-06](docs/backlog/B-06-token-generator.md) `[ ]` | Generate the token constants from metro-tokens.json instead of typing them | P0 | S/M | B-04 |
 | [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
-| [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P0 | M | - |
 | [B-18](docs/backlog/B-18-icon-set.md) `[ ]` | Draw the base icon set and a generator for it | P1 | L | - |
 | [B-19](docs/backlog/B-19-reverse-adapter-and-adaptive-widget.md) `[ ]` | Reverse adapter and AdaptiveWidget | P1 | M | B-14 |
 | [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
@@ -54,6 +53,7 @@ item must never move its file.
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
 | [B-27](docs/backlog/B-27-tilt-does-not-follow-the-finger.md) `[ ]` | The tilt is fixed at touch-down where the original followed the finger | P2 | S | - |
 | [B-30](docs/backlog/B-30-list-picker-full-mode.md) `[ ]` | A picker with six options reports Full mode and nothing happens | P2 | M | - |
+| [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 | [B-22](docs/backlog/B-22-win8-branch.md) `[?]` | Is the Windows 8 profile part of this library or a separate one? | P3 | XL | - |
 | [B-21](docs/backlog/B-21-maven-coordinates.md) `[?]` | Which Maven coordinates and which publishing identity? | infra | XS | - |
 

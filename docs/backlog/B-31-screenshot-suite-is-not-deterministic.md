@@ -2,13 +2,29 @@
 id: B-31
 title: "Six goldens change between two recordings of unchanged source"
 status: open
-priority: P0
+priority: P2
 size: M
 stage: stage-2-release
 blocked_by: []
 ---
 
 # B-31 — Six goldens change between two recordings of unchanged source
+
+**Guarded, not fixed, and dropped to P2 on that basis.** `make screenshots` (`ROUNDS=n`) records the
+suite n times and names every image that moved — the check the acceptance criteria asked for. Ten
+consecutive recordings of the current suite come back byte-identical, and the script was shown to
+work by adding a fixture keyed on `System.nanoTime()`, watching it flag that one image, and removing
+it. The mechanism this item suspected is not present either: a toast handed `visible = true` on its
+first composition has nothing to animate, and `StartScreen`'s `LaunchedEffect` does nothing when no
+tile is pressed.
+
+**Nothing was repaired.** A flake that cannot be reproduced has not been understood, and several
+things that could plausibly explain it — the tilt camera becoming a `Dp`, the font family gaining
+instanced weights — landed between the observation and the attempt. It stays open at P2 with a
+trigger rather than being closed on ten green runs: **if `make screenshots` ever names an image, this
+item comes back at P0 and that image's fixture is where to look.**
+
+Everything below is the original finding, unamended, because it is the evidence.
 
 `viddikRecord` twice in a row, with nothing edited in between, and six of the sixty-eight images
 come back different: `screen_start_dark`, `screen_start_light`, `screen_start_amber`,
