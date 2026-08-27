@@ -172,6 +172,17 @@ public fun KvadrantRotate(
 public fun KvadrantRoll(
     visible: Boolean,
     modifier: Modifier = Modifier,
+    /**
+     * Where the turn is anchored. **This number is not Microsoft's** — the specification gives the
+     * roll's two angles and its two durations and says nothing about the axis, so a default had to
+     * be chosen and it is a parameter because of that.
+     *
+     * The bottom-left corner, because the centre is worse in a way that is obvious once seen: a
+     * wide element rotated ninety degrees about its middle sweeps a circle the width of the page and
+     * ends up standing across everything else. Anchored at a corner it reads as a panel swinging on
+     * a hinge, which is what "roll" is meant to describe.
+     */
+    transformOrigin: TransformOrigin = TransformOrigin(0f, 1f),
     content: @Composable () -> Unit,
 ) {
     val angle = remember { Animatable(if (visible) ROLL_END else 0f) }
@@ -186,7 +197,12 @@ public fun KvadrantRoll(
         }
     }
 
-    Box(modifier.graphicsLayer { rotationZ = angle.value }) { content() }
+    Box(
+        modifier.graphicsLayer {
+            rotationZ = angle.value
+            this.transformOrigin = transformOrigin
+        },
+    ) { content() }
 }
 
 private const val ROTATE_MILLIS = 250

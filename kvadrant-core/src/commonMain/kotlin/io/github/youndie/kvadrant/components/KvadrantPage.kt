@@ -5,8 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -42,7 +47,16 @@ public fun KvadrantPage(
         Column(
             Modifier
                 .weight(1f)
-                .then(if (scrollable) Modifier.verticalScroll(scroll) else Modifier),
+                // A page is a screen, so it insets itself: top and sides from `safeDrawing`, never
+                // the bottom, which belongs to whatever app bar sits under it and paints its chrome
+                // to the edge. Without this a page shown as an overlay — which is how a detail page
+                // reached from a tile arrives — has no insets at all and puts its header under the
+                // clock, because the padding applied around the pivot is somewhere else in the tree.
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(
+                        WindowInsetsSides.Top + WindowInsetsSides.Horizontal,
+                    ),
+                ).then(if (scrollable) Modifier.verticalScroll(scroll) else Modifier),
         ) {
             if (applicationTitle != null || pageTitle != null) {
                 KvadrantPageHeader(

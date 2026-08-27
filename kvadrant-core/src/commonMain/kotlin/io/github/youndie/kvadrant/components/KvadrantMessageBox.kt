@@ -57,23 +57,11 @@ public fun KvadrantMessageBox(
 ) {
     val colors = KvadrantTheme.colors
 
-    // The box carries its own overlay, because the original does: `CustomMessageBox.Show` builds a
-    // container, puts a `Rectangle` in it and the box on top, and opens the pair in a `Popup`. A
-    // caller handed only the box has no way to know it was supposed to dim the screen, and this one
-    // did not — the dialog sat at the top of a perfectly bright page.
-    //
-    // The fill is `Color.FromArgb(0x99, PhoneBackgroundColor)`: sixty percent of the **theme
-    // background**, not a fixed black. In the light theme it is a white veil, which is why
-    // `PhoneSemitransparentBrush` — black at 0.667, and a real token used elsewhere — is the wrong
-    // one to reach for here.
-    // One flag, not two. `KvadrantSwivel` holds an `Animatable(SWIVEL_IN_FROM)` and therefore
-    // *always* starts at -45 degrees and tips in on its own — the "compose it closed and flip it
-    // next frame" dance a `Transition` needs is not only unnecessary here, it is harmful: handed
-    // `false` first, the swivel runs its **exit** to +60 and only then comes back, which is what a
-    // dialog that would not animate properly was actually doing.
-    //
-    // What is still needed is `onScreen`, because a surface removed on the frame its flag moves has
-    // nothing to animate out.
+    // `onScreen` outlives `visible` by the length of the exit, because a surface removed on the
+    // frame its flag moves has nothing to animate out. There is deliberately no second "compose it
+    // closed first" flag: `KvadrantSwivel` holds an `Animatable(SWIVEL_IN_FROM)` and always starts
+    // at -45 degrees, so handing it `false` first makes it run its *exit* to +60 and come back —
+    // which is what a dialog that would not animate properly was actually doing.
     var onScreen by remember { mutableStateOf(false) }
     if (visible) onScreen = true
     LaunchedEffect(visible) {
@@ -84,28 +72,36 @@ public fun KvadrantMessageBox(
     }
     if (!onScreen) return
 
-    // `SwivelTransitionMode.BackwardIn` on show and `BackwardOut` on dismiss, both from
-    // `CustomMessageBox.cs`. Not a slide: the box tips in around its top edge.
-    KvadrantSwivel(visible = visible, backward = true) {
-        Box(
-            modifier
-                .fillMaxSize()
-                .background(colors.background.copy(alpha = OVERLAY_ALPHA))
-                .then(
-                    if (dismissOnOutsideClick && onCancel != null) {
-                        Modifier.clickable(indication = null, interactionSource = null, onClick = onCancel)
-                    } else {
-                        Modifier
-                    },
-                ),
-        ) {
+    // The box carries its own overlay, because the original does: `CustomMessageBox.Show` builds a
+    // container, puts a `Rectangle` in it and the box beside it, and opens the pair in a `Popup`. A
+    // caller handed only the box has no way to know it was supposed to dim the screen.
+    //
+    // The fill is `Color.FromArgb(0x99, PhoneBackgroundColor)`: sixty percent of the **theme
+    // background**, not a fixed black, so in the light theme it is a white veil — which is why
+    // `PhoneSemitransparentBrush`, black at 0.667, is the wrong one to reach for here.
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(colors.background.copy(alpha = OVERLAY_ALPHA))
+            .then(
+                if (dismissOnOutsideClick && onCancel != null) {
+                    Modifier.clickable(indication = null, interactionSource = null, onClick = onCancel)
+                } else {
+                    Modifier
+                },
+            ),
+    ) {
+        // The swivel is on the **box**, not on the pair. `GetTransition(this)` is called on the
+        // message box itself and the overlay is its sibling, so the dim stays put while the dialog
+        // tips in — a scrim that tips away with its dialog is a thing nothing does anywhere.
+        KvadrantSwivel(visible = visible, backward = true) {
             Column(
                 Modifier
                     .fillMaxWidth()
                     .background(colors.chrome)
-                    // The overlay above covers the whole display, system bars included, because a
-                    // scrim that stops at the status bar is a scrim with a bright strip across the
-                    // top. The box insets its own content instead.
+                    // The overlay covers the whole display, system bars included, because a scrim
+                    // that stops at the status bar is a scrim with a bright strip across the top.
+                    // The box insets its own content instead.
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .padding(horizontal = 18.dp, vertical = 21.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -121,7 +117,9 @@ public fun KvadrantMessageBox(
                         KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
                     }
                     val cancel: @Composable () -> Unit = {
-                        if (onCancel != null) KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
+                        if (onCancel != null) {
+                            KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
+                        }
                     }
                     if (win8ButtonOrder) {
                         cancel()

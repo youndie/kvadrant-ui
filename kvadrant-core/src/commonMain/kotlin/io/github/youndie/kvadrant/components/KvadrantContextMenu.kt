@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontFamily
@@ -73,8 +74,22 @@ public fun KvadrantContextMenuHost(
                     .clickable(onClick = onDismiss),
             )
             ContextMenuSurface(anchorTop, anchorHeight) {
+                // The open animation, straight out of the `Open` visual state in the toolkit's
+                // `Generic.xaml`: `ScaleX` runs 0 to 1 over the first 300 ms and `ScaleY` sits at
+                // zero until 300 and then runs 0 to 1 by 420. Both linear, 420 ms in total. So the
+                // menu draws itself as a line across the page first and only then unrolls
+                // downwards — it is the two phases that make it recognisable, and this had no
+                // animation at all.
+                val opening = (progress * TOTAL_MILLIS)
                 Column(
                     Modifier
+                        .graphicsLayer {
+                            scaleX = (opening / SCALE_X_MILLIS).coerceIn(0f, 1f)
+                            scaleY =
+                                ((opening - SCALE_X_MILLIS) / (TOTAL_MILLIS - SCALE_X_MILLIS))
+                                    .coerceIn(0f, 1f)
+                            transformOrigin = TransformOrigin(0.5f, 0f)
+                        }
                         // Full width. `UpdateContextMenuPlacement` sets `x = bounds.Left` and
                         // `Width = bounds.Width` in portrait — the menu spans the page, and the
                         // inset it used to have here was ours.
@@ -135,6 +150,10 @@ private fun ContextMenuSurface(
         layout(constraints.maxWidth, page) { menu.place(0, y.coerceAtLeast(0)) }
     }
 }
+
+/** `Duration="0:0:0.42"` on the `Open` storyboard, with the ScaleX keyframe landing at 0.3. */
+private const val TOTAL_MILLIS = 420f
+private const val SCALE_X_MILLIS = 300f
 
 private const val PUSHED_BACK = 0.94f
 
