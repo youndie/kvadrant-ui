@@ -1,0 +1,35 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        // The viddik Gradle plugin is not on the plugin portal.
+        maven("https://reposilite.kotlin.website/snapshots") {
+            content { includeGroupAndSubgroups("ru.workinprogress") }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        // Compose Multiplatform pulls androidx artefacts published only to Google's repository.
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+            }
+        }
+        mavenCentral()
+        // Screenshot testing — https://github.com/youndie/viddik. Filtered, like every third-party
+        // repository here: an unfiltered one takes part in resolving *every* dependency, so the day
+        // its host is unreachable Gradle disables it and fails artefacts that live elsewhere.
+        maven("https://reposilite.kotlin.website/snapshots") {
+            mavenContent { includeGroupAndSubgroups("ru.workinprogress") }
+        }
+    }
+}
+
+rootProject.name = "kvadrant-ui"
+
+include(":kvadrant-core")
+include(":sample")

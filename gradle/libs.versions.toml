@@ -1,0 +1,28 @@
+[versions]
+kotlin = "2.4.10"
+# Pinned to 1.11.1, not the current 1.12.0, and viddik is the reason: its capture engine is
+# compiled against skiko 0.144.6, and CMP 1.12.0 brings skiko 0.150.1, where
+# `Matrix44(float[])` became private. It resolves, it compiles, and it throws IllegalAccessError
+# the moment a screenshot renders. See B-23.
+compose-multiplatform = "1.12.0"
+# KSP is versioned independently of the Kotlin compiler since KSP2; viddik's processor runs on it.
+ksp = "2.3.10"
+# viddik ships the plugin, the annotations and the capture engine under one version, which is what
+# keeps the processor and the renderer in step.
+viddik = "0.2.0.14"
+# The Gradle plugin and the ktlint it runs are separate versions on purpose: the plugin is a
+# launcher, the CLI is what decides how the code looks.
+ktlint = "1.8.0"
+ktlintPlugin = "14.2.0"
+
+[libraries]
+ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
+
+[plugins]
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+viddik = { id = "ru.workinprogress.viddik", version.ref = "viddik" }
