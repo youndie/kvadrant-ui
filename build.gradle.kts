@@ -5,6 +5,12 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.viddik) apply false
+    // Declared here, unapplied, and that is load-bearing rather than tidy: the Compose plugin reads
+    // AGP's own extension types to wire up resources, and it can only see them when both plugins
+    // land in the same build classloader. Declared in the module alone, Compose fails with
+    // NoClassDefFoundError on a class that is demonstrably in AGP's jar.
+    alias(libs.plugins.androidKmpLibrary) apply false
+    alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.ktlint)
 }
 

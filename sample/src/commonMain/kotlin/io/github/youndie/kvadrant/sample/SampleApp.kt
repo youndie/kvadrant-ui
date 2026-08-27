@@ -15,9 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
 import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
@@ -57,25 +54,21 @@ private val Layout =
         TileSize.Medium,
     )
 
-fun main() =
-    application {
-        Window(
-            onCloseRequest = ::exitApplication,
-            title = "Kvadrant UI",
-            // The phone's own canvas: 480x800 Metro pixels at the canonical 0.75.
-            state = rememberWindowState(width = 560.dp, height = 860.dp),
-        ) {
-            Gallery()
-        }
-    }
-
+/**
+ * The whole demo, in one composable, so that a desktop window and an Android activity show the same
+ * thing rather than two things that drift.
+ *
+ * [initialScale] is the metric scale the demo opens at, and it is a parameter because the right
+ * answer differs per platform rather than per taste: Metro's numbers were drawn for a 480 px phone,
+ * so a phone wants 1.0 and a desktop window wants them scaled up. See `KvadrantMetrics.scaled`.
+ */
 @Composable
-private fun Gallery() {
+public fun KvadrantSampleApp(initialScale: Float) {
     var dark by remember { mutableStateOf(true) }
     var accessible by remember { mutableStateOf(false) }
     var accent by remember { mutableStateOf(KvadrantAccents.Cyan) }
     var menuOpen by remember { mutableStateOf(false) }
-    var density by remember { mutableStateOf(1.6f) }
+    var density by remember { mutableStateOf(initialScale) }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base

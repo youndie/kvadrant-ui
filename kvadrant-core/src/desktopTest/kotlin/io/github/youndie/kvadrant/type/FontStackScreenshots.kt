@@ -20,20 +20,40 @@ import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.youndie.kvadrant.resources.Res
+import io.github.youndie.kvadrant.resources.selawik_regular
+import io.github.youndie.kvadrant.resources.selawik_semilight
+import io.github.youndie.kvadrant.resources.source_sans_3_variable
+import org.jetbrains.compose.resources.Font
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 // The Metro header weight. Selawik ships a real SemiLight; the fallbacks are asked for W300 and
 // give their Light, which is the closest any of them has.
 private val SemiLight = FontWeight.W300
 
-private fun family(vararg files: Pair<String, FontWeight>) =
-    FontFamily(files.map { (path, weight) -> Font(resource = path, weight = weight) })
+// The candidates that lost the spike are still read off the desktop classpath: they are comparison
+// material, they exist only in `desktopTest/resources`, and nothing ships them.
+private fun classpath(vararg files: Pair<String, FontWeight>) =
+    files.map { (path, weight) -> Font(resource = path, weight = weight) }
 
-private val Selawik = arrayOf("fonts/selawksl.ttf" to SemiLight, "fonts/selawk.ttf" to FontWeight.W400)
 private val Inter = arrayOf("fonts/Inter-Light.ttf" to SemiLight, "fonts/Inter-Regular.ttf" to FontWeight.W400)
 private val Fira = arrayOf("fonts/FiraSans-Light.ttf" to SemiLight, "fonts/FiraSans-Regular.ttf" to FontWeight.W400)
-private val SourceSans =
-    arrayOf("fonts/SourceSans3-Light.ttf" to SemiLight, "fonts/SourceSans3-Regular.ttf" to FontWeight.W400)
+
+// The two that won are read the way the library reads them, through compose-resources. Reading them
+// off the classpath here as well would be a second copy of the binaries and a second code path, and
+// the second path is the one that would keep passing after the first one broke.
+@Composable
+private fun selawik() =
+    listOf(
+        Font(Res.font.selawik_semilight, SemiLight),
+        Font(Res.font.selawik_regular, FontWeight.W400),
+    )
+
+@Composable
+private fun family(vararg files: Pair<String, FontWeight>) = FontFamily(classpath(*files))
+
+@Composable
+private fun selawikThen(vararg files: Pair<String, FontWeight>) = FontFamily(selawik() + classpath(*files))
 
 /**
  * The spike's evidence. Each stack renders the same three lines:
@@ -59,15 +79,15 @@ private fun Specimen(family: FontFamily) {
 
 @ViddikScreenshot(name = "selawik only", group = "font stack", width = 480, height = 300)
 @Composable
-internal fun StackSelawikOnly(): Unit = Specimen(family(*Selawik))
+internal fun StackSelawikOnly(): Unit = Specimen(FontFamily(selawik()))
 
 @ViddikScreenshot(name = "selawik then inter", group = "font stack", width = 480, height = 300)
 @Composable
-internal fun StackSelawikInter(): Unit = Specimen(family(*Selawik, *Inter))
+internal fun StackSelawikInter(): Unit = Specimen(selawikThen(*Inter))
 
 @ViddikScreenshot(name = "selawik then fira", group = "font stack", width = 480, height = 300)
 @Composable
-internal fun StackSelawikFira(): Unit = Specimen(family(*Selawik, *Fira))
+internal fun StackSelawikFira(): Unit = Specimen(selawikThen(*Fira))
 
 @ViddikScreenshot(name = "inter only", group = "font stack", width = 480, height = 300)
 @Composable
@@ -110,7 +130,7 @@ private fun MixedSpecimen(
     cyrillic: FontFamily,
     compensation: Float,
 ) {
-    val latin = family(*Selawik)
+    val latin = FontFamily(selawik())
     Column(
         Modifier.fillMaxSize().background(Color.Black).padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -149,16 +169,17 @@ internal fun MixedFiraCompensated(): Unit = MixedSpecimen(family(*Fira), 0.5000f
 
 @ViddikScreenshot(name = "per run source sans compensated", group = "font stack", width = 480, height = 300)
 @Composable
-internal fun MixedSourceSansCompensated(): Unit = MixedSpecimen(family(*SourceSans), 0.5000f / 0.4860f)
+internal fun MixedSourceSansCompensated(): Unit = MixedSpecimen(sourceSansAt(300), 0.5000f / 0.4860f)
 
 // "A touch bolder": Selawik's Semilight sits between Light and Regular, and Source Sans 3's Light
 // at 300 reads a shade thin beside it. The variable face has a wght axis from 200 to 900, so the
 // companion can be instanced at the weight that actually matches instead of the nearest static one.
+@Composable
 private fun sourceSansAt(weight: Int) =
     FontFamily(
         Font(
-            resource = "fonts/SourceSans3VF.ttf",
-            weight = FontWeight(weight),
+            Res.font.source_sans_3_variable,
+            FontWeight(weight),
             variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
         ),
     )

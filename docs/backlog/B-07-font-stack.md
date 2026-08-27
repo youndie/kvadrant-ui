@@ -1,7 +1,7 @@
 ---
 id: B-07
 title: "Bundle the font stack through compose-resources"
-status: open
+status: wip
 priority: P0
 size: M
 stage: stage-1-core
@@ -9,6 +9,19 @@ blocked_by: [B-03]
 ---
 
 # B-07 — Bundle the font stack through compose-resources
+
+**Half done — the half Android needed.** The six faces moved from `desktopMain/resources` into
+`kvadrant-core/src/commonMain/composeResources/font/`, `kvadrantLatin()` and `kvadrantCyrillic()`
+are common `@Composable` functions over `org.jetbrains.compose.resources.Font`, and the resource
+package is pinned to `io.github.youndie.kvadrant.resources` rather than the `kvadrant_ui.kvadrant_core`
+the generator derives from directory names. Fifteen of the sixteen font goldens came back
+byte-identical, which is the evidence that the new path renders what the old one did.
+
+**Still open:** there is no `kvadrant-resources` module — the fonts live in `kvadrant-core`, and
+whether they should move out is a packaging question nobody has been forced to answer yet. The POM
+does not declare the font licence separately from the code licence. iOS and wasm are unverified
+because those targets do not exist. And four of the five Metro weights are still uncalibrated: only
+SemiLight has its 370.
 
 Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)), bundled in
 `kvadrant-resources` and reachable from every target through

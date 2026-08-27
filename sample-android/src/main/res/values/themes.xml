@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      No action bar and no window background of its own. Metro paints PhoneBackgroundBrush edge to
+      edge, and a platform background underneath it is a light strip at every seam the compose tree
+      has not covered yet - which is exactly the defect the desktop demo opened with.
+    -->
+    <style name="Theme.Kvadrant" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
+</resources>

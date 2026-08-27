@@ -1,5 +1,15 @@
 pluginManagement {
     repositories {
+        // The Android Gradle plugin is published only here. Filtered like every other third-party
+        // repository in this file - an unfiltered one takes part in resolving *every* plugin, and
+        // the day its host is unreachable Gradle disables it and fails plugins that live elsewhere.
+        google {
+            content {
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+                includeGroupAndSubgroups("androidx")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
         // The viddik Gradle plugin is not on the plugin portal.
@@ -33,3 +43,4 @@ rootProject.name = "kvadrant-ui"
 
 include(":kvadrant-core")
 include(":sample")
+include(":sample-android")

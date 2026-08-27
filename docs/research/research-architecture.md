@@ -733,6 +733,51 @@ took a person saying "crooked tick" to send the search back out.
 template is in that XAML too and has not been read yet; the thumb dimensions remain this project's
 and stay parameters until it is.
 
+### 1.13 The second renderer cost four compatibility walls and no code
+
+[B-24](../backlog/B-24-add-the-android-target-next.md) added Android because it is the only planned
+target that is not skiko. The library code needed nothing: `commonMain` compiled for Android
+unchanged, and the 25 common tests passed on it first time. Everything below is toolchain, and it is
+written down because each of the four looked like a version problem and only one of them was.
+
+| Fact | Where verified |
+|---|---|
+| AGP 8.x cannot run on Gradle ≥ 9.6 — it uses `org.gradle.api.problems.internal.InternalProblems`, removed there | Gradle's own error, naming the API and the upgrade note |
+| Since AGP 9.0 `com.android.library` and `com.android.application` **refuse** to sit in a Kotlin Multiplatform module | `IllegalStateException` from the plugin, in as many words |
+| Since AGP 9.0 the Android plugin brings Kotlin itself, and applying `org.jetbrains.kotlin.android` beside it is a hard error | the Kotlin plugin's own diagnostic, pointing at kotl.in/gradle/agp-built-in-kotlin |
+| `androidx.compose.animation:animation-core-android:1.12.0` carries AAR metadata demanding `compileSdk` 37 | eight identical failures from `checkDebugAarMetadata` at 36 |
+
+Gradle 9.7.1 and AGP 9.3.2 are therefore the only pair available, and inside it a KMP library takes
+`com.android.kotlin.multiplatform.library` and an application module cannot be multiplatform at all.
+That last one is why `:sample` is a library holding the shared demo screen and `:sample-android` is a
+thin activity that hosts it: not a design, a constraint.
+
+**The one that was not a version problem.** With AGP declared only in `kvadrant-core`, the Compose
+plugin died with `NoClassDefFoundError` on
+`com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension` — a class that is
+demonstrably present in AGP's `gradle-api` jar, in the same package, in every version from 8.13.2 to
+9.3.2. Reading Compose's stack frame (`AndroidResourcesKt.configureAndroidComposeResources`) says
+what the version sweep could not: the Compose plugin reads AGP's own extension types, and it can
+only see them when both plugins land in the same build classloader. Declaring AGP in the **root**
+build file with `apply false`, alongside every other plugin already there, fixes it.
+
+Two hours of that was a version sweep across five AGP releases, all failing identically. The sweep
+was not wasted — it is what ruled out a version problem — but it was also not evidence for one, and
+after the second identical failure the stack trace was the cheaper question.
+
+**What the move to compose-resources found.** Bundling the fonts for both targets
+([B-07](../backlog/B-07-font-stack.md)) meant `Font("fonts/selawk.ttf")` — a JVM classpath idea —
+had to become `Font(Res.font.selawik_regular)`. Fifteen of the sixteen font goldens came back
+byte-identical. The sixteenth, `font_stack_per_run_source_sans_compensated`, changed completely: its
+fixture asked for `fonts/SourceSans3-Light.ttf`, a file that has never existed in this repository, so
+it had been drawing a system fallback face under the name of the font it claimed to be comparing.
+The golden recorded that fallback and guarded it faithfully for as long as it existed.
+
+The decisive images of the B-03 spike are not affected — the weight and fit groups use the variable
+face, which is real — but this was one of the images the font stack was argued from. A screenshot
+test fails when the render changes and says nothing at all about whether the render was ever the
+thing you named.
+
 ---
 
 ## 2. Decisions

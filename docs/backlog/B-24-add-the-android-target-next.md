@@ -1,14 +1,25 @@
 ---
 id: B-24
 title: "Add the Android target next, ahead of the plan"
-status: open
+status: done
 priority: P0
 size: M
 stage: stage-1-core
-blocked_by: [B-04]
 ---
 
 # B-24 — Add the Android target next, ahead of the plan
+
+**Done.** `kvadrant-core` builds for Android, the 25 common tests run on both renderers inside
+`./gradlew check`, and `:sample-android` installs the same demo screen the desktop window shows.
+What the toolchain cost is in [research §1.13](../research/research-architecture.md); the short
+version is that three of the four obstacles were plugin-compatibility walls with no code behind
+them, and the fourth was a font fixture that had been drawing a fallback face for its whole life.
+
+**Not covered, and named rather than left to be discovered:** screenshots. viddik renders through
+skiko and there is no Android golden — so the ~60 images still describe one renderer, and the
+sentence "the suite is green" means what it always meant. That is [B-16](B-16-screenshot-tests.md).
+[B-25](B-25-tilt-camera-is-in-inches.md) is now unblocked and is the first thing the second renderer
+was added for.
 
 [D14](../research/research-architecture.md) says desktop first and a target arrives when something
 runs on it. This item is a deliberate exception with one reason: **Android is the only target that

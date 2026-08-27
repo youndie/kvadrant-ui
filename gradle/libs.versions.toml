@@ -1,9 +1,8 @@
 [versions]
 kotlin = "2.4.10"
-# Pinned to 1.11.1, not the current 1.12.0, and viddik is the reason: its capture engine is
-# compiled against skiko 0.144.6, and CMP 1.12.0 brings skiko 0.150.1, where
-# `Matrix44(float[])` became private. It resolves, it compiles, and it throws IllegalAccessError
-# the moment a screenshot renders. See B-23.
+# The current release, and it stays there. A test-only tool does not get to choose the Compose line
+# the library publishes against - when viddik could not run on 1.12.0 the answer was to wait for
+# viddik, not to ship against 1.11.1. See B-23, closed.
 compose-multiplatform = "1.12.0"
 # KSP is versioned independently of the Kotlin compiler since KSP2; viddik's processor runs on it.
 ksp = "2.3.10"
@@ -14,9 +13,19 @@ viddik = "0.2.0.14"
 # launcher, the CLI is what decides how the code looks.
 ktlint = "1.8.0"
 ktlintPlugin = "14.2.0"
+agp = "9.3.2"
+# compileSdk is the API the library is compiled against; minSdk is what it runs on.
+# 37 is not a choice: `androidx.compose.animation:animation-core-android:1.12.0` carries AAR
+# metadata demanding it, and 36 fails the build with eight of those before a line is compiled.
+# 24 is where `FontVariation` stops needing a fallback, and Metro's own hardware is far below
+# anything current anyway.
+android-compileSdk = "37"
+android-minSdk = "24"
+activityCompose = "1.11.0"
 
 [libraries]
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -26,3 +35,8 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-mu
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 viddik = { id = "ru.workinprogress.viddik", version.ref = "viddik" }
+# A KMP library takes AGP's multiplatform plugin, not `com.android.library`: the latter wants to own
+# the module's source sets, and in a KMP module Kotlin already does.
+androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }

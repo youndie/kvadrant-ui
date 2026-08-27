@@ -4,20 +4,45 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.viddik)
+    alias(libs.plugins.androidKmpLibrary)
 }
 
 kotlin {
     jvmToolchain(25)
 
-    // Desktop first. The other targets are added when there is something to run on them; each one
-    // added early is a target whose failures nobody looks at.
+    // Desktop first, Android second, and the order was the point: the whole library was built and
+    // looked at on one renderer before a second one was allowed to have an opinion. Android is here
+    // now because a suite that only ever ran on skiko says nothing about the renderer most of this
+    // will actually ship on - and because B-25, a real defect, cannot be seen with one of them
+    // missing. Everything else still waits for something to run on it (D14).
     jvm("desktop")
+
+    androidLibrary {
+        namespace = "io.github.youndie.kvadrant"
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+
+        // Without this the Android target silently skips `commonTest` — the plugin says so in a
+        // warning, and a warning is not what should stand between a common test suite and one of
+        // the two renderers it is meant to be describing.
+        withHostTest {}
+    }
 
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
+            // Fonts are bundled through compose-resources so that one declaration serves every
+            // target. The desktop-only `platform.Font("fonts/x.ttf")` it replaces reads a classpath
+            // resource, which is a JVM idea and has no meaning on Android or on native.
+            implementation(compose.components.resources)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -32,6 +57,13 @@ kotlin {
             implementation(compose.uiTest)
         }
     }
+}
+
+// Without this the package is derived from the directory names - `kvadrant_ui.kvadrant_core` - and
+// a library would be shipping an identifier that changes when somebody renames a folder. It stays
+// internal (the default): the fonts are reached through `kvadrantLatin()`, not by resource id.
+compose.resources {
+    packageOfResClass = "io.github.youndie.kvadrant.resources"
 }
 
 // The screenshot suite has to be part of the one gate. Left out of `check` it becomes a command

@@ -1,8 +1,8 @@
 # Kvadrant UI — working notes for an agent
 
 A Metro (Windows Phone 8 / Windows 8) component library for Compose Multiplatform, with an optional
-`androidx.compose.material3` adapter. The skeleton builds; `kvadrant-core` has the desktop target
-only, and the component work has not started.
+`androidx.compose.material3` adapter. The components exist and are looked at: `./gradlew :sample:run`
+opens the demo on the desktop, `:sample-android:installDebug` puts the same screen on a device.
 
 ## How to start a session
 
@@ -29,7 +29,11 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 - **Compose Multiplatform stays on the current release.** skiko is never declared here — it comes
   transitively with `compose.ui` at the version CMP pins, and forcing it means running a renderer
   the Compose runtime above it was not built against.
-- **Desktop only for now.** Add a target when something runs on it (D14).
+- **Desktop and Android.** Android was added ahead of the plan because it is the only target that is
+  not skiko (B-24); iOS and wasm still wait for something to run on them (D14). Gradle 9.7.1 forces
+  AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
+  must be declared in the **root** build file or the Compose plugin cannot see its classes —
+  research §1.13 before touching the build.
 - **Screenshots**: a `@ViddikScreenshot` fixture must always exist in the module. With none, KSP
   reports SKIPPED and the verify task passes green with no tests in it. Name goldens in ASCII —
   non-ASCII collapses into colliding filenames. Desktop only, so a green suite says nothing about
