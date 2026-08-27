@@ -66,16 +66,17 @@ public fun KvadrantMessageBox(
     // background**, not a fixed black. In the light theme it is a white veil, which is why
     // `PhoneSemitransparentBrush` — black at 0.667, and a real token used elsewhere — is the wrong
     // one to reach for here.
-    // Two flags, and both are needed. `shown` is `false` on the frame this is first composed and is
-    // flipped by an effect on the next, because a transition handed its target on the frame it is
-    // born has nothing to run. `onScreen` outlives it by the length of the exit, because a surface
-    // removed when its flag moves has nothing to animate *out*. Getting one right and not the other
-    // gives an animation in one direction only, which is how this looked twice.
-    var shown by remember { mutableStateOf(false) }
+    // One flag, not two. `KvadrantSwivel` holds an `Animatable(SWIVEL_IN_FROM)` and therefore
+    // *always* starts at -45 degrees and tips in on its own — the "compose it closed and flip it
+    // next frame" dance a `Transition` needs is not only unnecessary here, it is harmful: handed
+    // `false` first, the swivel runs its **exit** to +60 and only then comes back, which is what a
+    // dialog that would not animate properly was actually doing.
+    //
+    // What is still needed is `onScreen`, because a surface removed on the frame its flag moves has
+    // nothing to animate out.
     var onScreen by remember { mutableStateOf(false) }
     if (visible) onScreen = true
     LaunchedEffect(visible) {
-        shown = visible
         if (!visible) {
             delay(KVADRANT_SWIVEL_OUT_MILLIS.toLong())
             onScreen = false
@@ -85,7 +86,7 @@ public fun KvadrantMessageBox(
 
     // `SwivelTransitionMode.BackwardIn` on show and `BackwardOut` on dismiss, both from
     // `CustomMessageBox.cs`. Not a slide: the box tips in around its top edge.
-    KvadrantSwivel(visible = shown, backward = true) {
+    KvadrantSwivel(visible = visible, backward = true) {
         Box(
             modifier
                 .fillMaxSize()

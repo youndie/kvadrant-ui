@@ -131,6 +131,8 @@ public final class io/github/youndie/kvadrant/components/KvadrantToastKt {
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantTransitionsKt {
+	public static final field KVADRANT_SWIVEL_IN_MILLIS I
+	public static final field KVADRANT_SWIVEL_OUT_MILLIS I
 	public static final fun KvadrantRoll (ZLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantRotate (ZFLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantSlide-hGBTI10 (ZLio/github/youndie/kvadrant/components/SlideDirection;Landroidx/compose/ui/Modifier;FLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
