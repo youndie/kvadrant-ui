@@ -119,9 +119,10 @@ class PanoramaFoldTest {
                 return blockUnderColumn(px, image.width, image.height)
             }
 
-            // Two copies are laid out, so `maxValue` is both of them less what the viewport shows.
+            // Three copies are laid out — one to look at, one to wrap into on each side — so
+            // `maxValue` is all three less what the viewport shows.
             val viewport = onNodeWithTag("pano").captureToImage().width
-            val copyWidth = (scroll.maxValue + viewport) / 2
+            val copyWidth = (scroll.maxValue + viewport) / 3
             assertTrue(copyWidth > viewport, "the fixture must be wider than its viewport: $copyWidth")
 
             // Blocks are a ring, so the distance between two of them is the shorter way round.
@@ -130,15 +131,19 @@ class PanoramaFoldTest {
                 b: Int,
             ): Int = minOf(abs(a - b), BLOCKS - abs(a - b))
 
-            val start = markerAt(0)
+            // The panorama rests in the middle copy, and a request to scroll outside it is folded
+            // straight back — so the readings are taken from where it actually lives. Every layer
+            // is periodic with the copy anyway, which is the property under test.
+            val home = copyWidth
+            val start = markerAt(home)
             // The positive control. Part-way along, the background has to have moved a long way —
             // otherwise one that never drifted at all would satisfy the assertion below.
-            val partway = markerAt(copyWidth / 3)
+            val partway = markerAt(home + copyWidth / 3)
             assertTrue(apart(partway, start) > 5, "the background did not drift: $start then $partway")
 
             // One pixel short of the fold, so the reading is of the last frame before the wrap
             // rather than of the frame the wrap produces.
-            val almost = markerAt(copyWidth - 1)
+            val almost = markerAt(home + copyWidth - 1)
             assertTrue(
                 apart(almost, start) <= 1,
                 "the background does not close its cycle: block $start at rest, block $almost one " +

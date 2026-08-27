@@ -91,11 +91,25 @@ public fun KvadrantPanorama(
     // The left edge of every section in the first copy, which is where a release has to land.
     val sectionWidths = remember(sections.size) { mutableStateListOf(*Array(sections.size) { 0 }) }
 
-    // The fold. Crossing into the second copy puts the scroll back at the same place in the first,
-    // which is invisible because the two are identical — and is why there is no end to hit.
+    // The fold, and it folds **both ways**, which needs three copies rather than two.
+    //
+    // With two, the scroll rests in the first and there is nothing to its left: panning backwards
+    // from the opening section hit a wall, so "no end to hit" was only true going forwards. Resting
+    // in the *middle* copy leaves a whole one spare in each direction, and crossing out of it puts
+    // the scroll at the same place in the middle again — invisible, because the copies are
+    // identical and every drifting layer is periodic with the same copy.
+    //
+    // Only while the scroll is at rest. `ScrollState.scrollTo` takes the scroll's mutex and would
+    // cancel a settle in flight, leaving the panorama stopped between two sections — and the spare
+    // copy is there precisely so that nothing has to be folded mid-gesture.
     LaunchedEffect(copyWidth) {
-        snapshotFlow { scroll.value }.collect { value ->
-            if (copyWidth > 0 && value >= copyWidth) scroll.scrollTo(value - copyWidth)
+        if (copyWidth <= 0) return@LaunchedEffect
+        snapshotFlow { scroll.isScrollInProgress to scroll.value }.collect { (moving, value) ->
+            if (moving) return@collect
+            when {
+                value >= 2 * copyWidth -> scroll.scrollTo(value - copyWidth)
+                value < copyWidth -> scroll.scrollTo(value + copyWidth)
+            }
         }
     }
 
@@ -260,12 +274,17 @@ private fun stops(
 }
 
 /**
- * Where a fling ends, rounded to the nearest section edge.
+ * Where a release settles: one of the **two stops the finger is between**, whichever the fling was
+ * heading for.
  *
- * The prediction is a decay from the release velocity — where the finger *would* have thrown it —
- * and the nearest stop to that is where it goes instead. Rounding the current position rather than
- * the predicted one would make a hard flick travel exactly one section however hard it was thrown,
- * which is a pager and not a panorama.
+ * This used to take the nearest stop to the predicted end of the decay, on the argument that
+ * clamping to one section per gesture "is a pager and not a panorama". The argument was invented and
+ * the rule skipped sections: released between two narrow ones, a prediction landing slightly past
+ * the second is nearer to the third, and a section goes by unseen. Bracketing is what stops that,
+ * and it costs nothing that was ever specified — Microsoft published no fling model at all.
+ *
+ * The decay still decides *which* of the two, so a gentle release falls back and a firm one carries
+ * on, and no velocity threshold has to be invented to tell them apart.
  */
 private class SectionSnap(
     private val scroll: ScrollState,
@@ -276,7 +295,9 @@ private class SectionSnap(
         if (landings.size < 2) return initialVelocity
         val from = scroll.value.toFloat()
         val predicted = from + exponentialDecay<Float>().calculateTargetValue(0f, initialVelocity)
-        val target = landings.minBy { abs(it - predicted) }.toFloat()
+        val below = landings.lastOrNull { it <= from } ?: landings.first()
+        val above = landings.firstOrNull { it >= from } ?: landings.last()
+        val target = (if (abs(below - predicted) <= abs(above - predicted)) below else above).toFloat()
         var last = from
         animate(
             initialValue = from,
@@ -301,7 +322,11 @@ private class SectionSnap(
 private const val SETTLE_MILLIS = 300
 
 /**
- * Two of everything: one copy to look at, one to wrap into.
+ * Three of everything: one to look at and one to wrap into on **each** side.
+ *
+ * Two was enough only for a panorama that wraps forwards. The scroll rests in the middle one, so
+ * there is always a whole copy of content to move into whichever way the finger goes, and the fold
+ * never has to happen during a gesture.
  *
  * There used to be a `DEFAULT_BACKGROUND_RATE` here — 0.35, this project's invention, exposed as a
  * parameter precisely because Microsoft never published a coefficient and nobody could check ours.
@@ -310,4 +335,4 @@ private const val SETTLE_MILLIS = 300
  * value tears the seam. An invented number that had to be a parameter turned out to be a derivation
  * that had no business being one.
  */
-private const val COPIES = 2
+private const val COPIES = 3
