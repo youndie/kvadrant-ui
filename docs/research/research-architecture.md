@@ -1393,6 +1393,38 @@ Why:
   function naming, and generated sources are excluded, because the plugin fixes its file list before
   its own filters would apply.
 
+### D17. One flag for everything the phone did not do: `remastered`
+
+Decision: `KvadrantTheme(remastered = …)`, **off by default**, is the single switch between "reproduce
+Windows Phone" and "a modern application in a Metro skin". It is a theme value rather than a build
+flag so that it can differ per subtree and be rendered both ways in one test, and rather than a
+per-component parameter because a per-component parameter is a decision each caller makes silently,
+which is how a design system ends up with no design.
+
+**Restoring behaviour the original had is not a deviation and is not gated.** Finger-tracking
+([B-27](../backlog/B-27-tilt-does-not-follow-the-finger.md)) is canon; animating a press *in* is not.
+Blurring the two would empty the flag of meaning, which is why the distinction is stated before the
+table rather than after it.
+
+| Behind the flag | Canon it replaces | Source |
+|---|---|---|
+| The press sinks over 100 ms | The press is applied outright; only the return is animated | `TiltEffect.cs` holds one storyboard, `tiltReturnStoryboard`, with `TiltReturnAnimationDelay` 200 ms and `Duration` 100 ms — there is no press storyboard to have got wrong |
+
+**One row, and the survey that produced it is the more useful half of the item.** Everything else the
+code admits to is a *number* nobody published — the panorama's settle, the live tile's interval, the
+placeholder's opacity — rather than a behaviour the phone lacked, and a flag cannot help with those:
+turning a number off leaves no number. The remaining candidate the backlog named was the 48 dp
+minimum touch target, and the claim that it is "on with no way to turn it off" is **false**: it is
+`KvadrantMetrics.touchTargetMin`, a field with a documented default, which a caller can set to
+`touchTargetVisual` today. [D7](#d7-authentic-visuals-always-extended-hit-areas-opt-in-contrast)
+stands: an extended hit area changes no pixel, and a library whose default is hard to tap is a worse
+outcome than a fidelity asterisk.
+
+**Consequence — the flag's value is a convention, not a mechanism.** One boolean and one behaviour is
+not worth a paragraph on its own; what is worth it is that the next improvement has somewhere to go
+and a rule that says it must. That rule is in `CLAUDE.md` and the row above is the shape every
+addition to it takes: what changes, what it replaces, and where the canon was read.
+
 ### D14. Desktop first; the other targets arrive when something runs on them
 
 Decision: `kvadrant-core` declares `jvm("desktop")` and nothing else for now. Android, iOS and wasm

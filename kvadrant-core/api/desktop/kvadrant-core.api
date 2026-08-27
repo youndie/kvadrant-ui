@@ -220,8 +220,8 @@ public final class io/github/youndie/kvadrant/indication/Tilt {
 public final class io/github/youndie/kvadrant/indication/TiltIndication : androidx/compose/foundation/IndicationNodeFactory {
 	public static final field $stable I
 	public static final field Companion Lio/github/youndie/kvadrant/indication/TiltIndication$Companion;
-	public synthetic fun <init> (FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (FFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Landroidx/compose/foundation/interaction/InteractionSource;)Landroidx/compose/ui/node/DelegatableNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
@@ -438,11 +438,12 @@ public final class io/github/youndie/kvadrant/theme/KvadrantTheme {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/theme/KvadrantTheme;
 	public final fun getColors (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantColors;
 	public final fun getMetrics (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public final fun getRemastered (Landroidx/compose/runtime/Composer;I)Z
 	public final fun getTypography (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantTypography;
 }
 
 public final class io/github/youndie/kvadrant/theme/KvadrantThemeKt {
-	public static final fun KvadrantTheme (Lio/github/youndie/kvadrant/theme/KvadrantColors;Lio/github/youndie/kvadrant/theme/KvadrantTypography;Lio/github/youndie/kvadrant/theme/KvadrantMetrics;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantTheme (Lio/github/youndie/kvadrant/theme/KvadrantColors;Lio/github/youndie/kvadrant/theme/KvadrantTypography;Lio/github/youndie/kvadrant/theme/KvadrantMetrics;ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getLocalKvadrantTextStyle ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

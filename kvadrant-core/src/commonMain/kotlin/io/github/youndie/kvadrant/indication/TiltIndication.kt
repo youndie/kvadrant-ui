@@ -54,16 +54,19 @@ import kotlinx.coroutines.launch
 public class TiltIndication(
     private val cameraDistance: Dp = DEFAULT_CAMERA_DISTANCE,
     private val maxDepression: Dp = Tilt.maxDepression,
+    private val animatePress: Boolean = false,
 ) : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        TiltNode(interactionSource, cameraDistance, maxDepression)
+        TiltNode(interactionSource, cameraDistance, maxDepression, animatePress)
 
     override fun equals(other: Any?): Boolean =
         other is TiltIndication &&
             other.cameraDistance == cameraDistance &&
-            other.maxDepression == maxDepression
+            other.maxDepression == maxDepression &&
+            other.animatePress == animatePress
 
-    override fun hashCode(): Int = 31 * cameraDistance.hashCode() + maxDepression.hashCode()
+    override fun hashCode(): Int =
+        31 * (31 * cameraDistance.hashCode() + maxDepression.hashCode()) + animatePress.hashCode()
 
     public companion object {
         /**
@@ -91,6 +94,7 @@ private class TiltNode(
     private val interactionSource: InteractionSource,
     private val cameraDistance: Dp,
     private val maxDepression: Dp,
+    private val animatePress: Boolean,
 ) : Modifier.Node(),
     LayoutModifierNode {
     /** Where the finger is, or was. Kept after release so the plane has somewhere to return from. */
@@ -104,6 +108,7 @@ private class TiltNode(
     private var amount by mutableFloatStateOf(0f)
 
     private var returning: Job? = null
+    private var pressing: Job? = null
 
     override fun onAttach() {
         coroutineScope.launch {
@@ -111,13 +116,32 @@ private class TiltNode(
                 when (interaction) {
                     is PressInteraction.Press -> {
                         returning?.cancel()
+                        pressing?.cancel()
                         pressPosition = interaction.pressPosition
-                        // Instant. Snapping rather than animating is the whole point.
-                        amount = 1f
-                        invalidatePlacement()
+                        if (!animatePress) {
+                            // Canon. `TiltEffect.cs` holds one storyboard and it is the *return*
+                            // one; the press sets the properties outright on every manipulation
+                            // delta. Snapping rather than animating is the whole point.
+                            amount = 1f
+                            invalidatePlacement()
+                        } else {
+                            pressing =
+                                coroutineScope.launch {
+                                    val start = withFrameMillis { it }
+                                    var elapsed = 0L
+                                    while (elapsed < PRESS_MILLIS) {
+                                        elapsed = withFrameMillis { it } - start
+                                        amount = (elapsed.toFloat() / PRESS_MILLIS).coerceIn(0f, 1f)
+                                        invalidatePlacement()
+                                    }
+                                    amount = 1f
+                                    invalidatePlacement()
+                                }
+                        }
                     }
 
                     is PressInteraction.Release, is PressInteraction.Cancel -> {
+                        pressing?.cancel()
                         returning?.cancel()
                         returning =
                             coroutineScope.launch {
@@ -188,3 +212,13 @@ private class TiltNode(
 
 private const val TOTAL_RETURN_MILLIS =
     Tilt.RETURN_DELAY_MILLIS.toLong() + Tilt.RETURN_DURATION_MILLIS.toLong()
+
+/**
+ * How long a remastered press takes to sink, and **this project's number** in both senses.
+ *
+ * The phone had no such animation at all — `TiltEffect.cs` carries one storyboard and it is the
+ * return — so this is not a duration Microsoft chose too slowly, it is a duration nobody chose. It
+ * matches the return's own `TiltReturnAnimationDuration`, on the argument that a movement and its
+ * reverse should cost the same; that argument is mine and is the only thing behind the number.
+ */
+private const val PRESS_MILLIS = 100L

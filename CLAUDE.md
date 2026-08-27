@@ -60,8 +60,12 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }` resolves into the Jetpack
   M3 1.5 alpha line it was written to keep out — research §1.2.
 - **Canon first, improvements second and behind `remastered`.** Build what the phone did, from the
-  documents; anything better than the phone is a deviation, is named as one, and waits for the flag
-  (B-28). Restoring behaviour the original had is not a deviation and is not gated.
+  documents; anything better than the phone is a deviation, is named as one, and goes behind
+  `KvadrantTheme(remastered = true)` — which is off by default, so the fidelity claim stays
+  falsifiable. Every gated behaviour is a row in research D17: what changes, what it replaces, and
+  where the canon was read. **Restoring behaviour the original had is not a deviation and is not
+  gated** — that distinction is the flag's whole value. A number nobody published is a different
+  thing again: it is not gated either, it is marked in KDoc and shipped as a parameter. Restoring behaviour the original had is not a deviation and is not gated.
 - **A number that is not Microsoft's says so**, in KDoc, and ships as a parameter of the public API
   rather than as a constant. Where the specification has gaps they are named in research §1.10.
 - **The light theme is not an inversion of the dark one.** Transcribe both; never derive one.
