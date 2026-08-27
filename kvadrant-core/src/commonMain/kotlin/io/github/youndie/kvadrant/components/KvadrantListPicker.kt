@@ -92,12 +92,18 @@ public fun KvadrantListPicker(
                     val itemHeight = placeable.height / items.size.coerceAtLeast(1)
                     // `MinHeight="46"` on the canvas, so a one-line picker is never thinner than
                     // that even if its single row would be.
-                    val closed = maxOf(itemHeight, MIN_CONTENT_HEIGHT.roundToPx())
+                    // `NormalModeOffset` is subtracted twice from the height and once from the
+                    // translation, so a closed picker is four Metro pixels shorter than its row at
+                    // each end and the row sits four higher inside it. It reads as the box gripping
+                    // its selection; without it the closed picker is just a row with a frame drawn
+                    // round it, which is what this was.
+                    val offset = NORMAL_MODE_OFFSET.roundToPx()
+                    val closed = maxOf(itemHeight - offset * 2, MIN_CONTENT_HEIGHT.roundToPx())
                     val height = closed + ((placeable.height - closed) * openness).roundToInt()
                     // The item height as an even division. The original read the selected
                     // container's real layout slot and did not need to assume it; this is exact
                     // while the labels are one line each, which is what a five-item picker is for.
-                    val slide = -(itemHeight * selectedIndex * (1f - openness)).roundToInt()
+                    val slide = ((-(itemHeight * selectedIndex) - offset) * (1f - openness)).roundToInt()
                     layout(placeable.width, height) { placeable.place(0, slide) }
                 },
         ) {
@@ -144,3 +150,6 @@ private const val EXPAND_MILLIS = 200
 
 /** `MinHeight="46"` on `Canvas x:Name="ItemsPresenterHost"` in the toolkit template. */
 private val MIN_CONTENT_HEIGHT = 34.5.dp
+
+/** `private const double NormalModeOffset = 4` in `ListPicker.cs`. */
+private val NORMAL_MODE_OFFSET = 3.dp
