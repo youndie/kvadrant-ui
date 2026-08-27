@@ -99,11 +99,27 @@ public fun KvadrantListPicker(
                     // There is no fade. The storyboard in `ListPicker.cs` holds two animations,
                     // Height and TranslateTransform.Y, and no opacity — the alpha that used to be
                     // here was ours.
+                    //
+                    // The second animation is the one that makes this read as a list unfolding
+                    // rather than a curtain lifting, and leaving it out was visible immediately.
+                    // In the original the control is one window: closed, its height is a single item
+                    // and the presenter is translated so the *selected* item is the one showing;
+                    // open, the height is the whole list and `_translateAnimation.To = 0` puts the
+                    // first item at the top. So the content slides while the window grows. Pinning
+                    // the content at the top instead leaves every item at a fixed position and only
+                    // moves the clip, which is the same end state reached without the movement.
+                    //
+                    // The item height is taken as an even division, which the original did not need
+                    // to do — it read the selected container's real layout slot. It is exact while
+                    // the labels are one line each, which is what a five-item picker is for, and it
+                    // is wrong only mid-animation if one ever wraps.
                     .clipToBounds()
                     .layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
                         val height = (placeable.height * openness).roundToInt()
-                        layout(placeable.width, height) { placeable.place(0, 0) }
+                        val itemHeight = placeable.height / items.size.coerceAtLeast(1)
+                        val slide = -(itemHeight * selectedIndex * (1f - openness)).roundToInt()
+                        layout(placeable.width, height) { placeable.place(0, slide) }
                     }.background(colors.chrome),
             ) {
                 items.forEachIndexed { index, label ->

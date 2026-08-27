@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantListPicker
@@ -66,6 +67,48 @@ class ListPickerExpandTest {
                 half > closed + 1f && half < open - 1f,
                 "half way through the 200 ms the neighbour sits at $half, with $closed closed and " +
                     "$open open — it is not being pushed, it has already been moved",
+            )
+        }
+
+    /**
+     * The content moves while the window grows — the second half of the storyboard.
+     *
+     * With the translate left out, every option sits at its final position from the first frame and
+     * only the clip edge moves: the same end state, reached without the movement, and it reads as a
+     * curtain rather than a list unfolding. An option's absolute position is where that shows.
+     */
+    @Test
+    fun the_options_slide_while_the_window_opens() =
+        runComposeUiTest {
+            mainClock.autoAdvance = false
+            var expanded by mutableStateOf(false)
+            setContent {
+                KvadrantTheme {
+                    Column {
+                        KvadrantListPicker(
+                            items = listOf("никогда", "каждые 15 минут", "каждый час"),
+                            selectedIndex = 2,
+                            onSelect = {},
+                            expanded = expanded,
+                            onExpandRequest = {},
+                        )
+                        Box(Modifier.size(40.dp).testTag("below"))
+                    }
+                }
+            }
+            mainClock.advanceTimeBy(500)
+
+            expanded = true
+            mainClock.advanceTimeBy(100)
+            val half = onNodeWithText("никогда").getUnclippedBoundsInRoot().top.value
+
+            mainClock.advanceTimeBy(500)
+            val open = onNodeWithText("никогда").getUnclippedBoundsInRoot().top.value
+
+            assertTrue(
+                open > half + 1f,
+                "the first option is at $half half way through and $open when open — it is not " +
+                    "moving, only being uncovered",
             )
         }
 }
