@@ -39,6 +39,8 @@ import io.github.youndie.kvadrant.components.KvadrantFlipTile
 import io.github.youndie.kvadrant.components.KvadrantIconicTile
 import io.github.youndie.kvadrant.components.KvadrantListItem
 import io.github.youndie.kvadrant.components.KvadrantListPicker
+import io.github.youndie.kvadrant.components.KvadrantListPickerMode
+import io.github.youndie.kvadrant.components.KvadrantListPickerPage
 import io.github.youndie.kvadrant.components.KvadrantMessageBox
 import io.github.youndie.kvadrant.components.KvadrantPasswordBox
 import io.github.youndie.kvadrant.components.KvadrantPivot
@@ -116,6 +118,8 @@ public fun KvadrantSampleApp() {
             pageOnScreen = false
         }
     }
+    var zone by remember { mutableStateOf(0) }
+    var zonePage by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf(false) }
     var toast by remember { mutableStateOf(false) }
 
@@ -126,6 +130,10 @@ public fun KvadrantSampleApp() {
     // `androidx.compose.ui.backhandler.BackHandler` is multiplatform: it is the gesture on Android
     // and inert on the desktop, so the shared screen needs no per-platform branch.
     BackHandler(enabled = openTile != null) { openTile = null }
+
+    // The picker page is a *destination*, not an overlay, which is the whole of B-30's argument —
+    // so the back gesture dismisses it, and it takes precedence over the tile page beneath.
+    BackHandler(enabled = zonePage) { zonePage = false }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base
@@ -203,6 +211,9 @@ public fun KvadrantSampleApp() {
                                         cyrillic = cyrillic,
                                         onDialog = { dialog = true },
                                         onToast = { toast = true },
+                                        zone = zone,
+                                        onZone = { zone = it },
+                                        onZonePage = { zonePage = true },
                                     )
                                 }
                             }
@@ -301,6 +312,24 @@ public fun KvadrantSampleApp() {
                         }
                     }
                 }
+            }
+
+            // Above the tile page, because it is the destination the picker routed to, and with no
+            // transition: `ListPicker.cs` saves the frame's navigation transitions, clears them for
+            // the trip and restores them afterwards, so the picker page arrives without the
+            // turnstile the rest of the application uses.
+            if (zonePage) {
+                KvadrantListPickerPage(
+                    items = ZONES,
+                    selectedIndex = zone,
+                    onSelect = {
+                        zone = it
+                        zonePage = false
+                    },
+                    header = "часовой пояс",
+                    applicationTitle = "KVADRANT UI",
+                    cyrillic = cyrillic,
+                )
             }
         }
     }
@@ -444,6 +473,9 @@ private fun SettingsPage(
     cyrillic: androidx.compose.ui.text.font.FontFamily,
     onDialog: () -> Unit,
     onToast: () -> Unit,
+    zone: Int,
+    onZone: (Int) -> Unit,
+    onZonePage: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var preview by remember { mutableStateOf(true) }
@@ -495,6 +527,20 @@ private fun SettingsPage(
             cyrillic = cyrillic,
         )
 
+        // Six options, so the picker reports `Full` and the demo has to route somewhere. Until this
+        // existed the mode was computed by the component, handed to the caller and dropped on the
+        // floor by every caller in the repository — a control that could not be opened, which is
+        // how B-30 was found.
+        KvadrantListPicker(
+            items = ZONES,
+            selectedIndex = zone,
+            onSelect = onZone,
+            expanded = false,
+            onExpandRequest = { mode -> if (mode == KvadrantListPickerMode.Full) onZonePage() },
+            header = "часовой пояс",
+            cyrillic = cyrillic,
+        )
+
         KvadrantText("имя", cyrillic = cyrillic)
         KvadrantTextBox(name, { name = it }, Modifier.fillMaxWidth(), "введите имя", cyrillic = cyrillic)
 
@@ -526,3 +572,14 @@ private fun SettingsPage(
         }
     }
 }
+
+/** Six, so the picker is over `FULL_MODE_THRESHOLD` and has to go to a page rather than unfold. */
+private val ZONES =
+    listOf(
+        "калининград",
+        "москва",
+        "самара",
+        "екатеринбург",
+        "новосибирск",
+        "владивосток",
+    )

@@ -1,7 +1,7 @@
 ---
 id: B-30
 title: "A picker with six options reports Full mode and nothing happens"
-status: open
+status: done
 priority: P2
 size: M
 stage: stage-1-core
@@ -9,6 +9,28 @@ blocked_by: []
 ---
 
 # B-30 — A picker with six options reports Full mode and nothing happens
+
+**Done.** `KvadrantListPickerPage` is the *content* of the page a long picker opens; the sample routes
+to it and dismisses it with the system back gesture, which is what makes it a destination rather than
+an overlay. `kvadrant-core` gained no navigation dependency, and it must not: a component library
+with a back stack is one that fights every application's.
+
+`ListPickerFullModeTest` taps a picker at the threshold and one over it and asserts which mode each
+reports. That test is the item's real lesson: the mode was computed, handed to the caller and dropped
+by every caller here, **and it was untested** — a value nothing reads and nothing checks is
+indistinguishable from a value that is never produced, which is exactly how it stayed inert for as
+long as it did.
+
+**One number on that page is this project's and says so.** The toolkit's `ListPickerPage.xaml` is a
+separate file from the `Generic.xaml` this repository has, so the type size of a row — the one thing
+that decides how the page looks — could not be read. It ships as `itemStyle`, a parameter, and is
+the first thing to fix if that file turns up. Everything else is transcribed: the navigation shape,
+the selection commit and the threshold from `ListPicker.cs`, the page chrome from `KvadrantPage`.
+
+The transition suppression is still not reproduced and still should not be: the original clears the
+frame's navigation transitions for the trip and restores them afterwards, and whether an application
+flattens its own animation is the application's business. The sample does the equivalent by drawing
+the page with no transition at all, and says so where it does it.
 
 `KvadrantListPicker` computes `KvadrantListPickerMode.Full` past `FULL_MODE_THRESHOLD` and hands it
 to `onExpandRequest`. Nothing in this repository does anything with it: the sample ignores the mode

@@ -71,6 +71,10 @@ public final class io/github/youndie/kvadrant/components/KvadrantListPickerMode 
 	public static fun values ()[Lio/github/youndie/kvadrant/components/KvadrantListPickerMode;
 }
 
+public final class io/github/youndie/kvadrant/components/KvadrantListPickerPageKt {
+	public static final fun KvadrantListPickerPage (Ljava/util/List;ILkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class io/github/youndie/kvadrant/components/KvadrantLongListKt {
 	public static final field MIN_GROUPS_FOR_JUMP_LIST I
 	public static final fun KvadrantGroupHeader (Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
