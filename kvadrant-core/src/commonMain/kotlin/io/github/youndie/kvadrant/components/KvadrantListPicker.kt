@@ -13,14 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
+import kotlin.math.roundToInt
 
 /**
  * A one-line control that opens into its options — or, past a threshold, into a whole page.
@@ -86,10 +88,22 @@ public fun KvadrantListPicker(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .graphicsLayer {
-                        alpha = openness
-                        scaleY = openness
-                        transformOrigin = TopEdge
+                    // `Height`, the layout property, the way `ListPicker.cs` animates it — not a
+                    // `scaleY` on a graphics layer, which is what this used to be. The difference is
+                    // the whole of what the control does to the page: a visual scale leaves the list
+                    // at full height in layout from the first frame, so everything below it jumps
+                    // aside at once and then waits; animating the measured height pushes them apart
+                    // over the same 200 ms. It also stops the text being squashed on the way, which
+                    // a scale cannot help doing.
+                    //
+                    // There is no fade. The storyboard in `ListPicker.cs` holds two animations,
+                    // Height and TranslateTransform.Y, and no opacity — the alpha that used to be
+                    // here was ours.
+                    .clipToBounds()
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val height = (placeable.height * openness).roundToInt()
+                        layout(placeable.width, height) { placeable.place(0, 0) }
                     }.background(colors.chrome),
             ) {
                 items.forEachIndexed { index, label ->
@@ -117,7 +131,5 @@ public enum class KvadrantListPickerMode { Expanded, Full }
 /** More than this many options and the phone opened a page instead of unfolding. */
 public const val FULL_MODE_THRESHOLD: Int = 5
 
+/** `Duration duration = TimeSpan.FromSeconds(0.2)` in `ListPicker.cs`, read out of the source. */
 private const val EXPAND_MILLIS = 200
-private val TopEdge =
-    androidx.compose.ui.graphics
-        .TransformOrigin(0f, 0f)
