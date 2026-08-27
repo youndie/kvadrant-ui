@@ -65,6 +65,7 @@ public data class KvadrantMetrics(
  * small one, which is the defect, not the fix. `TiltScaleInvarianceTest` fails if this line
  * acquires a `* factor`.
  */
+
 public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
     KvadrantMetrics(
         margin = margin * factor,
@@ -85,3 +86,22 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         tileWide = tileWide * factor,
         tileGap = tileGap * factor,
     )
+
+/**
+ * The metric set scaled so that one row of the Start screen — margin, wide tile, margin — is exactly
+ * [width] across.
+ *
+ * This is the scale a surface should normally use, and it is the reason a Metro layout has no
+ * breakpoints: Windows Phone stretched one 480-pixel canvas to WVGA, WXGA and 720p rather than
+ * reflowing anything. Passing a factor to [scaled] by hand means choosing a number instead, and a
+ * number chosen by eye cannot be re-derived — the desktop demo ran at a hand-picked 1.6 for a week,
+ * and the fitted factor for its 560 dp window turns out to be 1.64.
+ *
+ * The divisor is read out of the metric set rather than written down, so it stays true if the tile
+ * sizes ever move. **It is 342 dp and not the 360 dp the canvas is wide**, and that difference is
+ * unexplained: 480 Metro pixels is exactly `24 + 432 + 24`, which says the Start screen's outer
+ * margin is 24 px where [margin] is the 12 px of a text page. Until somebody reads that off a real
+ * Start screen, fitting the row is the honest thing — it makes both edges equal without asserting
+ * a number nobody has verified.
+ */
+public fun KvadrantMetrics.scaledToWidth(width: Dp): KvadrantMetrics = scaled(width / (margin * 2 + tileWide))

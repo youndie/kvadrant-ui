@@ -3,6 +3,7 @@ package io.github.youndie.kvadrant.sample
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -49,6 +50,7 @@ import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.theme.KvadrantTypography
 import io.github.youndie.kvadrant.theme.accessible
 import io.github.youndie.kvadrant.theme.scaled
+import io.github.youndie.kvadrant.theme.scaledToWidth
 
 private val Layout =
     listOf(
@@ -65,93 +67,99 @@ private val Layout =
  * The whole demo, in one composable, so that a desktop window and an Android activity show the same
  * thing rather than two things that drift.
  *
- * [initialScale] is the metric scale the demo opens at, and it is a parameter because the right
- * answer differs per platform rather than per taste: Metro's numbers were drawn for a 480 px phone,
- * so a phone wants 1.0 and a desktop window wants them scaled up. See `KvadrantMetrics.scaled`.
+ * There is no per-platform scale to pass in: the metric set is derived from the width it is given,
+ * the way Windows Phone scaled its 480-pixel canvas to WVGA, WXGA and 720p without reflowing
+ * anything. A phone and a desktop window differ in how much canvas they have, not in what the
+ * layout is. The slider then moves that derived scale, which is what it was always for.
  */
 @Composable
-public fun KvadrantSampleApp(initialScale: Float) {
+public fun KvadrantSampleApp() {
     var dark by remember { mutableStateOf(true) }
     var accessible by remember { mutableStateOf(false) }
     var accent by remember { mutableStateOf(KvadrantAccents.Cyan) }
     var menuOpen by remember { mutableStateOf(false) }
-    var density by remember { mutableStateOf(initialScale) }
+    var scale by remember { mutableStateOf<Float?>(null) }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base
 
     val cyrillic = kvadrantCyrillic()
 
-    // Metro's numbers were drawn for a 480 px phone. On a desktop window they read as cramped, so
-    // the whole metric set is scaled by one factor rather than the margin being nudged alone.
-    KvadrantTheme(
-        colors = colors,
-        typography = KvadrantTypography.default(kvadrantLatin()),
-        metrics = KvadrantMetrics().scaled(density),
-    ) {
-        // A Metro page always paints PhoneBackgroundBrush. Nothing below does it — a Pivot is a
-        // control, not a page — so the root has to, or the window shows through white.
-        // The background is painted edge to edge and the content is inset, in that order. Painting
-        // only the safe area leaves the status bar showing the platform's own colour, and insetting
-        // nothing puts the Pivot header under the clock — which is what the first Android build did.
-        // `safeDrawing` is zero on the desktop, so this is one expression for both.
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(KvadrantTheme.colors.background)
-                .windowInsetsPadding(WindowInsets.safeDrawing),
+    // A Metro page always paints PhoneBackgroundBrush. Nothing below does it — a Pivot is a control,
+    // not a page — so the root has to, or the window shows through white. Edge to edge, and the
+    // content inset inside it: painting only the safe area leaves the status bar showing the
+    // platform's own colour, and insetting nothing puts the Pivot header under the clock.
+    // `safeDrawing` is zero on the desktop, so one expression serves both.
+    Box(Modifier.fillMaxSize().background(colors.background)) {
+        BoxWithConstraints(
+            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-            KvadrantPivot(
-                titles = listOf("start", "почта", "settings"),
-                title = "KVADRANT UI",
-                cyrillic = cyrillic,
-                modifier = Modifier.weight(1f),
-            ) { page ->
-                when (page) {
-                    0 -> {
-                        StartPage(cyrillic)
-                    }
+            // The scale is measured, not chosen: Metro's canvas is 480 px wide and the whole of it
+            // is stretched to whatever the surface has, exactly as WVGA, WXGA and 720p ran the same
+            // layout at three sizes. This is what stops a phone from showing a strip of unused
+            // black beside a two-column tile grid. The slider below then moves this number, which
+            // is the only thing it was ever for.
+            val fitted = KvadrantMetrics().scaledToWidth(maxWidth)
 
-                    1 -> {
-                        MailPage(cyrillic)
-                    }
-
-                    else -> {
-                        SettingsPage(
-                            dark = dark,
-                            onDark = { dark = it },
-                            accessible = accessible,
-                            onAccessible = { accessible = it },
-                            accent = accent,
-                            onAccent = { accent = it },
-                            density = density,
-                            onDensity = { density = it },
-                            cyrillic = cyrillic,
-                        )
-                    }
-                }
-            }
-            KvadrantAppBar(
-                menuItems = listOf("Настройки", "О программе"),
-                menuExpanded = menuOpen,
-                onMenuToggle = { menuOpen = !menuOpen },
-                cyrillic = cyrillic,
+            KvadrantTheme(
+                colors = colors,
+                typography = KvadrantTypography.default(kvadrantLatin()),
+                metrics = scale?.let { KvadrantMetrics().scaled(it) } ?: fitted,
             ) {
-                listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
-                    .forEach { colour ->
-                        KvadrantAppBarButton(onClick = {}) {
-                            // A stand-in until there is an icon set (B-18), and it has to be sized
-                            // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
-                            // 74.25, so a tile here draws a square straight through the circle the
-                            // button is made of.
-                            Box(
-                                Modifier
-                                    .size(KvadrantAppBarGlyphSize)
-                                    .clip(CircleShape)
-                                    .background(colour),
-                            )
+                Column(Modifier.fillMaxSize()) {
+                    KvadrantPivot(
+                        titles = listOf("start", "почта", "settings"),
+                        title = "KVADRANT UI",
+                        cyrillic = cyrillic,
+                        modifier = Modifier.weight(1f),
+                    ) { page ->
+                        when (page) {
+                            0 -> {
+                                StartPage(cyrillic)
+                            }
+
+                            1 -> {
+                                MailPage(cyrillic)
+                            }
+
+                            else -> {
+                                SettingsPage(
+                                    dark = dark,
+                                    onDark = { dark = it },
+                                    accessible = accessible,
+                                    onAccessible = { accessible = it },
+                                    accent = accent,
+                                    onAccent = { accent = it },
+                                    density = scale ?: (fitted.margin / KvadrantMetrics().margin),
+                                    onDensity = { scale = it },
+                                    cyrillic = cyrillic,
+                                )
+                            }
                         }
                     }
+                    KvadrantAppBar(
+                        menuItems = listOf("Настройки", "О программе"),
+                        menuExpanded = menuOpen,
+                        onMenuToggle = { menuOpen = !menuOpen },
+                        cyrillic = cyrillic,
+                    ) {
+                        listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
+                            .forEach { colour ->
+                                KvadrantAppBarButton(onClick = {}) {
+                                    // A stand-in until there is an icon set (B-18), and it has to be sized
+                                    // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
+                                    // 74.25, so a tile here draws a square straight through the circle the
+                                    // button is made of.
+                                    Box(
+                                        Modifier
+                                            .size(KvadrantAppBarGlyphSize)
+                                            .clip(CircleShape)
+                                            .background(colour),
+                                    )
+                                }
+                            }
+                    }
+                }
             }
         }
     }
