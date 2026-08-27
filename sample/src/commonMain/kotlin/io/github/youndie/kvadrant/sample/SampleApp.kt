@@ -28,9 +28,15 @@ import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
 import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
+import io.github.youndie.kvadrant.components.KvadrantButton
 import io.github.youndie.kvadrant.components.KvadrantCheckBox
+import io.github.youndie.kvadrant.components.KvadrantCycleTile
+import io.github.youndie.kvadrant.components.KvadrantFlipTile
+import io.github.youndie.kvadrant.components.KvadrantIconicTile
 import io.github.youndie.kvadrant.components.KvadrantListItem
 import io.github.youndie.kvadrant.components.KvadrantListPicker
+import io.github.youndie.kvadrant.components.KvadrantMessageBox
+import io.github.youndie.kvadrant.components.KvadrantPasswordBox
 import io.github.youndie.kvadrant.components.KvadrantPivot
 import io.github.youndie.kvadrant.components.KvadrantProgressBar
 import io.github.youndie.kvadrant.components.KvadrantProgressDots
@@ -40,6 +46,7 @@ import io.github.youndie.kvadrant.components.KvadrantTextBox
 import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.KvadrantTileBadge
 import io.github.youndie.kvadrant.components.KvadrantTileGrid
+import io.github.youndie.kvadrant.components.KvadrantToast
 import io.github.youndie.kvadrant.components.KvadrantToggleSwitch
 import io.github.youndie.kvadrant.components.KvadrantTurnstile
 import io.github.youndie.kvadrant.components.KvadrantTurnstileFeather
@@ -182,31 +189,7 @@ public fun KvadrantSampleApp() {
                     ) {
                         val name = openTile
                         if (name != null) {
-                            Column(
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(KvadrantTheme.colors.background)
-                                    .clickable { openTile = null }
-                                    .padding(KvadrantTheme.metrics.margin),
-                            ) {
-                                KvadrantText(
-                                    "KVADRANT UI",
-                                    style = KvadrantTheme.typography.pageTitle,
-                                )
-                                KvadrantText(
-                                    name,
-                                    style = KvadrantTheme.typography.pivotHeader,
-                                    cyrillic = cyrillic,
-                                )
-                                KvadrantText(
-                                    "нажмите, чтобы вернуться",
-                                    style =
-                                        KvadrantTheme.typography.normal.copy(
-                                            color = KvadrantTheme.colors.subtle,
-                                        ),
-                                    cyrillic = cyrillic,
-                                )
-                            }
+                            Showcase(name, cyrillic, onBack = { openTile = null })
                         }
                     }
                 }
@@ -232,16 +215,75 @@ private fun StartPage(
             KvadrantAccents.Crimson,
         )
     KvadrantTileGrid(Layout) { index, size ->
-        KvadrantTile(size, color = colours[index], onClick = { onOpen(labels[index] ?: "плитка") }) {
-            if (index == 0) KvadrantTileBadge(7)
-            labels[index]?.let {
-                KvadrantText(
-                    it,
-                    Modifier.align(Alignment.BottomStart).padding(9.dp),
-                    KvadrantTheme.typography.normal.copy(color = KvadrantTheme.colors.onAccent),
-                    cyrillic,
+        // Three of the seven are live, because a Start screen of static rectangles is not the thing
+        // being reproduced: `KvadrantFlipTile`, `KvadrantCycleTile` and `KvadrantIconicTile` existed
+        // and had never been looked at outside a still frame, where a flip cannot show.
+        when (index) {
+            1 -> {
+                KvadrantFlipTile(
+                    size,
+                    color = colours[index],
+                    front = { TileLabel("4", cyrillic) },
+                    back = { TileLabel("18°", cyrillic) },
                 )
             }
+
+            2 -> {
+                KvadrantIconicTile(
+                    size = size,
+                    color = colours[index],
+                    count = 3,
+                    onClick = { onOpen("iconic") },
+                    icon = { KvadrantText("\u25A0", style = KvadrantTheme.typography.large) },
+                )
+            }
+
+            4 -> {
+                KvadrantCycleTile(
+                    faces =
+                        listOf<@Composable androidx.compose.foundation.layout.BoxScope.() -> Unit>(
+                            { TileLabel("сегодня", cyrillic) },
+                            { TileLabel("завтра", cyrillic) },
+                            { TileLabel("послезавтра", cyrillic) },
+                        ),
+                    size = size,
+                    color = colours[index],
+                )
+            }
+
+            else -> {
+                StaticTile(size, colours[index], labels[index], index, cyrillic, onOpen)
+            }
+        }
+    }
+}
+
+@Composable
+private fun androidx.compose.foundation.layout.BoxScope.TileLabel(
+    text: String,
+    cyrillic: androidx.compose.ui.text.font.FontFamily,
+) {
+    KvadrantText(
+        text,
+        Modifier.align(Alignment.BottomStart).padding(9.dp),
+        KvadrantTheme.typography.normal.copy(color = KvadrantTheme.colors.onAccent),
+        cyrillic,
+    )
+}
+
+@Composable
+private fun StaticTile(
+    size: TileSize,
+    colour: androidx.compose.ui.graphics.Color,
+    label: String?,
+    index: Int,
+    cyrillic: androidx.compose.ui.text.font.FontFamily,
+    onOpen: (String) -> Unit,
+) {
+    run {
+        KvadrantTile(size, color = colour, onClick = { onOpen(label ?: "плитка") }) {
+            if (index == 0) KvadrantTileBadge(7)
+            label?.let { TileLabel(it, cyrillic) }
         }
     }
 }
@@ -297,6 +339,9 @@ private fun SettingsPage(
     var frequency by remember { mutableStateOf(1) }
     var pickerOpen by remember { mutableStateOf(false) }
     var brightness by remember { mutableStateOf(0.65f) }
+    var password by remember { mutableStateOf("") }
+    var dialog by remember { mutableStateOf(false) }
+    var toast by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -349,5 +394,44 @@ private fun SettingsPage(
         KvadrantText("яркость", cyrillic = cyrillic)
         KvadrantSlider(brightness, { brightness = it })
         KvadrantProgressBar(brightness, Modifier.padding(top = 6.dp))
+
+        KvadrantText("пароль", Modifier.padding(top = 12.dp), cyrillic = cyrillic)
+        KvadrantPasswordBox(
+            password,
+            { password = it },
+            placeholder = "введите пароль",
+            cyrillic = cyrillic,
+        )
+
+        Row(
+            Modifier.padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(9.dp),
+        ) {
+            KvadrantButton("диалог", { dialog = true }, cyrillic = cyrillic)
+            KvadrantButton("тост", { toast = true }, cyrillic = cyrillic)
+        }
     }
+
+    // The two surfaces that cover the screen rather than sit in it, which is why they are outside
+    // the Column: a message box is modal and a toast lands over the status bar. Both existed only
+    // as screenshot fixtures until now.
+    if (dialog) {
+        KvadrantMessageBox(
+            title = "удалить письмо?",
+            message = "его нельзя будет вернуть",
+            onConfirm = { dialog = false },
+            onCancel = { dialog = false },
+            confirmText = "удалить",
+            cancelText = "отмена",
+            cyrillic = cyrillic,
+        )
+    }
+    KvadrantToast(
+        visible = toast,
+        title = "Анна Петрова",
+        message = "встреча в четверг",
+        onDismiss = { toast = false },
+        onClick = { toast = false },
+        cyrillic = cyrillic,
+    )
 }
