@@ -1293,6 +1293,27 @@ Why it matters more than the version number:
 - the whole token specification is transcribed from WP8 theme resources. Changing target does not
   adjust the foundation, it discards it.
 
+**Verified against 8.1, because "maybe the buttons went coloured there" is a fair question.** They
+did not, and the accent has nothing to do with it:
+
+| WinRT 8.x brush | Dark | Light |
+|---|---|---|
+| `ButtonBackgroundThemeBrush` | Transparent | **`#B3B6B6B6`** |
+| `ButtonBorderThemeBrush` | `#FFFFFFFF` | `#33000000` |
+| `ButtonPressedBackgroundThemeBrush` | `#FFFFFFFF` | `#FF000000` |
+| `ButtonPressedForegroundThemeBrush` | `#FF000000` | `#FFFFFFFF` |
+
+*(`dn518235(v=win.10)`, the archived XAML theme resources reference.)* The press is the same
+inversion the phone does — background to foreground, text to background — in both themes and in both
+lineages. **The word "accent" does not appear anywhere in that reference**: Windows 8.x XAML had no
+user accent brush at all, the personalisation colour was not exposed to app XAML until `SystemAccent*`
+in Windows 10, and the twenty phone dictionaries are the only place a Metro accent lives.
+
+What *did* change is smaller and goes the other way: in the **light** theme the resting WinRT button
+is **filled** — 70 % grey with a nearly invisible 20 % border — where the phone's is transparent with
+a solid one. That is the desktop lineage softening a Metro rule, not adding colour to it, and it is
+one more reason [B-22](../backlog/B-22-win8-branch.md) is a separate module rather than a flag.
+
 The price, stated plainly: this library reproduces a design that stopped being current in 2014, and
 every later Microsoft artefact will read as "newer" without being the thing being built. That is the
 point of the project, and D16 exists so the pull towards the newer artefact is a decision each time
