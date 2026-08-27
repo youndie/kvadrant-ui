@@ -55,6 +55,62 @@ class PanoramaSnapTest {
     }
 
     @Test
+    fun a_section_wider_than_the_screen_can_be_looked_at() {
+        runComposeUiTest {
+            lateinit var scroll: ScrollState
+            setContent {
+                KvadrantTheme(
+                    colors = KvadrantColors.dark(),
+                    typography = KvadrantTypography.default(kvadrantLatin()),
+                ) {
+                    scroll = remember { ScrollState(0) }
+                    Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
+                        KvadrantPanorama(
+                            title = "photos",
+                            scroll = scroll,
+                            sections =
+                                listOf(
+                                    // Two and a quarter screens of content in one section.
+                                    headers[0] to { Body(900.dp, "alpha") },
+                                    headers[1] to { Body(220.dp, "beta") },
+                                    headers[2] to { Body(340.dp, "gamma") },
+                                ),
+                        )
+                    }
+                }
+            }
+            waitForIdle()
+
+            val firstSectionEnds = onAllNodesWithText(headers[1])[0].getUnclippedBoundsInRoot().left.value
+            // A **pan**, which is the word the source uses, rather than a flick: slow enough that
+            // the release carries almost no velocity. A hard throw travelling past a whole section
+            // is correct and is what the other test does; this one is a person dragging the wide
+            // section's content across to look at the rest of it.
+            onNodeWithTag("pano").performTouchInput { swipeLeft(durationMillis = 1000) }
+            waitForIdle()
+
+            // The second header has not reached the margin, so the release did not throw the
+            // panorama past a section whose content is off the screen — which is what a single
+            // left-edge stop per section does, and what this fixture exists to catch.
+            val secondHeader = onAllNodesWithText(headers[1])[0].getUnclippedBoundsInRoot().left.value
+            assertTrue(scroll.value > 0, "the swipe did not scroll")
+            assertTrue(
+                secondHeader > 18f,
+                "settled at ${scroll.value} with the next section already at the margin: the wide " +
+                    "one was skipped rather than panned (it started at $firstSectionEnds)",
+            )
+            // And it still settled on a stop rather than wherever momentum died: the wide section's
+            // right edge against the right of the viewport.
+            val alpha = onAllNodesWithText(headers[0])[0].getUnclippedBoundsInRoot().left.value
+            assertTrue(
+                abs(alpha - (18f - (900f + 27f - 400f))) < 2f,
+                "settled at ${scroll.value}; the wide section's header is at $alpha, which is " +
+                    "neither its left edge nor its right edge against the viewport",
+            )
+        }
+    }
+
+    @Test
     fun a_release_settles_with_a_header_at_the_margin() {
         runComposeUiTest {
             lateinit var scroll: ScrollState

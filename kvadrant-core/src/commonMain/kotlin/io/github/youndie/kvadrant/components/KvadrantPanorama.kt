@@ -182,7 +182,9 @@ public fun KvadrantPanorama(
                     scroll,
                     flingBehavior =
                         remember(scroll) {
-                            SectionSnap(scroll) { stops(sectionWidths, copyWidth, scroll.maxValue) }
+                            SectionSnap(scroll) {
+                                stops(sectionWidths, viewport, copyWidth, scroll.maxValue)
+                            }
                         },
                 ),
             ) {
@@ -231,11 +233,24 @@ public fun KvadrantPanorama(
  */
 private fun stops(
     widths: List<Int>,
+    viewport: Int,
     copyWidth: Int,
     maxValue: Int,
 ): List<Int> {
-    if (widths.isEmpty() || widths.any { it <= 0 }) return emptyList()
-    val withinOne = widths.runningFold(0) { acc, w -> acc + w }.dropLast(1)
+    if (widths.isEmpty() || widths.any { it <= 0 } || viewport <= 0) return emptyList()
+    val starts = widths.runningFold(0) { acc, w -> acc + w }.dropLast(1)
+    // A section wider than the screen gets a second stop: its right edge against the right of the
+    // viewport. `ff941126` again — a horizontal `PanoramaItem` "will snap to both the left and the
+    // right sides of the screen", and "allows for a user to pan around the center contents without
+    // snapping to a new `PanoramaItem` control view". With only the left edge as a stop, a section
+    // with content off the screen could not be looked at: a release inside it threw the panorama
+    // past the whole thing to the next section, which is what the first version of this did. The
+    // original made the orientation an explicit property; here it follows from the measurement,
+    // because content that overflows the viewport is what that property was for.
+    val withinOne =
+        starts.flatMapIndexed { index, start ->
+            if (widths[index] > viewport) listOf(start, start + widths[index] - viewport) else listOf(start)
+        }
     return (0 until COPIES)
         .flatMap { copy -> withinOne.map { it + copy * copyWidth } }
         .plus(maxValue)

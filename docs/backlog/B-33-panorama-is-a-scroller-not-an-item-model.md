@@ -53,8 +53,23 @@ to the index.
   `PanoramaSnapTest`, which asserts the header's position on screen rather than the scroll offset,
   because the offset is computed from the very boundaries under test. Verified by removing the
   fling behaviour and watching it fail.
+- ~~A section wider than the screen can be panned across instead of being thrown past.~~ Done —
+  such a section gets a second stop, its right edge against the right of the viewport, per
+  `ff941126`: a horizontal `PanoramaItem` "will snap to both the left and the right sides of the
+  screen" and "allows for a user to pan around the center contents without snapping to a new
+  `PanoramaItem` control view". A hard flick still travels past it, which is the same source's
+  distinction between a pan and a throw, and the two tests use the two gestures.
 - A scenario naming which section is selected after a flick of a given size.
 - The title's KDoc deviation is removed because the behaviour it stands in for exists.
+
+## Deviation: orientation is derived, not declared
+
+The original carries an explicit `PanoramaItem.Orientation` — `Vertical` snaps to the left only,
+`Horizontal` to both edges and "allows for the content to be placed off the screen instead of being
+clipped". This library has no such property and infers it: a section measured wider than the
+viewport gets both stops. That covers every section the property was *for*, and misses the case of a
+narrow section deliberately marked `Horizontal`, which has nothing off screen to pan to anyway.
+Worth revisiting if a caller ever needs the distinction; adding the property later is additive.
 
 ## Notes
 
