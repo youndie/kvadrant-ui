@@ -1393,6 +1393,34 @@ Why:
   function naming, and generated sources are excluded, because the plugin fixes its file list before
   its own filters would apply.
 
+### D18. Finger-tracking is an opt-in modifier, not a change to the indication
+
+Decision: `Modifier.kvadrantTilt(onClick)` exists beside the indication and tracks the finger;
+`TiltIndication` keeps leaning once, at touch-down, and stays the default everywhere.
+
+**Measured before anything was built, because the item required it.** On a 158 px surface the drawn
+quad's leading column is 152 px for a centre press and **119** for a corner one, and whole frames
+differ by 1 882 pixels of 90 000. So a finger dragged across a tile leaves a fifth of the effect
+unused; the answer to "is this visible outside a deliberate drag" is that a deliberate drag is
+exactly where it shows, and that it shows plainly.
+
+The modifier is small because it reuses everything: it emits a fresh `PressInteraction.Press` on
+every move, and `TiltIndication` already reads a second press as "the finger is now here". No
+geometry is duplicated, which was the point — a second copy of the tilt maths would be a second
+place for it to drift. It replaces `clickable` rather than joining it, because two sources of `Press`
+on one element fight over the same indication.
+
+**It is canon and therefore not behind `remastered`** ([D17](#d17-one-flag-for-everything-the-phone-did-not-do-remastered)):
+`TiltEffect.cs` calls `ApplyTiltEffect` from three handlers, so the phone did this and this library
+did not.
+
+*Consequence — the residue is physical, not a bug.* A press dragged to the corner does not match one
+that started there to the pixel: by the time the second press arrives the surface has already leaned
+under the finger, so the coordinate it reports is not quite the one a still finger would give. 425
+pixels of 90 000, against 1 914 for the centre press. `TiltFollowsFingerTest` therefore asserts a
+ratio rather than a threshold — an absolute bound there would be a number chosen to fit today's
+renderer.
+
 ### D17. One flag for everything the phone did not do: `remastered`
 
 Decision: `KvadrantTheme(remastered = …)`, **off by default**, is the single switch between "reproduce

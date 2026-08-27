@@ -1,7 +1,7 @@
 ---
 id: B-27
 title: "The tilt is fixed at touch-down where the original followed the finger"
-status: open
+status: done
 priority: P2
 size: S
 stage: stage-1-core
@@ -9,6 +9,24 @@ blocked_by: []
 ---
 
 # B-27 — The tilt is fixed at touch-down where the original followed the finger
+
+**Done. Measured first, as the item demanded, and the measurement said build it.** On a 158 px
+surface the drawn quad's leading column is 152 px for a centre press and **119** for a corner one,
+and the whole frames differ by 1 882 pixels of 90 000 — a fifth of the edge, left unused by any
+finger that moves. The honest outcome the item allowed for, "close this with 'not worth fixing'
+written down", was not the one the numbers gave.
+
+`Modifier.kvadrantTilt(onClick)` is the fix and it is nine lines of gesture over no new geometry: it
+emits a fresh `PressInteraction.Press` on every move, and `TiltIndication` already reads a second
+press as "the finger is now here". A second copy of the tilt maths would have been a second place
+for it to drift. It replaces `clickable` rather than joining it — two sources of `Press` on one
+element fight over the same indication — and it is **not** gated by B-28, because the phone did
+this and restoring it is not an improvement.
+
+The answer is in research [D18](../research/research-architecture.md#d18-finger-tracking-is-an-opt-in-modifier-not-a-change-to-the-indication),
+along with the one thing that surprised: a dragged press does not match a still one to the pixel and
+cannot, because the surface has already leaned under the finger by the time the second press
+arrives. 425 pixels of residue against 1 914 for the wrong corner, so the test asserts a ratio.
 
 `TiltEffect.cs` calls `ApplyTiltEffect` from **three** handlers, not one:
 `TiltEffect_PointerPressed`, `TiltEffect_PointerMoved`, and the timer path. So while the finger
