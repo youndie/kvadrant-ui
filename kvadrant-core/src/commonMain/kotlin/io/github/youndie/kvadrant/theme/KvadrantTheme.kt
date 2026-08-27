@@ -4,6 +4,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -49,12 +50,18 @@ public fun KvadrantTheme(
     metrics: KvadrantMetrics = KvadrantMetrics(),
     content: @Composable () -> Unit,
 ) {
+    // The ramp scales with the metric set, and the theme does it rather than the caller: the two
+    // live in different objects here, and Windows Phone had them in one — its text was measured in
+    // the same canvas units as its margins, so it could not be scaled apart from them. Research
+    // §1.6c. `remember` because this allocates ten TextStyles and the inputs change twice a run.
+    val scaled = remember(typography, metrics.scale) { typography.scaled(metrics.scale) }
+
     CompositionLocalProvider(
         LocalKvadrantColors provides colors,
-        LocalKvadrantTypography provides typography,
+        LocalKvadrantTypography provides scaled,
         LocalKvadrantMetrics provides metrics,
         LocalIndication provides TiltIndication(maxDepression = metrics.tiltDepression),
-        LocalKvadrantTextStyle provides typography.normal,
+        LocalKvadrantTextStyle provides scaled.normal,
         content = content,
     )
 }

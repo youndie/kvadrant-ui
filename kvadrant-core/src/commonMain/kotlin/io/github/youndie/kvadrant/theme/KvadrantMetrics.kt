@@ -12,6 +12,16 @@ import androidx.compose.ui.unit.dp
  */
 @Immutable
 public data class KvadrantMetrics(
+    /**
+     * How far this set has been scaled from Metro's own numbers, cumulatively.
+     *
+     * It is carried rather than recomputed because the type ramp has to scale by the same amount and
+     * lives in a different object: [KvadrantTheme] reads this and scales
+     * [KvadrantTypography] by it, so a caller cannot scale the layout and forget the text. Windows
+     * Phone had no way to get that wrong — its text was measured in the same canvas units as
+     * everything else — and neither should a caller here.
+     */
+    val scale: Float = 1f,
     /** `PhoneMargin` 12 px. The margin everything on a page hangs off. */
     val margin: Dp = 9.dp,
     /** `PhoneBorderThickness` 3 px — a Metro button's border, and it is thick on purpose. */
@@ -51,9 +61,13 @@ public data class KvadrantMetrics(
  * the same 12 Metro pixels. So the scale is one knob over the whole set: everything moves together
  * or nothing does.
  *
- * **The type ramp is deliberately not scaled with it.** Text has its own reason to be the size it
- * is — the 72 px header is the design, not a consequence of the canvas — and scaling both at once
- * is how a faithful layout turns into a merely large one.
+ * **The type ramp scales with it, and [scale] is what carries that** to [KvadrantTheme], which
+ * applies it to [KvadrantTypography]. This used to say the opposite — that text has its own reason
+ * to be the size it is and scaling both at once turns a faithful layout into a merely large one.
+ * That is the Android and iOS convention and it is not Metro's: the phone's canvas was 480 units
+ * wide whatever the screen was, text was measured in those same units as everything else, and the
+ * device stretched the whole of it (×1.5 on 720p, ×1.6 on WXGA, ×2.25 on 1080p). A 20-unit body
+ * line was 2.18 mm on a 4-inch Lumia 520 and 3.11 mm on a 6-inch Lumia 1520. Research §1.6c.
  *
  * **[tiltDepression] is not scaled either, and that one is a measurement rather than a taste.** It
  * reads as the obvious omission — every other screen distance here scales, so surely a press should
@@ -68,6 +82,7 @@ public data class KvadrantMetrics(
 
 public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
     KvadrantMetrics(
+        scale = scale * factor,
         margin = margin * factor,
         borderThickness = borderThickness * factor,
         touchTargetOverhang = touchTargetOverhang * factor,

@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 
 /**
@@ -41,6 +42,7 @@ public object KvadrantWeights {
  * [pivotHeader] is the one to look at: 72 px SemiLight, the largest step of the ramp, read out of
  * `PivotHeaderFontSize` in the SDK's theme dictionary rather than guessed.
  */
+
 @Immutable
 public data class KvadrantTypography(
     val normal: TextStyle,
@@ -138,3 +140,43 @@ public data class KvadrantTypography(
             )
     }
 }
+
+/**
+ * The same ramp, every size multiplied by [factor].
+ *
+ * **Windows Phone scaled its text with its layout and this restores that.** The canvas was 480 units
+ * wide whatever the screen was, and the device stretched the whole of it — ×1.5 on 720p, ×1.6 on
+ * WXGA, ×2.25 on 1080p — so a 20-unit body line was physically 2.18 mm on a 4-inch Lumia 520 and
+ * 3.11 mm on a 6-inch Lumia 1520. Text was measured in the same units as margins and tiles and had
+ * no way *not* to scale with them.
+ *
+ * Leaving the ramp fixed while the layout grows is the Android and iOS convention, and it was this
+ * project's until it was checked: research §1.6c has the measurements. Nothing is rounded to whole
+ * sp on the way — Metro's own ramp is not whole numbers either (18.667, 22.667, 25.333 px), and
+ * rounding a scaled ramp would break the relationships the unrounded one holds.
+ */
+public fun KvadrantTypography.scaled(factor: Float): KvadrantTypography =
+    if (factor == 1f) {
+        this
+    } else {
+        KvadrantTypography(
+            normal = normal.scaledBy(factor),
+            subtle = subtle.scaledBy(factor),
+            title = title.scaledBy(factor),
+            mediumLarge = mediumLarge.scaledBy(factor),
+            large = large.scaledBy(factor),
+            extraLarge = extraLarge.scaledBy(factor),
+            pageTitle = pageTitle.scaledBy(factor),
+            pivotHeader = pivotHeader.scaledBy(factor),
+            panoramaTitle = panoramaTitle.scaledBy(factor),
+            panoramaSectionHeader = panoramaSectionHeader.scaledBy(factor),
+        )
+    }
+
+private fun TextStyle.scaledBy(factor: Float): TextStyle =
+    copy(
+        fontSize = fontSize * factor,
+        // Only if the style set one. `TextUnit.Unspecified * f` is not Unspecified, and a line
+        // height that quietly becomes a number changes the layout of every style that had none.
+        lineHeight = if (lineHeight.isSpecified) lineHeight * factor else lineHeight,
+    )

@@ -351,13 +351,14 @@ public final class io/github/youndie/kvadrant/theme/KvadrantFontSizes {
 
 public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public static final field $stable I
-	public synthetic fun <init> (FFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (FFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-D9Ej5fM ()F
+	public synthetic fun <init> (FFFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
 	public final fun component10-D9Ej5fM ()F
 	public final fun component11-D9Ej5fM ()F
 	public final fun component12-D9Ej5fM ()F
 	public final fun component13-D9Ej5fM ()F
+	public final fun component14-D9Ej5fM ()F
 	public final fun component2-D9Ej5fM ()F
 	public final fun component3-D9Ej5fM ()F
 	public final fun component4-D9Ej5fM ()F
@@ -366,14 +367,15 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun component7-D9Ej5fM ()F
 	public final fun component8-D9Ej5fM ()F
 	public final fun component9-D9Ej5fM ()F
-	public final fun copy-UucoBsQ (FFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
-	public static synthetic fun copy-UucoBsQ$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public final fun copy-011EjVI (FFFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public static synthetic fun copy-011EjVI$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBorderThickness-D9Ej5fM ()F
 	public final fun getMargin-D9Ej5fM ()F
 	public final fun getPivotHeaderGap-D9Ej5fM ()F
 	public final fun getPivotItemMargin-D9Ej5fM ()F
 	public final fun getPivotItemTopMargin-D9Ej5fM ()F
+	public final fun getScale ()F
 	public final fun getTileGap-D9Ej5fM ()F
 	public final fun getTileMedium-D9Ej5fM ()F
 	public final fun getTileSmall-D9Ej5fM ()F
@@ -437,6 +439,10 @@ public final class io/github/youndie/kvadrant/theme/KvadrantTypography {
 
 public final class io/github/youndie/kvadrant/theme/KvadrantTypography$Companion {
 	public final fun default (Landroidx/compose/ui/text/font/FontFamily;)Lio/github/youndie/kvadrant/theme/KvadrantTypography;
+}
+
+public final class io/github/youndie/kvadrant/theme/KvadrantTypographyKt {
+	public static final fun scaled (Lio/github/youndie/kvadrant/theme/KvadrantTypography;F)Lio/github/youndie/kvadrant/theme/KvadrantTypography;
 }
 
 public final class io/github/youndie/kvadrant/theme/KvadrantWeights {

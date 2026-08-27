@@ -488,15 +488,21 @@ not ×0.75**, and applying this project's constant to that ramp would render it 
 intended physical size — 42 dp where 93 is meant. The brief's Win8 "validation" produced points, and
 points are not dp.
 
-**Consequence 2 — [D5](#d5-metrics-scale-as-one-set) has it backwards.** `scaled()` deliberately
-leaves the type ramp alone, on the reasoning that scaling type with layout turns a faithful design
-into a merely large one. That is the Android and iOS convention and it is not Metro's: Windows Phone
-scaled the **whole canvas** by the resolution ratio — ×1.5, ×1.6, ×2.25 — and text scaled with it,
-because text was measured in the same canvas units as everything else. Scaling the ramp with
-`scaledToWidth` is therefore *more* faithful, not less, and D5's exception is a deviation that was
-recorded as a preservation. It is the third case for
-[B-28](../backlog/B-28-remastered-flag.md) — except that here the flag would be needed for the
-**current** behaviour rather than for the change.
+**Consequence 2 — [D5](#d5-metrics-scale-as-one-set) had it backwards, and is amended.** `scaled()`
+used to leave the type ramp alone, on the reasoning that scaling type with layout turns a faithful
+design into a merely large one. That is the Android and iOS convention and it is not Metro's:
+Windows Phone scaled the **whole canvas** by the resolution ratio — ×1.5, ×1.6, ×2.25 — and text
+scaled with it, because text was measured in the same canvas units as everything else. The exception
+was a deviation recorded as a preservation, and the flag it would have needed
+([B-28](../backlog/B-28-remastered-flag.md)) would have had to gate the *old* behaviour.
+
+**The amendment, and how it is wired.** `KvadrantMetrics.scale` now carries the cumulative factor and
+`KvadrantTheme` applies it to `KvadrantTypography`. The two live in different objects here where the
+phone had them in one, so leaving it to the caller would mean a caller who scales the layout and
+forgets the text — `TypeScaleTest` measures drawn ink at scale 1 against scale 2 and fails if either
+end of that wiring comes apart, verified by breaking each. Nothing is rounded to whole sp: Metro's
+own ramp is 18.667 / 22.667 / 25.333, and rounding a scaled ramp breaks relationships the unrounded
+one holds.
 
 ### 1.7 Selawik contains no Cyrillic — re-verified
 
