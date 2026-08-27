@@ -100,6 +100,42 @@ val noMaterialInTheCore by tasks.registering {
 
 tasks.named("check") { dependsOn(noMaterialInTheCore) }
 
+// B-06. The specification is several hundred numbers, and typing them is several hundred chances to
+// be wrong in a way no test catches - a test written from the same source, by the same person, on
+// the same afternoon restates the mistake rather than finding it. So the vendored dump is the source
+// and `KvadrantTokens.kt` is its output.
+//
+// Two tasks rather than one: `generateKvadrantTokens` writes the file, and `check` runs the same
+// script in `--check` mode so that a dump edited without regenerating is a red build rather than a
+// silent divergence. The generated file is committed - a consumer reading the sources should see the
+// constants, and a reviewer should see the diff.
+val tokensScript = layout.projectDirectory.file("../scripts/generate_tokens.py")
+val tokensJson =
+    layout.projectDirectory.file("../reference/metro-compose-brief/references/metro-tokens.json")
+val tokensOutput =
+    layout.projectDirectory.file("src/commonMain/kotlin/io/github/youndie/kvadrant/theme/KvadrantTokens.kt")
+val repositoryRoot = rootProject.layout.projectDirectory
+
+val generateKvadrantTokens by tasks.registering(Exec::class) {
+    description = "Regenerate KvadrantTokens.kt from the vendored metro-tokens.json."
+    inputs.file(tokensScript)
+    inputs.file(tokensJson)
+    outputs.file(tokensOutput)
+    workingDir = repositoryRoot.asFile
+    commandLine("python3", "scripts/generate_tokens.py")
+}
+
+val checkKvadrantTokens by tasks.registering(Exec::class) {
+    description = "Fail if KvadrantTokens.kt no longer matches the JSON it is generated from."
+    inputs.file(tokensScript)
+    inputs.file(tokensJson)
+    inputs.file(tokensOutput)
+    workingDir = repositoryRoot.asFile
+    commandLine("python3", "scripts/generate_tokens.py", "--check")
+}
+
+tasks.named("check") { dependsOn(checkKvadrantTokens) }
+
 // `ScreenshotSuiteTest` reads the golden directory, so the task has to say so. Without this Gradle
 // sees no input change when a golden is added, renamed or deleted, leaves `desktopTest` UP-TO-DATE,
 // and the guard reports the last run's verdict about a set that has since changed — which is how it

@@ -1,7 +1,7 @@
 ---
 id: B-06
 title: "Generate the token constants from metro-tokens.json instead of typing them"
-status: open
+status: done
 priority: P0
 size: S/M
 stage: stage-1-core
@@ -9,6 +9,31 @@ blocked_by: [B-04]
 ---
 
 # B-06 — Generate the token constants from metro-tokens.json instead of typing them
+
+**Done.** `./gradlew generateKvadrantTokens` writes `KvadrantTokens.kt` from the vendored dump;
+`check` runs the same script in `--check` mode, so a dump edited without regenerating is a red build
+rather than a silent divergence. The generated file is committed — a consumer reading the sources
+should see the constants and a reviewer should see the diff. Scope is the twelve colour tokens per
+theme, the twenty accents and the eight type sizes: what something reads, and nothing else, because
+a token emitted before anything uses it is the same failure with more lines.
+
+**Two things it found on the first run, which is the whole argument for the item.**
+
+The dump's `light.border` is `#BFFFFFFF` — the dark value repeated — marked `unverified` with a note
+in Russian to re-check it. Generating it faithfully broke `KvadrantColorsTest`, which had been
+written from the SDK's `ThemeResources` and knew better. The dump is vendored evidence and evidence
+does not get amended, so the correction lives in the generator's `CORRECTIONS` table **together with
+the value it was written against**: if the dump is ever fixed, the generator stops rather than
+letting a stale override sit on top of a corrected source.
+
+And `18.667 × 0.75` is `14.00025`, not `14`. The dump stores decimal approximations of exact thirds,
+and carrying the error through put every glyph a fraction of a pixel off its grid — visible in two
+palette goldens, which is how it was found. The generator rounds, and refuses to round anything
+further than a hundredth of an sp, so a genuinely fractional size would stop the build instead of
+being flattened.
+
+With both handled, the whole suite of sixty-seven goldens is unchanged: the generator reproduces
+what was typed, which is the only evidence that it is faithful.
 
 The specification is several hundred numbers: 13 colour tokens × 2 themes, 20 accents with computed
 luminance and contrast, two type ramps, page and tile metrics, motion curves and durations, tilt

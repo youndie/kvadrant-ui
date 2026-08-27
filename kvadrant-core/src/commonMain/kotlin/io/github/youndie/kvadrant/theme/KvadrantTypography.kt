@@ -15,14 +15,16 @@ import androidx.compose.ui.unit.sp
  * rather than a convention chosen here.
  */
 public object KvadrantFontSizes {
-    public val Small: TextUnit = 14.sp // 18.667 px
-    public val Normal: TextUnit = 15.sp // 20 px
-    public val Medium: TextUnit = 17.sp // 22.667 px
-    public val MediumLarge: TextUnit = 19.sp // 25.333 px
-    public val Large: TextUnit = 24.sp // 32 px
-    public val ExtraLarge: TextUnit = 32.sp // 42.667 px
-    public val ExtraExtraLarge: TextUnit = 54.sp // 72 px
-    public val Huge: TextUnit = 140.sp // 186.667 px
+    // Generated from the dump's Metro pixels — see `KvadrantTokens.FontSizesSp`, which does the
+    // multiplication and the rounding, and refuses to round anything it should not.
+    public val Small: TextUnit = KvadrantTokens.FontSizesSp.SMALL.sp
+    public val Normal: TextUnit = KvadrantTokens.FontSizesSp.NORMAL.sp
+    public val Medium: TextUnit = KvadrantTokens.FontSizesSp.MEDIUM.sp
+    public val MediumLarge: TextUnit = KvadrantTokens.FontSizesSp.MEDIUM_LARGE.sp
+    public val Large: TextUnit = KvadrantTokens.FontSizesSp.LARGE.sp
+    public val ExtraLarge: TextUnit = KvadrantTokens.FontSizesSp.EXTRA_LARGE.sp
+    public val ExtraExtraLarge: TextUnit = KvadrantTokens.FontSizesSp.EXTRA_EXTRA_LARGE.sp
+    public val Huge: TextUnit = KvadrantTokens.FontSizesSp.HUGE.sp
 }
 
 /**
