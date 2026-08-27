@@ -106,8 +106,14 @@ public fun KvadrantListPicker(
                         label,
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onSelect(index) }
-                            .background(if (highlighted) colors.accent else Color.Transparent)
+                            // Only while open. Every row exists at every moment — closed, they are
+                            // simply clipped away — so a row that is always clickable puts the
+                            // selected one's `onSelect` under the closed box and the picker cannot
+                            // be opened at all. That is what happened, and neither test caught it
+                            // because both drive `expanded` as a parameter and never tap anything.
+                            .then(
+                                if (expanded) Modifier.clickable { onSelect(index) } else Modifier,
+                            ).background(if (highlighted) colors.accent else Color.Transparent)
                             .padding(horizontal = 9.dp, vertical = 9.dp),
                         // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:ListPicker"`,
                         // toolkit `Generic.xaml`.

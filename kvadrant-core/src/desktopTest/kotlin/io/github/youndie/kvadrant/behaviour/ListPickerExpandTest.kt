@@ -12,6 +12,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantListPicker
@@ -110,5 +111,38 @@ class ListPickerExpandTest {
                 "the first option is at $half half way through and $open when open — it is not " +
                     "moving, only being uncovered",
             )
+        }
+
+    /**
+     * Tapping a closed picker asks it to open.
+     *
+     * The obvious test, missing until the control stopped opening entirely. Both tests above drive
+     * `expanded` as a parameter, which is the right way to inspect an animation and is also a way to
+     * check every frame of a control that can never be reached by touch. Every option row exists at
+     * every moment — closed, they are clipped rather than absent — so the selected row's own click
+     * handler sat under the closed box and swallowed the tap.
+     */
+    @Test
+    fun tapping_a_closed_picker_asks_it_to_open() =
+        runComposeUiTest {
+            var asked = 0
+            var selected = 0
+            setContent {
+                KvadrantTheme {
+                    KvadrantListPicker(
+                        items = listOf("никогда", "каждые 15 минут", "каждый час"),
+                        selectedIndex = 1,
+                        onSelect = { selected++ },
+                        expanded = false,
+                        onExpandRequest = { asked++ },
+                        modifier = Modifier.testTag("picker"),
+                    )
+                }
+            }
+            onNodeWithTag("picker").performClick()
+            waitForIdle()
+
+            assertTrue(asked == 1, "the closed picker was tapped and asked to open $asked times")
+            assertTrue(selected == 0, "the tap selected something instead of opening: $selected")
         }
 }
