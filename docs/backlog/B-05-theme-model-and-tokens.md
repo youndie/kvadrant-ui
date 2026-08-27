@@ -1,7 +1,7 @@
 ---
 id: B-05
 title: "KvadrantTheme: colours, typography, metrics, motion"
-status: wip
+status: done
 priority: P0
 size: M
 stage: stage-1-core
@@ -10,8 +10,20 @@ blocked_by: [B-04]
 
 # B-05 — KvadrantTheme: colours, typography, metrics, motion
 
-**Audited. The theme is built; one acceptance criterion is met differently from how it was written
-and one is not met at all.**
+**Done.** The field-by-field comparison the criterion asks for now exists — `TokenDumpTest` reads
+the vendored `metro-tokens.json` and pins **44 values**: twelve tokens in each theme and all twenty
+accents by name. It could not be written before [B-20](B-20-durable-home-for-the-brief.md) put the
+dump in the repository, which is why the criterion stood open rather than being forgotten.
+
+**The dump is treated as an oracle only where it says it is.** Each entry carries a `confidence`,
+and one is `unverified` — `light.border`, with the dump's own note that it matches the dark value and
+needs re-checking. It was re-checked, in the SDK's `ThemeResources`. So the test asserts equality on
+`verified` rows and **inequality** on the rest: asserting the whole dump would fail on that row, and
+skipping low-confidence rows would let a real transcription error hide behind the flag. Verified
+both ways — one accent altered by one bit fails by name, and copying the unverified row back in
+fails as "we took the flag instead of the re-check".
+
+The audit below stands as the record of what the check looked like before it existed.
 
 `KvadrantColorsTest` does not do what the AC below asks — it never opens `metro-tokens.json` — but
 what it does instead is worth more than a literal transcription check for the accents. It pins nine
@@ -22,14 +34,13 @@ name out of that list, so the values are guarded — indirectly, and by a check 
 itself. The fear the AC was written against — deriving one palette from the other — is addressed
 head-on by `the_light_theme_is_not_an_inversion_of_the_dark_one`.
 
-**What is genuinely unguarded is the semantic slots.** `background`, `chrome`, `inactive`,
-`onAccent` and the rest have no value assertion anywhere; only `foreground` and `border` do. A typo
-in `chrome` would pass every test in this repository and show up as a screenshot diff *if* a fixture
-happens to use it.
+**What was genuinely unguarded was the semantic slots** — `background`, `chrome`, `inactive` and the
+rest had no value assertion anywhere, and a typo in `chrome` would have passed every test here. That
+is what `TokenDumpTest` closes.
 
-Field-by-field against the dump is not reachable while the dump lives outside the repository — that
-is [B-06](B-06-token-generator.md) and [B-20](B-20-durable-home-for-the-brief.md), and it is the
-reason the AC has stood unmet rather than an oversight.
+**Still not generated, and that is [B-06](B-06-token-generator.md) rather than this.** The constants
+are typed by hand and now checked against their source; generating them would remove the typing.
+Those are different jobs, and the check is the one that catches drift in either direction.
 
 Four `@Immutable data class`es behind four `internal staticCompositionLocalOf` locals, a public
 `KvadrantTheme` accessor object with `@Composable @ReadOnlyComposable` getters, and a scoped

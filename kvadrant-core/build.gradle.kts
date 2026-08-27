@@ -64,6 +64,9 @@ kotlin {
             implementation(compose.desktop.currentOs)
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
+            // Reads the vendored token dump. Test-only on purpose: the dump is the source the
+            // palette was transcribed from, not something the library carries at runtime.
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }
