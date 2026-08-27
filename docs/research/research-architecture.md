@@ -315,18 +315,52 @@ that is.** Found while scoping what remains of the spike, and it is a defect in 
 | Android passes the value straight to `RenderNode` with no scaling at all | `GraphicsLayerV29.android.kt` — `renderNode.cameraDistance = value`; nothing between the modifier and the layer touches it |
 | Android's own default camera is `1280 × density` px, and `density = dpi / 160`, so that is `8 × dpi` px — **8 inches**, the same 8 as `DefaultCameraDistance` | Android `View` documentation, arithmetic |
 
-So one `cameraDistance = 8f` is 576 px of depth under skiko and roughly 3840 px on a 480 dpi phone:
-the same tile tilts about six times flatter on Android than on the desktop. And `depressionScale()`
-in `TiltIndication.kt` hard-codes the `× 72`, which makes the sinking it computes correct on three
-targets and wrong on the fourth.
+**The reading was right and the conclusion drawn from it was wrong**, which is worth more than
+either. From those three rows it followed that `cameraDistance = 8f` is 576 px of depth under skiko
+and some multiple of the display density on Android — "about six times flatter on a modern phone".
+The bytecode still says what it said: `GraphicsLayerV29.setCameraDistance` and `RenderNodeApi29` and
+`RenderNodeApi23` all hand the float to `RenderNode.setCameraDistance` untouched, whose own
+documentation calls the unit pixels. Taken literally that would put the default camera **8 pixels**
+away, which is not a flatter tilt — it is a tile folded through the lens — and it is plainly not what
+a device shows. A documented unit that cannot be true is not evidence for a value six times larger
+either; it is evidence that the documentation is not the place to find out.
 
-**Measured, once the second renderer existed.** On a Pixel 6a at 420 dpi the same tile pressed dead
-centre draws 413 px at rest and 381 px pressed — **0.9225**, against the desktop's 0.9685. The
-arithmetic above predicts 0.9213 for that density (`576 / (576 + 18.75 × 2.625)`), so the
-measurement and the reading agree to within edge antialiasing. The consequence is sharper than
-"wrong on the fourth target": the depression is converted to pixels and the depth is not, so **a
-press sinks deeper the denser the screen** — the defect is a function of the device, and every
-desktop test in this repository is at density 1 where it cannot appear.
+**So it was measured, on both, with the same geometry.** A press on the centre of the bottom edge is
+pure rotation about the x-axis, so the tile draws as a symmetric trapezoid and the camera falls out
+of the two horizontal edge widths: `depth = s(r + 1) / (r - 1)`, `s = (H / 2) sin θ`.
+
+| | top edge | bottom edge | ratio | solved depth |
+|---|---|---|---|---|
+| desktop, 497 px tile | 521 px | 461 px | 1.1301 | 588 px |
+| Pixel 6a, 497 px tile | 507 px | 449 px | 1.1292 | 593 px |
+
+**The two backends agree to within a tenth of a percent.** Both land on Compose's nominal 576 px
+(the ~2% excess is the bias of reading antialiased edges two rows in from the ends, and it is the
+same bias on both). There is no per-backend divergence in `cameraDistance` at all.
+
+**The defect was ours, and it was one line.** On a Pixel 6a at 420 dpi the same tile pressed dead
+centre draws 413 px at rest and 381 px pressed — **0.9225**, against the desktop's 0.9685.
+`576 / (576 + 18.75 × 2.625)` predicts 0.9213. Nothing about the backends is involved: the camera
+sits at a fixed number of *pixels* on both, and every piece of geometry handed to it is in *dp*, so
+the denser the screen the closer the camera effectively is. Both symptoms are that one mismatch —
+a press sinks deeper on a denser screen, and a same-sized tile gets more perspective there too
+(a 100 dp tile subtends 0.174 of a 576 px camera on the desktop and 0.456 on the phone).
+
+**The fix is to hold the camera at a distance in dp** and convert to the platform's unit at the
+edge, which is what B-25 prescribed even though the reason it gave was wrong. `TiltIndication`'s
+`cameraDistance` is a `Dp`, defaulting to the 576 dp that reproduces Compose's own camera at
+density 1, so no desktop golden moves. `depressionScale` no longer contains the number 72;
+`CameraProbeTest` solves the camera out of a rendered trapezoid and fails if the unit stops
+reaching the layer.
+
+**And the conversion factor is measured rather than read.** 72 px per unit is in skiko's source;
+for Android it is the number the trapezoid gives, because the documented unit there is wrong.
+
+**Confirmed on the device after the change.** The same 497 px tile — which on that phone *is* 189 dp
+— now draws at 0.9678 of itself under a centre press against the desktop's 0.9685, and a bottom-edge
+press gives a trapezoid ratio of 1.0461 against the 1.0487 the desktop draws for 189 dp. Before, the
+same tile gave 0.9225. The comparison that means something is the one in dp: a pixel-for-pixel
+comparison across two densities compares two different designs.
 
 This is [B-25](../backlog/B-25-tilt-camera-is-in-inches.md), and it was not what
 [B-01](../backlog/B-01-spike-tilt-indication.md) expected to leave behind — it expected a

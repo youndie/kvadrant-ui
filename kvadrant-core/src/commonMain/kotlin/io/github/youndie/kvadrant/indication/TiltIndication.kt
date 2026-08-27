@@ -19,6 +19,7 @@ import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -34,13 +35,23 @@ import kotlinx.coroutines.launch
  * would get no perspective at all. The sinking is therefore emulated with a uniform scale computed
  * from the same camera the rotation uses, which is the one deviation from the original geometry.
  *
- * [cameraDistance] is in the units of `GraphicsLayerScope.cameraDistance`, which Compose turns into
- * `cameraDistance * 72` pixels of depth. The default is Compose's own, and it is a decision rather
- * than a transcription: the original's camera was global to the screen and its distance is not
- * published, so there is nothing to transcribe.
+ * [cameraDistance] is a **[Dp]**, and that is the whole of what B-25 turned out to be. Compose's own
+ * `GraphicsLayerScope.cameraDistance` lands the camera at a fixed number of *pixels* — measured at
+ * `value * 72` px on both skiko and hwui, the two backends this library has — while every piece of
+ * geometry it looks at is in dp. On a 2.625x screen a 100 dp tile is 262 px and subtends 0.456 of a
+ * 576 px camera where the same tile subtends 0.174 on the desktop, so the denser the screen the
+ * more perspective a press gets and the deeper it sinks. Measured, before and after: a tile drew at
+ * 0.9225 of itself on a Pixel 6a against 0.9685 on the desktop.
+ *
+ * Holding the camera at a distance in dp makes the whole projection density-independent, which is
+ * what "the same design on every screen" has to mean. The default reproduces Compose's own camera
+ * exactly at density 1, so nothing about the desktop moves.
+ *
+ * The distance itself is still a decision rather than a transcription: the original's camera was
+ * global to the screen and Microsoft never published how far away it was.
  */
 public class TiltIndication(
-    private val cameraDistance: Float = DEFAULT_CAMERA_DISTANCE,
+    private val cameraDistance: Dp = DEFAULT_CAMERA_DISTANCE,
     private val maxDepression: Dp = Tilt.maxDepression,
 ) : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode =
@@ -55,28 +66,43 @@ public class TiltIndication(
 
     public companion object {
         /**
-         * Compose's own default. It puts the camera at `8 * 72 = 576` px, which turns the full
-         * 18.75 dp depression into a shrink of **0.9685** at density 1.
+         * Compose's own default camera, restated in dp: `8 * 72 = 576` px at density 1. At that
+         * distance the full 18.75 dp depression is a shrink of **0.9685**, on every screen.
          */
-        public const val DEFAULT_CAMERA_DISTANCE: Float = 8f
+        public val DEFAULT_CAMERA_DISTANCE: Dp = 576.dp
+
+        /**
+         * Pixels of depth per unit of `GraphicsLayerScope.cameraDistance`.
+         *
+         * skiko says so in its source — `val depth = cameraDistance * 72f`, under the comment "The
+         * camera location is passed in inches, set in pt". Android's path says nothing: it hands the
+         * value to `RenderNode.setCameraDistance` untouched, whose documentation calls it pixels,
+         * which would put the default camera 8 px away and is plainly not what happens. So the
+         * Android figure is **measured, not read**: the same tile pressed on the centre of its
+         * bottom edge draws a trapezoid of 507/449 px on a Pixel 6a and 521/461 on the desktop —
+         * ratios of 1.1292 and 1.1301, which is the same camera to within a tenth of a percent.
+         * `CameraProbeTest` keeps the desktop half of that honest.
+         */
+        internal const val PIXELS_PER_UNIT: Float = 72f
     }
 }
 
 /**
  * The shrink that stands in for sinking away from the eye: a plane at [depressionPx] behind the
- * drawing plane, seen from a camera `cameraDistance * 72` pixels away.
+ * drawing plane, seen from a camera [depthPx] away.
+ *
+ * Both arguments are pixels, and that they are the *same* pixels is the point. Taking a depth in one
+ * unit and a depression in another is what made a press sink 0.9225 of a tile on a phone and 0.9685
+ * on a desktop.
  */
 internal fun depressionScale(
     depressionPx: Float,
-    cameraDistance: Float,
-): Float {
-    val depth = cameraDistance * 72f
-    return depth / (depth + depressionPx)
-}
+    depthPx: Float,
+): Float = depthPx / (depthPx + depressionPx)
 
 private class TiltNode(
     private val interactionSource: InteractionSource,
-    private val cameraDistance: Float,
+    private val cameraDistance: Dp,
     private val maxDepression: Dp,
 ) : Modifier.Node(),
     LayoutModifierNode {
@@ -147,8 +173,9 @@ private class TiltNode(
                         Size(placeable.width.toFloat(), placeable.height.toFloat()),
                         maxDepression,
                     )
+                val depthPx = this@TiltNode.cameraDistance.toPx()
                 placeable.placeWithLayer(0, 0) {
-                    this.cameraDistance = this@TiltNode.cameraDistance
+                    this.cameraDistance = depthPx / TiltIndication.PIXELS_PER_UNIT
                     // Both negated. `tiltFor` reproduces `TiltEffect.cs` exactly, and Silverlight's
                     // `PlaneProjection` turns the opposite way from `graphicsLayer` on both axes:
                     // applied as written, the corner under the finger comes *towards* the eye, which
@@ -163,7 +190,7 @@ private class TiltNode(
                     // arrived on rather than unwinding one axis at a time.
                     rotationX = -tilt.rotationX * amount
                     rotationY = -tilt.rotationY * amount
-                    val sink = depressionScale(tilt.depression.toPx() * amount, this@TiltNode.cameraDistance)
+                    val sink = depressionScale(tilt.depression.toPx() * amount, depthPx)
                     scaleX = sink
                     scaleY = sink
                 }
