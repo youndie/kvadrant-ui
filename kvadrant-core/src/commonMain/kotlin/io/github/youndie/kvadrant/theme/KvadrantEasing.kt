@@ -34,7 +34,23 @@ public object KvadrantEasing {
     /** `sineOut`: the rotate's opacity, which fades evenly while the transform accelerates. */
     public val SineOut: Easing = Easing { t -> sin(t * PI.toFloat() / 2f) }
 
-    /** `exponentialInOut(4)`: a ListPicker opening, a ContextMenu pushing its page back. */
+    /**
+     * `ExponentialEase { EasingMode = EaseInOut }` with no `Exponent` set, which is Silverlight's
+     * default of **2** — the curve the context menu's zoom runs on.
+     *
+     * The exponent matters here rather than being a detail: at 4 the page sits still and then
+     * lurches, which is what this animation looked like while it borrowed the list picker's curve.
+     */
+    public val ExponentialInOut2: Easing =
+        Easing { t ->
+            if (t < 0.5f) {
+                (1f - exp(-4f * t)) / (1f - exp(-2f)) / 2f
+            } else {
+                1f - (1f - exp(-4f * (1f - t))) / (1f - exp(-2f)) / 2f
+            }
+        }
+
+    /** `exponentialInOut(4)`: a ListPicker opening. The context menu uses [ExponentialInOut2]. */
     public val ExponentialInOut4: Easing =
         Easing { t ->
             if (t < 0.5f) {

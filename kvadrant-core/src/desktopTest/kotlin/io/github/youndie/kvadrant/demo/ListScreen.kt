@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantContextMenuHost
 import io.github.youndie.kvadrant.components.KvadrantGroupHeader
@@ -79,7 +80,22 @@ internal fun JumpList() {
  */
 @ViddikScreenshot(name = "context menu", group = "list", width = 400, height = 560)
 @Composable
-internal fun ContextMenu() {
+internal fun ContextMenu(): Unit = ContextMenuAt(null)
+
+/**
+ * The same menu opened *on a row*, which is the branch that matters and the one that was wrong.
+ *
+ * `AdjustContextMenuPositionForPortraitMode` puts the menu directly below the pressed item when it
+ * fits there, above it when it fits there instead, and at the bottom of the page when neither is
+ * true — which is also where it goes with no anchor at all, the case the original reaches by opening
+ * the menu from code. Both branches have a picture now; before, everything went to the top.
+ */
+@ViddikScreenshot(name = "context menu on a row", group = "list", width = 400, height = 560)
+@Composable
+internal fun ContextMenuOnRow(): Unit = ContextMenuAt(200.dp)
+
+@Composable
+private fun ContextMenuAt(anchorTop: Dp?) {
     val cyrillic = kvadrantCyrillic()
     Contacts(KvadrantColors.dark()) {
         KvadrantContextMenuHost(
@@ -88,6 +104,8 @@ internal fun ContextMenu() {
             onDismiss = {},
             onItemClick = {},
             cyrillic = cyrillic,
+            anchorTop = anchorTop,
+            anchorHeight = 42.dp,
         ) {
             Column {
                 KvadrantPageHeader("KVADRANT UI", "контакты", cyrillic = cyrillic)

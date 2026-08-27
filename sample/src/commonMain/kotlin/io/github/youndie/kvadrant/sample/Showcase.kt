@@ -19,6 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantButton
@@ -70,6 +73,11 @@ private fun ContactsShowcase(
 ) {
     var jumping by remember { mutableStateOf(false) }
     var menuFor by remember { mutableStateOf<String?>(null) }
+    // Where the pressed row sits, so the menu can open below it the way the phone did. The host
+    // cannot work this out for itself: it wraps the page, and the row is somewhere inside it.
+    var anchorTop by remember { mutableStateOf(0.dp) }
+    var anchorHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
     val groups =
         listOf(
             "А" to listOf("Анна Петрова", "Артём"),
@@ -87,6 +95,8 @@ private fun ContactsShowcase(
         onDismiss = { menuFor = null },
         onItemClick = { menuFor = null },
         cyrillic = cyrillic,
+        anchorTop = anchorTop,
+        anchorHeight = anchorHeight,
     ) {
         KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = "почта", cyrillic = cyrillic) {
             KvadrantButton(
@@ -113,6 +123,15 @@ private fun ContactsShowcase(
                             onClick = { menuFor = who },
                             cyrillic = cyrillic,
                             titleStyle = KvadrantTheme.typography.mediumLarge,
+                            modifier =
+                                Modifier.onGloballyPositioned { coordinates ->
+                                    if (menuFor == null) {
+                                        with(density) {
+                                            anchorTop = coordinates.positionInRoot().y.toDp()
+                                            anchorHeight = coordinates.size.height.toDp()
+                                        }
+                                    }
+                                },
                         )
                     }
                 }

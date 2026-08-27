@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantEasing
@@ -37,55 +40,104 @@ public fun KvadrantContextMenuHost(
     onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     cyrillic: FontFamily? = null,
+    anchorTop: Dp? = null,
+    anchorHeight: Dp = 0.dp,
     content: @Composable () -> Unit,
 ) {
     val colors = KvadrantTheme.colors
-    val scale by animateFloatAsState(
-        targetValue = if (expanded) PUSHED_BACK else 1f,
-        animationSpec = tween(DURATION_MILLIS, easing = KvadrantEasing.ExponentialInOut4),
-        label = "page",
+    val progress by animateFloatAsState(
+        targetValue = if (expanded) 1f else 0f,
+        animationSpec = tween(DURATION_MILLIS, easing = KvadrantEasing.ExponentialInOut2),
+        label = "menu",
     )
 
-    Box(modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize().background(colors.background)) {
+        // The background is painted here rather than left to the page, because the page is about to
+        // be scaled away from the edges and something has to be behind it. On the phone that
+        // something was the shell; in a Compose tree it is whatever happens to be underneath, which
+        // in a demo turned out to be the previous screen showing in the margins.
         Box(
             Modifier.fillMaxSize().graphicsLayer {
+                val scale = 1f - (1f - PUSHED_BACK) * progress
                 scaleX = scale
                 scaleY = scale
             },
         ) { content() }
 
-        if (expanded) {
+        if (progress > 0f) {
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(colors.semitransparent)
+                    .background(colors.foreground.copy(alpha = 0f))
+                    .background(Color.Black.copy(alpha = FADE_TO * progress))
                     .clickable(onClick = onDismiss),
             )
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp)
-                    .background(colors.chrome)
-                    .padding(vertical = 6.dp),
-            ) {
-                items.forEachIndexed { index, label ->
-                    KvadrantText(
-                        label,
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onItemClick(index) }
-                            .padding(horizontal = 12.dp, vertical = 12.dp),
-                        // `PhoneFontSizeLarge`, 32 px: `Style TargetType="controls:MenuItem"`
-                        // in the toolkit's `Generic.xaml` sets it explicitly, overriding the
-                        // page's Normal. A menu item is nearly twice the body size.
-                        KvadrantTheme.typography.large,
-                        cyrillic,
-                    )
+            ContextMenuSurface(anchorTop, anchorHeight) {
+                Column(
+                    Modifier
+                        // Full width. `UpdateContextMenuPlacement` sets `x = bounds.Left` and
+                        // `Width = bounds.Width` in portrait — the menu spans the page, and the
+                        // inset it used to have here was ours.
+                        .fillMaxWidth()
+                        .background(colors.chrome)
+                        .padding(vertical = 6.dp),
+                ) {
+                    items.forEachIndexed { index, label ->
+                        KvadrantText(
+                            label,
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onItemClick(index) }
+                                .padding(horizontal = 12.dp, vertical = 12.dp),
+                            // `PhoneFontSizeLarge`, 32 px: `Style TargetType="controls:MenuItem"`
+                            // in the toolkit's `Generic.xaml` sets it explicitly, overriding the
+                            // page's Normal. A menu item is nearly twice the body size.
+                            KvadrantTheme.typography.large,
+                            cyrillic,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * Places the menu the way `AdjustContextMenuPositionForPortraitMode` does.
+ *
+ * Below the pressed item if the menu fits there, above it if it fits there instead, and pinned to
+ * the bottom of the page when neither is true — which is also what happens when there is no anchor
+ * at all, the case the original reaches by opening the menu from code rather than from a finger.
+ *
+ * It is a `Layout` rather than an offset computed from a remembered height because the decision
+ * needs the menu's measured height, and measuring it into state costs a frame in which the menu is
+ * drawn in the wrong place.
+ */
+@Composable
+private fun ContextMenuSurface(
+    anchorTop: Dp?,
+    anchorHeight: Dp,
+    content: @Composable () -> Unit,
+) {
+    Layout(content = content, modifier = Modifier.fillMaxSize()) { measurables, constraints ->
+        val menu = measurables.first().measure(constraints.copy(minHeight = 0))
+        val page = constraints.maxHeight
+        val top = anchorTop?.roundToPx()
+        val height = anchorHeight.roundToPx()
+
+        val y =
+            when {
+                top == null || page <= menu.height -> page - menu.height
+                top + height <= page - menu.height -> top + height
+                top >= menu.height -> top - menu.height
+                else -> page - menu.height
+            }
+        layout(constraints.maxWidth, page) { menu.place(0, y.coerceAtLeast(0)) }
+    }
+}
+
 private const val PUSHED_BACK = 0.94f
+
+/** `From = 0, To = .3` on the fade layer, same storyboard, same duration. It used to be 0.667. */
+private const val FADE_TO = 0.3f
 private const val DURATION_MILLIS = 420

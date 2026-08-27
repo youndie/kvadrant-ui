@@ -49,7 +49,7 @@ public final class io/github/youndie/kvadrant/components/KvadrantAppBarKt {
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantContextMenuKt {
-	public static final fun KvadrantContextMenuHost (ZLjava/util/List;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantContextMenuHost-fizy5fc (ZLjava/util/List;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/unit/Dp;FLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantListPickerKt {
@@ -334,6 +334,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantEasing {
 	public final fun getExponential1 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialIn15 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialIn6 ()Landroidx/compose/animation/core/Easing;
+	public final fun getExponentialInOut2 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialInOut4 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialOut15 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialOut6 ()Landroidx/compose/animation/core/Easing;
