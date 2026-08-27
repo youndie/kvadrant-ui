@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -50,7 +53,17 @@ public fun KvadrantAppBar(
 ) {
     val colors = KvadrantTheme.colors
 
-    Column(modifier.fillMaxWidth().background(colors.chrome)) {
+    // Background to the very bottom, content above the navigation bar. The order of those two
+    // modifiers is the whole of edge-to-edge: padding *before* the background insets the paint and
+    // leaves the system bar showing the page behind it, padding *after* it fills to the edge and
+    // keeps the buttons reachable. `navigationBars` is empty on the desktop, so this costs nothing
+    // there and needs no per-platform branch.
+    Column(
+        modifier
+            .fillMaxWidth()
+            .background(colors.chrome)
+            .windowInsetsPadding(WindowInsets.navigationBars),
+    ) {
         if (menuExpanded && menuItems.isNotEmpty()) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)) {
                 menuItems.forEachIndexed { index, label ->

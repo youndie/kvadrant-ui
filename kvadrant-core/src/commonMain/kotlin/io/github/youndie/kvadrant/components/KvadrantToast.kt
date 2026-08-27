@@ -5,8 +5,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +63,11 @@ public fun KvadrantToast(
                 .graphicsLayer { translationY = slide * size.height }
                 .background(colors.chrome)
                 .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
+                // The phone's toast landed *over* the system tray. On a screen drawn edge to edge
+                // that means the chrome reaches the top of the display and the text sits below the
+                // clock — background first, inset second. Inset first and a strip of page shows
+                // above a notification that is supposed to be covering it.
+                .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = 12.dp, vertical = 9.dp),
         ) {
             KvadrantText(title, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)

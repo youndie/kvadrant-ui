@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -137,7 +139,7 @@ public fun KvadrantSampleApp() {
     // `safeDrawing` is zero on the desktop, so one expression serves both.
     Box(Modifier.fillMaxSize().background(colors.background)) {
         BoxWithConstraints(
-            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
+            Modifier.fillMaxSize(),
         ) {
             // The scale is measured, not chosen: Metro's canvas is 480 px wide and the whole of it
             // is stretched to whatever the surface has, exactly as WVGA, WXGA and 720p ran the same
@@ -156,12 +158,28 @@ public fun KvadrantSampleApp() {
                 // with none, and the phone showed an app bar at the top and nothing else. An overlay
                 // is what a page transition is, and a row in a column is not one.
                 Box(Modifier.fillMaxSize()) {
+                    // Only the page is inset here. The app bar, the toast and the message box
+                    // are screen-edge surfaces and inset themselves, because each needs its own
+                    // edge: chrome to the bottom of the display, chrome to the top, and a scrim
+                    // over the whole of it. One blanket padding at the root gives all three the
+                    // same answer, and it is the wrong one for all three.
                     Column(Modifier.fillMaxSize()) {
                         KvadrantPivot(
                             titles = listOf("start", "почта", "settings"),
                             title = "KVADRANT UI",
                             cyrillic = cyrillic,
-                            modifier = Modifier.weight(1f),
+                            // Top and sides only. The bottom belongs to the app bar below, which
+                            // paints its chrome to the edge of the display and insets its own
+                            // buttons — take the bottom here as well and the bar is pushed up off
+                            // the navigation bar with the page's black showing underneath it.
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .windowInsetsPadding(
+                                        WindowInsets.safeDrawing.only(
+                                            WindowInsetsSides.Top + WindowInsetsSides.Horizontal,
+                                        ),
+                                    ),
                         ) { page ->
                             when (page) {
                                 0 -> {

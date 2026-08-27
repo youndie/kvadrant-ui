@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +57,10 @@ public fun KvadrantMessageBox(
             Modifier
                 .fillMaxWidth()
                 .background(colors.chrome)
+                // The overlay above covers the whole display, system bars included, because a
+                // scrim that stops at the status bar is a scrim with a bright strip across the
+                // top. The box insets its own content instead.
+                .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = 18.dp, vertical = 21.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
