@@ -445,6 +445,59 @@ text really is smaller than on the phone — by exactly the metric scale. Whethe
 is a judgement, not an error, and it is where a `remastered` setting would live
 ([B-28](../backlog/B-28-remastered-flag.md)).
 
+### 1.6c "px" is not one unit, and ×0.75 is a choice of reference phone
+
+Asked directly: *"а 20 px у Microsoft это не 20 dp? и может px в разных источниках разное dp?"*
+Both halves are worth an answer and the second one is the important one.
+
+**"px" means two different things in the two sources this project reads.**
+
+| source | what a "px" is | px → pt | px → dp |
+|---|---|---|---|
+| WPF / Windows 8 (WinRT) | **1/96 inch**, a physical unit | ×0.75, *by definition* | ×1.667 |
+| Silverlight for Windows Phone | one unit of the 480×800 canvas, stretched to the device | — | depends on the device |
+
+**On the phone a Metro pixel was never a fixed physical size.** The canvas is always 480 units
+across, so its size on glass is whatever the screen is. Measured across the range Windows Phone 8
+actually shipped on:
+
+| device | canvas scale | one Metro px | ×N that would reproduce it in dp |
+|---|---|---|---|
+| Lumia 620, 3.8″ | ×1.0 | 1/246 in | ×0.652 |
+| Lumia 520, 4.0″ | ×1.0 | 1/233 in | ×0.686 |
+| Lumia 920, 4.5″ | ×1.6 | 1/207 in | ×0.772 |
+| Lumia 1520, 6.0″ | ×2.25 | 1/163 in | ×0.981 |
+
+A 43% spread. **So ×0.75 is not a conversion, it is a choice of reference device** — it puts us
+between the 520 and the 920, at the small-phone end of the range, and it is 24% below the 1520,
+which is the WP8 device closest in physical size to a modern phone. That is the whole of why the
+text reads small: it is faithfully reproducing a 4-inch phone on a 6-inch screen.
+
+**The brief's justification for ×0.75 does not survive being read closely, though its number nearly
+does.** It states the premise "Metro metrics are WPF/Silverlight pixels (1/96 inch)" and then offers
+three checks. Two of them — the WP ramp landing on 15 pt, the Win8 ramp landing on the official
+42/20/11/9 pt — are *the same identity restated*: if a px is 1/96 inch then px→pt is ×0.75 by
+definition, and neither says anything about dp. Only the status bar (32 px → 24 dp, Android's own
+height) is independent, and it is one number. And the premise itself is false for the phone: at
+1/96 inch a 480-unit canvas would be **5.00 inches wide**, and no Windows Phone was wider than 2.94.
+Taken at its word the premise demands ×1.667, which would make body text 33 dp.
+
+**Consequence 1 — a live trap in [B-22](../backlog/B-22-win8-branch.md).** On Windows 8 the premise
+*is* true: a px there really is 1/96 inch. So the correct multiplier for a Win8 profile is **×1.667,
+not ×0.75**, and applying this project's constant to that ramp would render it at 45% of its
+intended physical size — 42 dp where 93 is meant. The brief's Win8 "validation" produced points, and
+points are not dp.
+
+**Consequence 2 — [D5](#d5-metrics-scale-as-one-set) has it backwards.** `scaled()` deliberately
+leaves the type ramp alone, on the reasoning that scaling type with layout turns a faithful design
+into a merely large one. That is the Android and iOS convention and it is not Metro's: Windows Phone
+scaled the **whole canvas** by the resolution ratio — ×1.5, ×1.6, ×2.25 — and text scaled with it,
+because text was measured in the same canvas units as everything else. Scaling the ramp with
+`scaledToWidth` is therefore *more* faithful, not less, and D5's exception is a deviation that was
+recorded as a preservation. It is the third case for
+[B-28](../backlog/B-28-remastered-flag.md) — except that here the flag would be needed for the
+**current** behaviour rather than for the change.
+
 ### 1.7 Selawik contains no Cyrillic — re-verified
 
 | Fact | Where verified |
