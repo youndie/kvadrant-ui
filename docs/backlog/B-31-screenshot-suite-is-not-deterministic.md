@@ -1,0 +1,49 @@
+---
+id: B-31
+title: "Six goldens change between two recordings of unchanged source"
+status: open
+priority: P0
+size: M
+stage: stage-2-release
+blocked_by: []
+---
+
+# B-31 — Six goldens change between two recordings of unchanged source
+
+`viddikRecord` twice in a row, with nothing edited in between, and six of the sixty-eight images
+come back different: `screen_start_dark`, `screen_start_light`, `screen_start_amber`,
+`appbar_start_with_bar`, `appbar_menu_open`, `picker_toast_and_badge`.
+
+Measured on `screen_start_dark`: **147 pixels of 280 000**, inside a single 68 × 177 box, in shades
+around the cyan accent — `(31, 162, 226)` in one recording against the accent's exact
+`(27, 161, 226)` in the other. Something animated is being captured at an arbitrary phase.
+
+**This is a P0 because of what it does to every other claim.** viddik's tolerance is 0.05% or 16 px;
+147 of 280 000 is 0.052%. These fixtures sit *on* the threshold, so they pass and fail at random,
+and the first thing anyone learns is that a red screenshot run means nothing. After that a real
+regression in those six is invisible.
+
+It also retro-actively weakens claims made from single runs. "Fifteen of the sixteen font goldens
+came back byte-identical" ([B-07](B-07-font-stack.md)) was one sample, and is evidence about that
+run rather than about the two rendering paths being equivalent. The same goes for every "no golden
+moved" in this repository's history, including the one that argued the tilt camera change was inert
+at density 1.
+
+- **Find what is animating first, then decide.** The flapping set is not random: every one of those
+  six shows the Start screen or the app bar, and `picker_toast_and_badge` contains a toast, which
+  slides in from a `LaunchedEffect`. A fixture holding a component that animates on composition is a
+  fixture whose capture time decides its pixels.
+- **The fix is not a wider tolerance.** Raising it past 0.052% hides a real 0.05% regression, and the
+  fixtures would drift again the moment something else animates. Either the fixture holds the
+  animation still — the way `TurnstileTest` stops the clock — or the component is captured in a
+  state it cannot leave.
+- Rejected: recording until it passes. That is the behaviour the flake trains, and it is how a suite
+  stops being read.
+
+- AC: `viddikRecord` twice from unchanged source produces byte-identical images, checked by a script
+  rather than by eye.
+- AC: whatever is animating is named in `docs/research/research-architecture.md` §1.9, because the
+  next person adding a fixture needs to know which components cannot go in one unheld.
+- AC: the six are re-recorded once the cause is fixed, and the diff at that point is the measure of
+  how much drift had accumulated.
+- Anchors: `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/demo/`

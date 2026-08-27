@@ -2,6 +2,7 @@ package io.github.youndie.kvadrant.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,38 +40,56 @@ public fun KvadrantMessageBox(
 ) {
     val colors = KvadrantTheme.colors
 
-    Column(
-        modifier
-            .fillMaxWidth()
-            .background(colors.chrome)
-            .padding(horizontal = 18.dp, vertical = 21.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        KvadrantText(title, style = KvadrantTheme.typography.large, cyrillic = cyrillic)
-        KvadrantText(message, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)
-
-        Row(
-            Modifier.fillMaxWidth().padding(top = 9.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+    // The box carries its own overlay, because the original does: `CustomMessageBox.Show` builds a
+    // container, puts a `Rectangle` in it and the box on top, and opens the pair in a `Popup`. A
+    // caller handed only the box has no way to know it was supposed to dim the screen, and this one
+    // did not — the dialog sat at the top of a perfectly bright page.
+    //
+    // The fill is `Color.FromArgb(0x99, PhoneBackgroundColor)`: sixty percent of the **theme
+    // background**, not a fixed black. In the light theme it is a white veil, which is why
+    // `PhoneSemitransparentBrush` — black at 0.667, and a real token used elsewhere — is the wrong
+    // one to reach for here.
+    Box(modifier.fillMaxSize().background(colors.background.copy(alpha = OVERLAY_ALPHA))) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(colors.chrome)
+                .padding(horizontal = 18.dp, vertical = 21.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            val confirm: @Composable () -> Unit = {
-                KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
-            }
-            val cancel: @Composable () -> Unit = {
-                if (onCancel != null) KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
-            }
-            if (win8ButtonOrder) {
-                cancel()
-                confirm()
-            } else {
-                confirm()
-                cancel()
+            KvadrantText(title, style = KvadrantTheme.typography.large, cyrillic = cyrillic)
+            KvadrantText(message, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)
+
+            Row(
+                Modifier.fillMaxWidth().padding(top = 9.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                val confirm: @Composable () -> Unit = {
+                    KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
+                }
+                val cancel: @Composable () -> Unit = {
+                    if (onCancel != null) KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
+                }
+                if (win8ButtonOrder) {
+                    cancel()
+                    confirm()
+                } else {
+                    confirm()
+                    cancel()
+                }
             }
         }
     }
 }
 
-/** Dims what is behind a message box, at `PhoneSemitransparentColor`. */
+/**
+ * Dims what is behind something, at `PhoneSemitransparentColor`.
+ *
+ * **Not what a message box uses**, despite the name it used to carry here: that one dims with 60% of
+ * the theme *background*, so it is a white veil in the light theme, and it now lives inside
+ * [KvadrantMessageBox] where the original keeps it. This is the token brush, for whatever else wants
+ * it.
+ */
 @Composable
 public fun KvadrantScrim(
     modifier: Modifier = Modifier,
@@ -81,3 +100,6 @@ public fun KvadrantScrim(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) { content() }
 }
+
+/** `0x99` of 255, from `Color.FromArgb(0x99, ...)` in `CustomMessageBox.Show`. */
+private const val OVERLAY_ALPHA = 0.6f
