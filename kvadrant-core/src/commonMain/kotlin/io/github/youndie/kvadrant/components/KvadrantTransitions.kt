@@ -167,6 +167,13 @@ public fun KvadrantRotate(
  * 300 **linearly** — six hundred in total. The change of curve halfway is the whole character of it:
  * the page eases into the turn and then completes it at a constant rate, which reads as something
  * being carried rather than something falling. Opacity is not animated at all.
+ *
+ * **It does not hide anything.** Nothing here fades and nothing is removed: at the end of the exit
+ * the content is still on screen, standing at ninety degrees. On the phone that is invisible because
+ * the navigation removes the page the moment the transition completes, and a caller here has to do
+ * the same — keep the content composed for the six hundred milliseconds and then stop. The same is
+ * true of [KvadrantSlide] and [KvadrantRotate], and it is least obvious with this one, whose end
+ * state is a full-width element lying across the page rather than something edge-on.
  */
 @Composable
 public fun KvadrantRoll(

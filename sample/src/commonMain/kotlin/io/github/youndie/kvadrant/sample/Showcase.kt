@@ -5,13 +5,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +49,7 @@ import io.github.youndie.kvadrant.components.SlideDirection
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantTheme
+import kotlinx.coroutines.delay
 
 /**
  * One page per tile, so the components that only existed in screenshot fixtures can be pressed.
@@ -203,7 +210,17 @@ private fun PanoramaShowcase(
     cyrillic: FontFamily,
     onBack: () -> Unit,
 ) {
-    Box(Modifier.fillMaxSize().background(KvadrantTheme.colors.background)) {
+    // The one showcase not built out of `KvadrantPage`, because a panorama *is* the page — so it
+    // does not get the page's insets either, and had none at all. Top and sides; the bottom is
+    // nobody's here, there being no app bar on this screen.
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(KvadrantTheme.colors.background)
+            .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+            ),
+    ) {
         KvadrantPanorama(
             title = "фото",
             cyrillic = cyrillic,
@@ -244,6 +261,19 @@ private fun MotionShowcase(
     onBack: () -> Unit,
 ) {
     var shown by remember { mutableStateOf(true) }
+    // Composed until the longest exit has finished, and then not. These transitions turn their
+    // content; they do not hide it, and on the phone the navigation removes the page when the
+    // transition completes. Leave it composed and the roll ends as a full-width strip lying across
+    // the page at ninety degrees, which is what "roll does not disappear" looks like.
+    var present by remember { mutableStateOf(true) }
+    LaunchedEffect(shown) {
+        if (shown) {
+            present = true
+        } else {
+            delay(ROLL_MILLIS)
+            present = false
+        }
+    }
 
     KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = name, cyrillic = cyrillic) {
         KvadrantButton(if (shown) "спрятать" else "показать", { shown = !shown }, cyrillic = cyrillic)
@@ -255,9 +285,11 @@ private fun MotionShowcase(
             "rotate" to { c -> KvadrantRotate(shown, 25f) { c() } },
         ).forEach { (label, wrap) ->
             Box(Modifier.fillMaxWidth().height(60.dp).padding(top = 9.dp)) {
-                wrap {
-                    KvadrantSurface(Modifier.fillMaxSize()) {
-                        KvadrantText(label, Modifier.align(Alignment.Center), cyrillic = cyrillic)
+                if (present) {
+                    wrap {
+                        KvadrantSurface(Modifier.fillMaxSize()) {
+                            KvadrantText(label, Modifier.align(Alignment.Center), cyrillic = cyrillic)
+                        }
                     }
                 }
             }
@@ -265,3 +297,6 @@ private fun MotionShowcase(
         KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
     }
 }
+
+/** The roll's six hundred, which is the longest of the four and therefore the one to wait for. */
+private const val ROLL_MILLIS = 600L
