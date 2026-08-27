@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontFamily
@@ -102,7 +104,18 @@ public fun KvadrantPanorama(
         // insets**: on the phone the image runs under the status bar and only the content is held
         // clear of it, so insetting the whole panorama — which the sample did — leaves a band of
         // page colour above an image that was supposed to reach the top of the glass.
-        Row(Modifier.fillMaxHeight().offset { IntOffset(drift(backgroundWidth), 0) }) {
+        // `wrapContentWidth(unbounded = true)` is the whole of why this measured wrong. The same
+        // trap the sections row carries a comment about, one layer up: inside a bounded Box a Row is
+        // measured against the viewport, so `backgroundWidth` came back as the width of the screen
+        // rather than of the background. The period was then the viewport, the two copies were laid
+        // out one screen apart while each painted its full width over the other, and the seam that
+        // produced is what a wrap looked like.
+        Row(
+            Modifier
+                .fillMaxHeight()
+                .wrapContentWidth(Alignment.Start, unbounded = true)
+                .offset { IntOffset(drift(backgroundWidth), 0) },
+        ) {
             repeat(COPIES) { copy ->
                 Box(Modifier.onSizeChanged { if (copy == 0) backgroundWidth = it.width }) {
                     background(Modifier.fillMaxHeight())
@@ -119,9 +132,17 @@ public fun KvadrantPanorama(
         ) {
             // Margin 10,-34,0,0: the title deliberately sits above the top of its row.
             //
-            // Drawn twice for the same reason the sections are, and only when it is wide enough to
-            // move: a title narrower than the viewport has no overflow to traverse, stays put, and
-            // a second copy of it would simply be a second title on screen.
+            // Drawn twice, and **that is a deviation from the original**, named here rather than
+            // quietly kept. `PanningTitleLayer` "does not repeat itself when you pan past the edges
+            // of the content"; instead, on a selection change, it "animates out of view in the
+            // direction it was previously moving and animates back into the scene from the other
+            // side of the screen" (`ff941126`). That behaviour needs a selected item, and this
+            // panorama has no item model — it free-scrolls, which is the same gap as the missing
+            // snap ([B-33](../../../docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)). Until it has one, a second copy is what keeps the wrap from tearing;
+            // the alternative is a title that jumps on every fold, which is worse and was the state
+            // this replaced. A title narrower than the viewport has no overflow, does not move, and
+            // gets no second copy — that one is the original's behaviour by accident rather than by
+            // design.
             val titleMoves = titleWidth > viewport
             Row(Modifier.offset { IntOffset(if (titleMoves) drift(titleWidth) else 0, 0) }) {
                 repeat(if (titleMoves) COPIES else 1) { copy ->
