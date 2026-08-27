@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -54,6 +58,119 @@ class PanoramaSnapTest {
         label: String,
     ) {
         Box(Modifier.width(width).height(400.dp)) { KvadrantText(label) }
+    }
+
+    /**
+     * It opens on a section even when the content is not measured on the first frame.
+     *
+     * **It does not reproduce what a phone showed, and that is worth writing down rather than
+     * implying otherwise.** A device opened this panorama part-way through its second section; the
+     * suspected mechanism is `scrollTo` clamping to a `maxValue` that had not arrived yet, with
+     * nothing re-running the move because the fold watched only the position and the gesture. That
+     * mechanism is closed — the limit is in the flow now, and the fold normalises by modulo instead
+     * of one subtraction — but this test passes with the old code too, so it is evidence of an
+     * invariant holding and not of that defect being the one.
+     */
+    @Test
+    fun it_opens_on_a_section_even_when_the_width_arrives_late() {
+        runComposeUiTest {
+            setContent {
+                KvadrantTheme(
+                    colors = KvadrantColors.dark(),
+                    typography = KvadrantTypography.default(kvadrantLatin()),
+                ) {
+                    var ready by remember { mutableStateOf(false) }
+                    LaunchedEffect(Unit) { ready = true }
+                    Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
+                        KvadrantPanorama(
+                            title = "photos",
+                            sections =
+                                headers.mapIndexed { index, header ->
+                                    header to
+                                        {
+                                            // Nothing on the first frame, its real width on the
+                                            // next, which is what a grid of tiles or an image does.
+                                            if (ready) Body((240 + index * 60).dp, "body") else Unit
+                                        }
+                                },
+                        )
+                    }
+                }
+            }
+            waitForIdle()
+
+            val left = onAllNodesWithText(headers[0])[0].getUnclippedBoundsInRoot().left.value
+            val opened =
+                headers.firstOrNull { header ->
+                    onAllNodesWithText(header).fetchSemanticsNodes().indices.any { copy ->
+                        abs(onAllNodesWithText(header)[copy].getUnclippedBoundsInRoot().left.value - 18f) < 2f
+                    }
+                }
+            assertEquals(headers[0], opened, "opened part-way through a section; first header at $left")
+        }
+    }
+
+    /** Section after section, round and round, with no end to arrive at in either direction. */
+    @Test
+    fun the_sections_cycle_without_running_out() {
+        runComposeUiTest {
+            lateinit var scroll: ScrollState
+            setContent {
+                KvadrantTheme(
+                    colors = KvadrantColors.dark(),
+                    typography = KvadrantTypography.default(kvadrantLatin()),
+                ) {
+                    scroll = remember { ScrollState(0) }
+                    Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
+                        KvadrantPanorama(
+                            title = "photos",
+                            scroll = scroll,
+                            sections =
+                                listOf(
+                                    headers[0] to { Body(300.dp, "alpha") },
+                                    headers[1] to { Body(220.dp, "beta") },
+                                    headers[2] to { Body(340.dp, "gamma") },
+                                ),
+                        )
+                    }
+                }
+            }
+            waitForIdle()
+
+            fun lefts(header: String): List<Float> =
+                onAllNodesWithText(header).fetchSemanticsNodes().indices.map { copy ->
+                    onAllNodesWithText(header)[copy].getUnclippedBoundsInRoot().left.value
+                }
+
+            fun headerAtMargin(): String? = headers.firstOrNull { header -> lefts(header).any { abs(it - 18f) < 2f } }
+
+            fun step(forward: Boolean): String? {
+                onNodeWithTag("pano").performTouchInput {
+                    if (forward) {
+                        swipeLeft(startX = right, endX = right - 250f, durationMillis = 1000)
+                    } else {
+                        swipeRight(startX = left, endX = left + 250f, durationMillis = 1000)
+                    }
+                }
+                waitForIdle()
+                return headerAtMargin()
+            }
+
+            // Three sections, so four steps has to come back to where it began — and nine of them
+            // exhausts any finite amount of laid-out content several times over.
+            val forwards = List(9) { step(forward = true) }
+            assertEquals(
+                List(9) { headers[(it + 1) % 3] },
+                forwards,
+                "the panorama stopped cycling forwards",
+            )
+            val backwards = List(9) { step(forward = false) }
+            assertEquals(
+                List(9) { headers[(9 - it - 1) % 3] },
+                backwards,
+                "the panorama stopped cycling backwards",
+            )
+        }
     }
 
     /**

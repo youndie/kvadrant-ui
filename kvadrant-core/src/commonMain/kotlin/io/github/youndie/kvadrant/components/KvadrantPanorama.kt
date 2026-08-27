@@ -104,13 +104,19 @@ public fun KvadrantPanorama(
     // copy is there precisely so that nothing has to be folded mid-gesture.
     LaunchedEffect(copyWidth) {
         if (copyWidth <= 0) return@LaunchedEffect
-        snapshotFlow { scroll.isScrollInProgress to scroll.value }.collect { (moving, value) ->
-            if (moving) return@collect
-            when {
-                value >= 2 * copyWidth -> scroll.scrollTo(value - copyWidth)
-                value < copyWidth -> scroll.scrollTo(value + copyWidth)
+        // `maxValue` is in the flow, and it has to be. `scrollTo` clamps, so the opening move into
+        // the middle copy is silently swallowed while the content is still being measured — and
+        // nothing then re-emits, because neither the value nor the gesture changed. The panorama
+        // opened part-way through a section and stayed there, one copy from the end it could not
+        // wrap past.
+        snapshotFlow { Triple(scroll.isScrollInProgress, scroll.value, scroll.maxValue) }
+            .collect { (moving, value, limit) ->
+                if (moving || limit < 2 * copyWidth) return@collect
+                // Modulo rather than one subtraction: a single step gets it home from wherever it
+                // is, including from a position left behind by an earlier, smaller measurement.
+                val home = copyWidth + (((value - copyWidth) % copyWidth) + copyWidth) % copyWidth
+                if (home != value) scroll.scrollTo(home)
             }
-        }
     }
 
     // A layer of period `period` advances by exactly one period per content copy, so it is where it
