@@ -1,7 +1,7 @@
 ---
 id: B-08
 title: "TiltIndication in production quality"
-status: wip
+status: done
 priority: P0
 size: L
 stage: stage-1-core
@@ -9,6 +9,42 @@ blocked_by: [B-01]
 ---
 
 # B-08 — TiltIndication in production quality
+
+**Done.** Tilt is the default `LocalIndication` under `KvadrantTheme`; the geometry is fixed by nine
+goldens rather than the five asked for — centre, four edges and four corners — because the edge
+presses turned out to be the only ones that can tell an inverted axis from a correct one, a corner
+press turning about both axes at once and hiding it. The camera is held in dp
+([B-25](B-25-tilt-camera-is-in-inches.md)) and the return timing is a pure function with its own
+test.
+
+**Frame budget, measured.** Pixel 6a, 60 Hz, the fitted metric scale, 25 full press-and-release
+cycles per run so that every 200 ms hold and 100 ms return plays out. Read from
+`dumpsys gfxinfo` after a `reset`.
+
+| surface | frames | janky | 50th | 99th |
+|---|---|---|---|---|
+| medium tile, 189×189 dp | 546 | 0 (0.00%) | 5 ms | 12 ms |
+| wide tile, 390×189 dp | 547 | 6 (1.10%) | 6 ms | 17 ms |
+| wide tile, 390×189 dp, **repeat** | 549 | 1 (0.18%) | 6 ms | 12 ms |
+| small tile, ~74 dp | 545 | 6 (1.10%) | — | 19 ms |
+
+**The repeat is the row that matters.** After the first two runs the obvious reading was that jank
+scales with the area being transformed — 0% on the medium tile, 1.1% on the wide one. Running the
+wide tile again gave 0.18%, and the small tile — the least area of the three — gave the same 1.10%
+as the wide one's worst run. **The spread between two identical runs is larger than the spread
+between the surfaces**, so the size hypothesis is not supported by this data and the honest statement
+is that it was not tested.
+
+What is not in doubt: the tilt draws far inside the budget. The GPU is idle — 518 of 549 frames at
+1 ms, 99th percentile 2 ms — and the CPU median is 5–6 ms against 16.7. The outliers are single
+frames at 20 and 24 ms, and the harness is a plausible source: it starts fifty `input` processes on
+the device per run, competing for the same CPU. That was not separated out, because there is no
+baseline available inside the app — press somewhere without a tilt and Compose draws no frames at
+all, so there is nothing to compare against.
+
+**Left open deliberately and tracked elsewhere:** the tilt does not follow a moving finger
+([B-27](B-27-tilt-does-not-follow-the-finger.md)), and whether a per-layer camera should be emulating
+the original's global one is [B-26](B-26-per-layer-camera-versus-a-global-one.md).
 
 **The tilt was inverted on one axis for as long as it existed.** Every golden had recorded it,
 every measurement of the geometry had confirmed it against the formula, and the formula was right —

@@ -1,13 +1,50 @@
 ---
 id: B-01
 title: "Can tilt be the default indication, or must the consumer apply it by hand?"
-status: wip
+status: done
 priority: P0
 size: L
 stage: stage-0-spikes
 ---
 
 # B-01 — Can tilt be the default indication, or must the consumer apply it by hand?
+
+**Done. The answer is yes**, and it is what kept `Modifier.kvadrantTilt()` out of every component
+signature in the library. `TiltIndication` is an `IndicationNodeFactory` provided as
+`LocalIndication` by `KvadrantTheme`, so the tilt arrives on every clickable surface without one
+call site mentioning it.
+
+The other three criteria are answered in [research §1.6](../research/research-architecture.md): the
+brief's 0.975 prediction was refuted (skiko uses `cameraDistance * 72`), `Press.pressPosition`
+arrives in the coordinate space the formula expects, and both are written up there rather than here.
+
+**Frame budget, measured.** Pixel 6a, 60 Hz, the fitted metric scale, 25 full press-and-release
+cycles per run so that every 200 ms hold and 100 ms return plays out. Read from
+`dumpsys gfxinfo` after a `reset`.
+
+| surface | frames | janky | 50th | 99th |
+|---|---|---|---|---|
+| medium tile, 189×189 dp | 546 | 0 (0.00%) | 5 ms | 12 ms |
+| wide tile, 390×189 dp | 547 | 6 (1.10%) | 6 ms | 17 ms |
+| wide tile, 390×189 dp, **repeat** | 549 | 1 (0.18%) | 6 ms | 12 ms |
+| small tile, ~74 dp | 545 | 6 (1.10%) | — | 19 ms |
+
+**The repeat is the row that matters.** After the first two runs the obvious reading was that jank
+scales with the area being transformed — 0% on the medium tile, 1.1% on the wide one. Running the
+wide tile again gave 0.18%, and the small tile — the least area of the three — gave the same 1.10%
+as the wide one's worst run. **The spread between two identical runs is larger than the spread
+between the surfaces**, so the size hypothesis is not supported by this data and the honest statement
+is that it was not tested.
+
+What is not in doubt: the tilt draws far inside the budget. The GPU is idle — 518 of 549 frames at
+1 ms, 99th percentile 2 ms — and the CPU median is 5–6 ms against 16.7. The outliers are single
+frames at 20 and 24 ms, and the harness is a plausible source: it starts fifty `input` processes on
+the device per run, competing for the same CPU. That was not separated out, because there is no
+baseline available inside the app — press somewhere without a tilt and Compose draws no frames at
+all, so there is nothing to compare against.
+
+The one thing being an indication costs is that the tilt cannot follow a moving finger, which the
+original did — [B-27](B-27-tilt-does-not-follow-the-finger.md), and it is a price worth paying.
 
 Tilt is the signature of Metro the way ripple is the signature of Material: the plane rotates
 towards the finger instead of a circle growing out of it. For it to be automatic — every clickable

@@ -302,6 +302,15 @@ project that a green check turned out to be measuring something adjacent to the 
 in Risk 1, an explicit `Modifier.kvadrantTilt()` on every surface, is not needed. This was the one
 finding that could have changed the shape of every component signature in the library.
 
+**And it is not expensive.** Measured on a Pixel 6a at 60 Hz, 25 full press-and-release cycles per
+run: the GPU is idle at 1 ms for 518 of 549 frames and the CPU median is 5–6 ms against a 16.7 ms
+budget. Jank ran between 0.00% and 1.10% — and *which* surface produced which figure is not a
+finding: the wide tile gave 1.10% and then 0.18% on an identical repeat, while the smallest tile in
+the set gave 1.10%. The spread between two runs of the same thing is wider than the spread between
+the things, so the tempting reading — that jank scales with the area being transformed — is
+unsupported rather than confirmed. Full table in
+[B-01](../backlog/B-01-spike-tilt-indication.md).
+
 **Consequence 2 — the camera is ours.** The original had a global camera over the whole screen whose
 distance Microsoft never published, so there is nothing to transcribe; `TiltIndication` takes
 `cameraDistance` as a parameter, defaults to Compose's own, and says so in KDoc.
