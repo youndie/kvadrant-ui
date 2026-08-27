@@ -1,7 +1,7 @@
 ---
 id: B-15
 title: "Motion: the easing catalogue and the turnstile transitions"
-status: wip
+status: done
 priority: P1
 size: M
 stage: stage-2-release
@@ -29,8 +29,18 @@ pixel on screen was 14 of 255. Whether the original faded on the same exponentia
 until it is, this is an undeclared deviation of exactly the kind [B-28](B-28-remastered-flag.md)
 exists to make legible.
 
-**Still open:** the turnstile does not play on page entry anywhere — the sample's Pivot does not use
-it, so the AC below is unmet and the component is still, in effect, unused code.
+**Both are called now, and giving them somewhere to be called from was the work.** The demo had no
+navigation at all, and a turnstile is a *page* transition — the phone slid between pivot items
+sideways and never turnstiled them, so there was nowhere for it to play. Tapping a tile now opens a
+detail page that enters and leaves on it, and the mail rows feather in on page entry.
+
+Two things that had to be right for either to be visible, and neither is obvious:
+
+- **Both sides of the turnstile are composed at once.** An exit that unmounts the instant its flag
+  flips never plays; that is the ordinary way a leaving animation is lost.
+- **The feather starts hidden and is shown from a `LaunchedEffect`.** A component whose `visible` is
+  already true at first composition has nothing to animate — state and target agree and the entrance
+  is skipped, in exactly the way that looks like the transition was never wired up.
 
 **Done:** `KvadrantEasing` — the primary bezier plus the two exponentials, which have no bezier
 equivalent and so are the formula — and `KvadrantTurnstile`: −80° in over 350 ms, +50° out over
@@ -82,7 +92,14 @@ exponential-in(15) the Windows Phone Toolkit uses — and the turnstile page tra
   transcription, and the risk is in the shared-axis geometry rather than in the timings.
 - Not covered: swivel, continuum and the Win8 entrance transition.
 
-- AC: the turnstile plays on page entry and exit in the sample on every target.
+- AC met on desktop and Android, which is every target that exists. The detail page enters on
+  `-80°` over 350 ms and leaves at `+50°` over 250 ms, and `TurnstileTest` holds the axis at the
+  left edge with the clock stopped.
+- **Still open, and it is the one finding this item produced:** the alpha runs on `tween`'s default
+  easing — Compose's fast-out-slow-in, not one of Metro's curves — while the angle runs on
+  exponential-out(6). Whether the original faded on the same exponential is unverified. Until it is,
+  that is an undeclared deviation of the kind [B-28](B-28-remastered-flag.md) exists to make
+  legible, and it is tracked there rather than left in a component nobody re-reads.
 - AC: the feather variant demonstrably uses one axis for the whole list, verified by a screenshot at
   mid-animation rather than by reading the code.
 - Anchors (to be created): `kvadrant-core/src/commonMain/kotlin/theme/KvadrantMotion.kt`

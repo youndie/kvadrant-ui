@@ -1,7 +1,7 @@
 ---
 id: B-16
 title: "Screenshot regression suite, and an honest statement of what it does not cover"
-status: wip
+status: done
 priority: P1
 size: M
 stage: stage-2-release
@@ -26,11 +26,17 @@ Two things that came out of building it, both worth more than the fixtures:
   it, so the image would record a macOS font and differ on a Linux runner. These goldens are
   portable only because every glyph comes from a bundled file.
 
-**Still open:** the Material comparison row, which needs [B-14](B-14-material-adapter.md), and the
-Win8 baseline-grid overlay, which needs a Win8 profile to exist at all
-([B-22](B-22-win8-branch.md)). Android is **not** part of this item — see
-[B-29](B-29-android-screenshot-coverage.md), which exists because viddik turns out to be JVM-only —
-and where a second screenshot tool has been ruled out, so the suite stays one suite.
+**The Material comparison row exists**, and it is in `kvadrant-material-adapter` rather than here:
+`adapter_pairs_dark`/`adapter_pairs_light` put five Kvadrant controls above their Material
+counterparts and the three wrapped ones, inside `check`, with its own non-vacuity guard. Keeping it
+beside the adapter rather than in the core is not tidiness — the core declares no Material
+dependency and `noMaterialInTheCore` fails if it ever does.
+
+**Closed with one row named as blocked rather than pending:** the Win8 baseline-grid overlay needs a
+Win8 profile to exist at all ([B-22](B-22-win8-branch.md)), and there is nothing to overlay a grid
+on. Android is **not** part of this item — [B-29](B-29-android-screenshot-coverage.md), which exists
+because viddik turns out to be JVM-only, and where a second screenshot tool has been ruled out, so
+the suite stays one suite.
 
 **viddik** on the desktop target, wired into `check` and already running there
 ([B-23](B-23-viddik-pins-the-compose-line.md)). What this item adds is the matrix, once there are

@@ -1,6 +1,7 @@
 package io.github.youndie.kvadrant.sample
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +41,8 @@ import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.KvadrantTileBadge
 import io.github.youndie.kvadrant.components.KvadrantTileGrid
 import io.github.youndie.kvadrant.components.KvadrantToggleSwitch
+import io.github.youndie.kvadrant.components.KvadrantTurnstile
+import io.github.youndie.kvadrant.components.KvadrantTurnstileFeather
 import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
@@ -79,6 +83,10 @@ public fun KvadrantSampleApp() {
     var accent by remember { mutableStateOf(KvadrantAccents.Cyan) }
     var menuOpen by remember { mutableStateOf(false) }
     var scale by remember { mutableStateOf<Float?>(null) }
+    // The demo's one piece of navigation, and it exists so that the turnstile has somewhere to
+    // play: it is a *page* transition, not something a Pivot does between its own items — the phone
+    // slid those sideways. Without a page to enter, `KvadrantTurnstile` was code nobody called.
+    var openTile by remember { mutableStateOf<String?>(null) }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base
@@ -115,7 +123,7 @@ public fun KvadrantSampleApp() {
                     ) { page ->
                         when (page) {
                             0 -> {
-                                StartPage(cyrillic)
+                                StartPage(cyrillic, onOpen = { openTile = it })
                             }
 
                             1 -> {
@@ -159,6 +167,44 @@ public fun KvadrantSampleApp() {
                                 }
                             }
                     }
+
+                    // The page, over everything, entering and leaving on the turnstile. Both are
+                    // composed at once on purpose: an exit that unmounts the moment the flag flips
+                    // never plays, and that is the ordinary way a leaving animation is lost.
+                    KvadrantTurnstile(visible = openTile == null) {}
+                    KvadrantTurnstile(
+                        visible = openTile != null,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        val name = openTile
+                        if (name != null) {
+                            Column(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(KvadrantTheme.colors.background)
+                                    .clickable { openTile = null }
+                                    .padding(KvadrantTheme.metrics.margin),
+                            ) {
+                                KvadrantText(
+                                    "KVADRANT UI",
+                                    style = KvadrantTheme.typography.pageTitle,
+                                )
+                                KvadrantText(
+                                    name,
+                                    style = KvadrantTheme.typography.pivotHeader,
+                                    cyrillic = cyrillic,
+                                )
+                                KvadrantText(
+                                    "нажмите, чтобы вернуться",
+                                    style =
+                                        KvadrantTheme.typography.normal.copy(
+                                            color = KvadrantTheme.colors.subtle,
+                                        ),
+                                    cyrillic = cyrillic,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -166,7 +212,10 @@ public fun KvadrantSampleApp() {
 }
 
 @Composable
-private fun StartPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
+private fun StartPage(
+    cyrillic: androidx.compose.ui.text.font.FontFamily,
+    onOpen: (String) -> Unit,
+) {
     val labels = mapOf(0 to "почта", 3 to "календарь", 6 to "фото")
     val colours =
         listOf(
@@ -179,7 +228,7 @@ private fun StartPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
             KvadrantAccents.Crimson,
         )
     KvadrantTileGrid(Layout) { index, size ->
-        KvadrantTile(size, color = colours[index]) {
+        KvadrantTile(size, color = colours[index], onClick = { onOpen(labels[index] ?: "плитка") }) {
             if (index == 0) KvadrantTileBadge(7)
             labels[index]?.let {
                 KvadrantText(
@@ -195,23 +244,32 @@ private fun StartPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
 
 @Composable
 private fun MailPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
+    var rowsShown by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { rowsShown = true }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf(
             "Анна Петрова" to "встреча в четверг",
             "build server" to "nightly is green",
             "Дмитрий" to "документы отправил",
-        ).forEach { (who, what) ->
-            // The demo's choice, not the library's and not Microsoft's: the phone's Mail set its
-            // sender line above the page default in its own data template, and no dictionary
-            // records what it used. A demo imitating Mail has to make that call somewhere visible,
-            // which is here rather than inside `KvadrantListItem`.
-            KvadrantListItem(
-                who,
-                subtitle = what,
-                onClick = {},
-                cyrillic = cyrillic,
-                titleStyle = KvadrantTheme.typography.mediumLarge,
-            )
+        ).forEachIndexed { index, (who, what) ->
+            // The feather, which is the turnstile for a list: one axis down the screen and the rows
+            // 40 ms apart. It starts hidden and is shown from a LaunchedEffect because a component
+            // whose `visible` is already true at first composition has nothing to animate — the
+            // state and the target agree, and the entrance is skipped in exactly the way that makes
+            // a transition look like it was never wired up.
+            KvadrantTurnstileFeather(visible = rowsShown, index = index) {
+                // The demo's choice, not the library's and not Microsoft's: the phone's Mail set its
+                // sender line above the page default in its own data template, and no dictionary
+                // records what it used. A demo imitating Mail has to make that call somewhere visible,
+                // which is here rather than inside `KvadrantListItem`.
+                KvadrantListItem(
+                    who,
+                    subtitle = what,
+                    onClick = {},
+                    cyrillic = cyrillic,
+                    titleStyle = KvadrantTheme.typography.mediumLarge,
+                )
+            }
         }
         KvadrantProgressDots(Modifier.padding(top = 12.dp))
     }

@@ -33,6 +33,12 @@ modern application in a Metro skin want opposite defaults, and both are legitima
 - The rejected alternative is a second artefact — `kvadrant-remastered` — with its own components.
   It doubles the surface to keep in step and gives a caller an all-or-nothing choice, when the
   realistic want is canon everywhere and one modern behaviour in the one place it matters.
+- **Known deviations to gate, so far.** Each was found by measuring rather than by review, and each
+  is currently on with no way to turn it off: the 48 dp minimum touch target
+  ([B-11](B-11-accessibility-policy.md)); the accessible palette; and the turnstile's alpha, which
+  runs on `tween`'s default fast-out-slow-in while its angle runs on Metro's exponential-out(6)
+  ([B-15](B-15-motion-easing-and-turnstile.md)) — that one may turn out to be canon once somebody
+  reads what the original faded on, which is the point of listing it rather than assuming.
 - **Deciding which existing behaviour is already a deviation is part of this item**, and it is the
   larger part. [B-11](B-11-accessibility-policy.md)'s 48 dp touch target is one; the accessible
   palette is arguably another; anything KDoc currently marks "this project's" is a candidate.
