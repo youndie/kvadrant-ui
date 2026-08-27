@@ -22,10 +22,14 @@ agp = "9.3.2"
 android-compileSdk = "37"
 android-minSdk = "24"
 activityCompose = "1.11.0"
+# The one place a Material version is allowed to be written down (research §1.2, consequence 4).
+# Which of the two candidate graphs this ends up on is decided by rendering, not by reading POMs.
+composeMaterial3 = "1.12.0-alpha03"
 
 [libraries]
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

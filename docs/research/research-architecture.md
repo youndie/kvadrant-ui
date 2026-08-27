@@ -126,6 +126,34 @@ This is settled by **rendering, not by resolving and not by reading POMs**, and 
 task of the skeleton — [B-04](../backlog/B-04-repository-skeleton.md). The acceptance is a Material
 `OutlinedTextField` drawn on screen under the adapter, on each candidate graph.
 
+**Run, and it settled nothing.** Both graphs draw the field, and both compile
+`LocalRippleConfiguration provides null` — the one API the whole adapter is built on.
+`GraphRendersTest` captures the pixels rather than trusting the absence of an exception.
+
+| | resolves | compiles | **draws** | ripple switch |
+|---|---|---|---|---|
+| (a) `material3:1.9.0` → Jetpack M3 1.4.0 | yes | yes | **yes** | yes |
+| (b) `material3:1.12.0-alpha03` → Jetpack M3 1.5.0-alpha22 | yes | yes | **yes** | yes |
+
+So the failure this check was designed around — `AbstractMethodError` on the first screen with a
+text field — **does not reproduce here**, and §1.2 was right to call it a strong prior rather than a
+fact about this project. Worth keeping the check anyway: it cost an afternoon and it retires the
+question for one component, which is one more than reading POMs retires.
+
+**The decision therefore turns on which risk is cheaper to be wrong about, and that inverts the
+brief.** Option (a) is stable Material on a **mixed graph**: `material3:1.9.0` brings
+`runtime:1.9.0`, conflict resolution lifts it to 1.12.0, and its classes run against a runtime they
+were not compiled against. That fails at *runtime*, in whichever component nobody happened to
+render, in a consumer's application. Option (b) is a coherent graph on an **alpha API**: it fails at
+*compile time*, in this build, on the day the alpha renames something, and it is fixed by editing
+one line of a version catalog. A loud failure in our build beats a quiet one in someone else's, and
+(b) is also the pair CMP 1.12.0 ships itself with — the graph most likely to have been exercised by
+somebody other than us.
+
+**Decision: the adapter takes (b).** Consequence 3 below reads the other way round and is
+superseded: if the alpha becomes untenable, `-next` is where the stable-Material variant goes, not
+the other way about.
+
 **Consequence 3.** The brief's "two adapter branches" idea stops being speculative overhead and
 becomes the cheap way out: `kvadrant-material-adapter` takes option (a) and
 `kvadrant-material-adapter-next` takes option (b), which is one build-file difference rather than a

@@ -32,7 +32,14 @@ because there is no `androidMain` source at all — the Android target compiles 
 nothing else — but the first `actual` written there will be outside the dump, and this paragraph is
 what should stop that going unnoticed.
 
-The Material criteria below are [B-14](B-14-material-adapter.md)'s and should be read there.
+**The (a)/(b) question is answered**, by rendering, and the answer inverts the brief: both graphs
+draw and both carry the ripple switch, so the choice fell to which risk is cheaper to be wrong
+about. A mixed graph fails at runtime in somebody else's application; an alpha API fails at compile
+time in ours. The adapter takes **(b)** — `material3:1.12.0-alpha03`. Full working in
+[research §1.2](../research/research-architecture.md).
+
+The remaining Material criteria below are [B-14](B-14-material-adapter.md)'s and should be read
+there.
 
 Seven Gradle modules with strictly one-way dependencies — `kvadrant-resources ← kvadrant-core ←
 kvadrant-material-adapter ← sample-gallery`, and `kvadrant-icons ← kvadrant-core` — convention

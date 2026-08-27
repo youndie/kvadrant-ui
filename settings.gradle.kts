@@ -42,5 +42,6 @@ dependencyResolutionManagement {
 rootProject.name = "kvadrant-ui"
 
 include(":kvadrant-core")
+include(":kvadrant-material-adapter")
 include(":sample")
 include(":sample-android")

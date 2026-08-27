@@ -10,6 +10,25 @@ blocked_by: [B-04]
 
 # B-14 — KvadrantMaterialAdapter and the ripple shim
 
+**In progress.** `kvadrant-material-adapter` exists on option (b) — the graph question is settled in
+[research §1.2](../research/research-architecture.md) and the answer inverted the brief. The adapter
+raises a `MaterialTheme` from the surrounding `KvadrantTheme`, and four things came out of building
+it that reading could not have given:
+
+- **`Shapes` has eight slots in this version**, not the six this item says: `largeIncreased`,
+  `extraLargeIncreased` and `extraExtraLarge` beyond the familiar five. Its five-argument constructor
+  still exists and still compiles, leaving three slots rounded, silently.
+- **`RectangleShape` cannot go in a `Shapes`** — it takes `CornerBasedShape`, so "no corner" is
+  spelled `RoundedCornerShape(0.dp)`.
+- **A Material `Button` cannot be squared by theming at all.** `ButtonDefaults.shape` is
+  `RoundedCornerShape(50%)` from a token and never reads `MaterialTheme.shapes`; `CardDefaults.shape`
+  in the same composition *is* the theme's zero corner. So the adapter works and the button is
+  outside its reach — the "shapes forced round" cause of research §1.3, demonstrated on the most
+  ordinary component there is, and pinned by a test so that a Material version which starts
+  honouring the theme is noticed rather than discovered.
+- The AC below asks for a **flat, rectangular** Material `DatePicker`. Given the button, that has to
+  be measured rather than assumed, and it has not been yet.
+
 A separate artefact that reads the current `KvadrantTheme` and raises a `MaterialTheme` derived from
 it, so a consumer's existing Material widgets stop looking foreign: a `ColorScheme` with
 `surfaceTint = Color.Transparent` (this is what kills tonal surfaces), a `Typography` from the WP
