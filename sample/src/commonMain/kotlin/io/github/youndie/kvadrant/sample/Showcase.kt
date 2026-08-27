@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantButton
 import io.github.youndie.kvadrant.components.KvadrantContextMenuHost
@@ -77,6 +78,12 @@ private fun ContactsShowcase(
     // cannot work this out for itself: it wraps the page, and the row is somewhere inside it.
     var anchorTop by remember { mutableStateOf(0.dp) }
     var anchorHeight by remember { mutableStateOf(0.dp) }
+    // A plain map, deliberately not state. Every row reports its position after every layout pass,
+    // and three rows writing one piece of *state* is a hang: each write differs from the last, each
+    // differing write schedules another layout, and the three chase each other forever. Writing to
+    // an ordinary map invalidates nothing, and the value is only lifted into state on a click,
+    // which is the one moment it is needed.
+    val rowBounds = remember { mutableMapOf<String, Pair<Dp, Dp>>() }
     val density = LocalDensity.current
     val groups =
         listOf(
@@ -120,16 +127,21 @@ private fun ContactsShowcase(
                         KvadrantListItem(
                             who,
                             subtitle = "нажмите для контекстного меню",
-                            onClick = { menuFor = who },
+                            onClick = {
+                                rowBounds[who]?.let { (top, height) ->
+                                    anchorTop = top
+                                    anchorHeight = height
+                                }
+                                menuFor = who
+                            },
                             cyrillic = cyrillic,
                             titleStyle = KvadrantTheme.typography.mediumLarge,
                             modifier =
                                 Modifier.onGloballyPositioned { coordinates ->
-                                    if (menuFor == null) {
-                                        with(density) {
-                                            anchorTop = coordinates.positionInRoot().y.toDp()
-                                            anchorHeight = coordinates.size.height.toDp()
-                                        }
+                                    with(density) {
+                                        rowBounds[who] =
+                                            coordinates.positionInRoot().y.toDp() to
+                                            coordinates.size.height.toDp()
                                     }
                                 },
                         )

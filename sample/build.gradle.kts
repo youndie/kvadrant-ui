@@ -39,6 +39,13 @@ kotlin {
             // Android, inert on the desktop, so the shared screen needs no per-platform branch.
             implementation("org.jetbrains.compose.ui:ui-backhandler:${libs.versions.compose.multiplatform.get()}")
         }
+        val desktopTest by getting
+        desktopTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(compose.desktop.currentOs)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
