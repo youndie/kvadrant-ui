@@ -75,7 +75,10 @@ public fun KvadrantContextMenuHost(
                             .fillMaxWidth()
                             .clickable { onItemClick(index) }
                             .padding(horizontal = 12.dp, vertical = 12.dp),
-                        KvadrantTheme.typography.normal,
+                        // `PhoneFontSizeLarge`, 32 px: `Style TargetType="controls:MenuItem"`
+                        // in the toolkit's `Generic.xaml` sets it explicitly, overriding the
+                        // page's Normal. A menu item is nearly twice the body size.
+                        KvadrantTheme.typography.large,
                         cyrillic,
                     )
                 }

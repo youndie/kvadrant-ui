@@ -207,7 +207,7 @@ public fun KvadrantTextBox(
         if (value.isEmpty() && !focused && placeholder.isNotEmpty()) {
             KvadrantText(
                 placeholder,
-                style = KvadrantTheme.typography.normal.copy(color = colors.subtle),
+                style = KvadrantTheme.typography.mediumLarge.copy(color = colors.subtle),
                 cyrillic = cyrillic,
             )
         }
@@ -215,8 +215,12 @@ public fun KvadrantTextBox(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth().onFocusChanged { focused = it.isFocused },
+            // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:PhoneTextBox"`
+            // in the toolkit's `Generic.xaml`. Typing into a field happens at a size above the
+            // page's body text, which is a thing every screenshot of the phone shows and no
+            // amount of looking at our own output would have suggested.
             textStyle =
-                KvadrantTheme.typography.normal.copy(
+                KvadrantTheme.typography.mediumLarge.copy(
                     color = if (focused) colors.contrastForeground else colors.foreground,
                 ),
             cursorBrush = SolidColor(if (focused) colors.contrastForeground else colors.foreground),

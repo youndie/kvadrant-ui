@@ -75,7 +75,9 @@ public fun KvadrantListPicker(
         ) {
             KvadrantText(
                 items.getOrElse(selectedIndex) { "" },
-                style = KvadrantTheme.typography.normal,
+                // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:ListPicker"`,
+                // toolkit `Generic.xaml`.
+                style = KvadrantTheme.typography.mediumLarge,
                 cyrillic = cyrillic,
             )
         }
@@ -98,7 +100,7 @@ public fun KvadrantListPicker(
                             .clickable { onSelect(index) }
                             .background(if (index == selectedIndex) colors.accent else Color.Transparent)
                             .padding(horizontal = 9.dp, vertical = 9.dp),
-                        KvadrantTheme.typography.normal.copy(
+                        KvadrantTheme.typography.mediumLarge.copy(
                             color = if (index == selectedIndex) colors.onAccent else colors.foreground,
                         ),
                         cyrillic,

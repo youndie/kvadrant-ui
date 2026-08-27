@@ -61,7 +61,11 @@ public fun KvadrantAppBar(
                             .fillMaxWidth()
                             .clickable { onMenuItemClick(index) }
                             .padding(vertical = 9.dp),
-                        KvadrantTheme.typography.normal,
+                        // `PhoneFontSizeLarge`, and the reference is the toolkit's `MenuItem`
+                        // rather than the native ApplicationBar: the native bar is drawn by
+                        // the shell, not by a template, so its metrics are not published.
+                        // The nearest thing Microsoft did publish is a menu, and it is Large.
+                        KvadrantTheme.typography.large,
                         cyrillic,
                     )
                 }

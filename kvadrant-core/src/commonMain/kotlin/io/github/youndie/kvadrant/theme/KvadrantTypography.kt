@@ -46,6 +46,15 @@ public data class KvadrantTypography(
     val normal: TextStyle,
     val subtle: TextStyle,
     val title: TextStyle,
+    /**
+     * `PhoneFontSizeMediumLarge`, 25.333 px.
+     *
+     * The slot the ramp had but the theme did not, which is why four controls that Microsoft sized
+     * *up* from the page default were all set in [normal]: a text box, a list picker and an
+     * autocomplete box are `PhoneFontSizeMediumLarge` in the toolkit's `Generic.xaml`, and a
+     * control with nowhere to point at ends up pointing at the default.
+     */
+    val mediumLarge: TextStyle,
     val large: TextStyle,
     val extraLarge: TextStyle,
     val pageTitle: TextStyle,
@@ -78,6 +87,12 @@ public data class KvadrantTypography(
                         fontFamily = family,
                         fontSize = KvadrantFontSizes.Medium,
                         fontWeight = KvadrantWeights.SemiBold,
+                    ),
+                mediumLarge =
+                    TextStyle(
+                        fontFamily = family,
+                        fontSize = KvadrantFontSizes.MediumLarge,
+                        fontWeight = KvadrantWeights.Normal,
                     ),
                 large =
                     TextStyle(

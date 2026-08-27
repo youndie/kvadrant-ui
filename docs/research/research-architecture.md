@@ -407,6 +407,44 @@ inherits the reasoning's blind spot, and only breaking the code in *both* direct
 the two the assertion could actually see. This is [the recurring one](#0-provenance) in this
 project: a green check usually measures something adjacent to the thing in doubt.
 
+### 1.6b The ramp was right and four controls pointed at the wrong rung
+
+Raised from the running demo: *"текстовки капец мелкие, а раньше на Windows Phone они казались
+крупней — кривой перевод dp→px или так было?"* Neither, as it turned out.
+
+**The conversion is right, to within a percent.** WVGA is 480×800 physical pixels on a ~4.3 in
+phone, so a Metro pixel *is* a physical pixel there: 217 ppi. The canonical ×0.75 turns
+`PhoneFontSizeNormal` — 20 px — into 15 sp, which on a Pixel 6a at 431 ppi is 2.32 mm against the
+phone's 2.34 mm. Every rung of the ramp lands at 99% of the original's physical size.
+
+**Four controls were set at the page default where Microsoft set them above it.** The toolkit's
+`Generic.xaml` overrides `FontSize` in exactly six styles, and reading them off is the whole finding:
+
+| Style | Microsoft | Metro px | ours before |
+|---|---|---|---|
+| `controls:MenuItem` | `PhoneFontSizeLarge` | 32 → 24 sp | 15 sp |
+| `controls:ToggleSwitch` | `PhoneFontSizeLarge` | 32 → 24 sp | — (no label in our API) |
+| `controls:ListPicker` | `PhoneFontSizeMediumLarge` | 25.333 → 19 sp | 15 sp |
+| `controls:PhoneTextBox` | `PhoneFontSizeMediumLarge` | 25.333 → 19 sp | 15 sp |
+| `controls:AutoCompleteBox` | `PhoneFontSizeMediumLarge` | 25.333 → 19 sp | not built |
+| `controls:CustomMessageBox` | `PhoneFontSizeNormal` | 20 → 15 sp | 15 sp ✓ |
+
+And `local:PhoneApplicationFrame` in the SDK's own dictionary sets `PhoneFontSizeNormal` for the
+page, which is why everything that does *not* override is correctly 15 sp — a list item, a button,
+a page body. The defect was never the default; it was the four overrides nobody transcribed.
+
+**Consequence — a missing rung hides a class of defect.** `KvadrantTypography` had no
+`mediumLarge` slot at all: the ramp constant existed, the style did not, and a control with nowhere
+to point at points at the default. Two of the four were mis-sized for that reason rather than by
+choice, which is the kind of thing a code review cannot see and a side-by-side with the phone can.
+
+**The other half of the question is not a defect and is still open.** `scaledToWidth` grows every
+length in the metric set with the surface and deliberately leaves the type ramp alone (D5), so on a
+411 dp phone the tiles are 1.2× their Metro size and the text is 1.0×. Relative to the tiles, the
+text really is smaller than on the phone — by exactly the metric scale. Whether that trade is right
+is a judgement, not an error, and it is where a `remastered` setting would live
+([B-28](../backlog/B-28-remastered-flag.md)).
+
 ### 1.7 Selawik contains no Cyrillic — re-verified
 
 | Fact | Where verified |
