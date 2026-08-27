@@ -109,6 +109,7 @@ public final class io/github/youndie/kvadrant/components/KvadrantPivotKt {
 
 public final class io/github/youndie/kvadrant/components/KvadrantProgressKt {
 	public static final fun KvadrantProgressDots-iJQMabo (Landroidx/compose/ui/Modifier;JLandroidx/compose/runtime/Composer;II)V
+	public static final fun dotOpacity ()Landroidx/compose/animation/core/KeyframesSpec;
 	public static final fun dotPath ()Landroidx/compose/animation/core/KeyframesSpec;
 }
 
@@ -345,6 +346,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantEasing {
 	public static final field $stable I
 	public static final field INSTANCE Lio/github/youndie/kvadrant/theme/KvadrantEasing;
 	public final fun getExponential1 ()Landroidx/compose/animation/core/Easing;
+	public final fun getExponentialIn1 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialIn15 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialIn6 ()Landroidx/compose/animation/core/Easing;
 	public final fun getExponentialInOut2 ()Landroidx/compose/animation/core/Easing;

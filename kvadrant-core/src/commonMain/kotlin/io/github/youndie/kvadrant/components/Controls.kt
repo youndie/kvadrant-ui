@@ -365,10 +365,16 @@ public fun KvadrantListItem(
 }
 
 /**
- * The determinate bar: a straight line, part of it accent, the rest the inactive token.
+ * The determinate half of the same `ProgressBar` template: two 4 px rectangles, one over the other.
  *
- * Four pixels tall and nothing else — no rounded cap, no gap before the head, no stop indicator.
- * Material grew all three; Metro had none of them.
+ * **The track is the accent at a tenth, not a grey.** `ProgressBarTrack` is
+ * `Fill="{TemplateBinding Background}"` with `Opacity="0.1"`, and the style sets *both* `Background`
+ * and `Foreground` to `PhoneAccentBrush` — so an amber theme gets an amber ghost behind an amber
+ * bar, and this used [KvadrantColors.inactive], a neutral, which reads as a Material track wearing
+ * Metro's colours.
+ *
+ * `Padding="{StaticResource PhoneHorizontalMargin}"` — 12,0 — is the template's, and applies to the
+ * determinate root as much as to the dots.
  */
 @Composable
 public fun KvadrantProgressBar(
@@ -376,7 +382,13 @@ public fun KvadrantProgressBar(
     modifier: Modifier = Modifier,
 ) {
     val colors = KvadrantTheme.colors
-    Box(modifier.fillMaxWidth().height(3.dp).background(colors.inactive)) {
+    Box(
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 9.dp)
+            .height(3.dp)
+            .background(colors.accent.copy(alpha = TRACK_ALPHA)),
+    ) {
         Box(
             Modifier
                 .fillMaxWidth(progress.coerceIn(0f, 1f))
@@ -385,6 +397,9 @@ public fun KvadrantProgressBar(
         )
     }
 }
+
+/** `Opacity="0.1"` on `ProgressBarTrack`. */
+private const val TRACK_ALPHA = 0.1f
 
 /**
  * A password field that shows the character you just typed, then hides it.

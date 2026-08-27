@@ -21,6 +21,14 @@ Five have been read: `CheckBox`, `RadioButton`, `ProgressBar`, `TextBox` under �
 over them are reconstructions — `KvadrantSlider`, `KvadrantPasswordBox`, `KvadrantListItem`, the
 scroll bar, the hyperlink.
 
+**"Read" is not a property of a control, it is a property of a paragraph.** `ProgressBar` was on
+the read list and its indeterminate half was wrong in four ways: both exponentials had the wrong
+exponent, the last one had the wrong *direction*, the template's `Padding` was missing, and the
+per-dot `Opacity` storyboard — two discrete keyframes that switch a dot off the moment it lands —
+had not been implemented at all, so five dots stood against the right-hand edge for over a second
+of every 4.4. The determinate half was wrong too: its track is the accent at a tenth, not a neutral.
+Whoever ticks a control off this list should say which *states* were transcribed, not which control.
+
 **The point is not that the reconstructions are wrong.** It is that nobody knows, and finding out is
 a text search in a file already on disk. The button was assumed right for the same reason all of
 these are — the shape is simple — and it was wrong about its type ramp, its padding, its hit area

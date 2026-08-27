@@ -2,6 +2,7 @@ package io.github.youndie.kvadrant.theme
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
+import kotlin.math.E
 import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.sin
@@ -27,6 +28,16 @@ public object KvadrantEasing {
 
     /** `exponentialIn(15)`: the snap of a ToggleSwitch, and Swivel's forward-out. */
     public val ExponentialIn15: Easing = Easing { t -> exp(15f * (t - 1f)) }
+
+    /**
+     * `ExponentialEase { EasingMode = EaseIn, Exponent = 1 }`: the last third of a progress dot.
+     *
+     * Written in Silverlight's own normalised form, `(e^t − 1) / (e − 1)`, rather than in the
+     * `exp(n·(t−1))` shorthand the sixes above use. At exponent 6 that shorthand starts a quarter of
+     * a percent along and nobody can see it; at exponent 1 it starts **37 %** along, so a dot would
+     * jump a third of the way down the bar the moment it entered its last leg.
+     */
+    public val ExponentialIn1: Easing = Easing { t -> (exp(t) - 1f) / (E.toFloat() - 1f) }
 
     /** `exponential(1)`: the rotate transition's transform, gentler than anything else here. */
     public val Exponential1: Easing = Easing { t -> (1f - exp(-1f * t)) / (1f - exp(-1f)) }
