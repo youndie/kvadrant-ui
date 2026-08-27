@@ -57,6 +57,15 @@ public data class KvadrantMetrics(
     val buttonPaddingHorizontal: Dp = 7.5.dp,
     val buttonPaddingTop: Dp = 2.25.dp,
     val buttonPaddingBottom: Dp = 3.75.dp,
+    /**
+     * The progress bar's one dimension: a dot is `Width="4" Height="4"` and both rectangles of the
+     * determinate track are `Height="4"`, so it is a single number in three places.
+     *
+     * Here rather than beside the component because it has to move with [scaled]. Left as a
+     * constant it stayed at 3 dp while every other measurement on the page grew, and a scaled-up
+     * theme got a row of specks — which is what it looked like.
+     */
+    val progressThickness: Dp = 3.dp,
     /** Tile sizes: 99 / 210 / 432×210 px, gap 12 px. */
     val tileSmall: Dp = 74.25.dp,
     val tileMedium: Dp = 157.5.dp,
@@ -111,6 +120,7 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         buttonPaddingHorizontal = buttonPaddingHorizontal * factor,
         buttonPaddingTop = buttonPaddingTop * factor,
         buttonPaddingBottom = buttonPaddingBottom * factor,
+        progressThickness = progressThickness * factor,
         tileSmall = tileSmall * factor,
         tileMedium = tileMedium * factor,
         tileWide = tileWide * factor,

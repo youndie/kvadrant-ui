@@ -382,17 +382,18 @@ public fun KvadrantProgressBar(
     modifier: Modifier = Modifier,
 ) {
     val colors = KvadrantTheme.colors
+    val metrics = KvadrantTheme.metrics
     Box(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 9.dp)
-            .height(3.dp)
+            .padding(horizontal = metrics.margin)
+            .height(metrics.progressThickness)
             .background(colors.accent.copy(alpha = TRACK_ALPHA)),
     ) {
         Box(
             Modifier
                 .fillMaxWidth(progress.coerceIn(0f, 1f))
-                .height(3.dp)
+                .height(metrics.progressThickness)
                 .background(colors.accent),
         )
     }

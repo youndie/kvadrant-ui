@@ -65,8 +65,15 @@ public fun KvadrantProgressDots(
 
     // `Padding="{StaticResource PhoneHorizontalMargin}"` — 12,0 — on the template, carried by the
     // indeterminate root's own margin. A dot's travel is the width inside it, not the whole bar.
-    Canvas(modifier.fillMaxWidth().height(DOT).padding(horizontal = 9.dp)) {
-        val dot = DOT.toPx()
+    // Both numbers come out of the metric set so that a theme scaled up scales them too.
+    val metrics = KvadrantTheme.metrics
+    Canvas(
+        modifier
+            .fillMaxWidth()
+            .height(metrics.progressThickness)
+            .padding(horizontal = metrics.margin),
+    ) {
+        val dot = metrics.progressThickness.toPx()
         dots.forEach { (position, alpha) ->
             drawRect(
                 color.copy(alpha = color.alpha * alpha.value),
@@ -112,7 +119,6 @@ public fun dotOpacity(): KeyframesSpec<Float> =
         0f at CYCLE_MILLIS
     }
 
-private val DOT = 3.dp // 4 px
 private const val DOT_COUNT = 5
 private const val CYCLE_MILLIS = 4400
 
