@@ -5,7 +5,7 @@ status: open
 priority: P0
 size: S
 stage: stage-1-core
-blocked_by: [B-24]
+blocked_by: []
 ---
 
 # B-25 — The tilt camera is measured in inches, and the backends disagree about it
@@ -28,12 +28,22 @@ right on three targets and wrong on the fourth.
 - The rejected alternative is picking a per-platform constant that makes the two look similar.
   It would work and it would be a magic number in two places that nobody can re-derive; the
   conversion is documented arithmetic, so do the arithmetic.
-- **Blocked by [B-24](B-24-add-the-android-target-next.md), and blocked in fact rather than by
-  preference:** the acceptance is that the two renderers agree, which cannot be seen with one of
-  them missing. The code can be written before that; it cannot be believed.
+- **Unblocked, and half of it is now measured rather than reasoned.** B-24 landed and the demo runs
+  on a Pixel 6a at 420 dpi. The same tile, pressed dead centre — pure depression, no rotation —
+  draws **413 px at rest and 381 px pressed, a ratio of 0.9225**, against the desktop's 0.9685.
+  `depth / (depth + depression)` with the hard-coded 576 px depth and a depression of
+  `18.75 dp × 2.625 = 49.2 px` predicts **0.9213**. The measurement lands within a pixel of edge
+  antialiasing of the arithmetic, which means the mechanism is not in doubt: the depression is
+  converted to pixels and the depth is not, so **the deeper the screen's density, the deeper a press
+  sinks** — a phone-shaped bug that no desktop test can see.
+  The rotation half of this item is still unmeasured: what the six-times figure predicts is a
+  flatter *perspective*, and a centre press has none.
 
 - AC: a press at the same point on the same tile produces the same rendered geometry on desktop and
-  on Android, compared as images rather than as reasoning.
+  on Android, compared as images rather than as reasoning. The depression side of that comparison
+  exists and currently reads 0.9225 against 0.9685; the fix is what makes those two the same number.
+- AC: the same measurement is repeated at a second density, because one device confirms an
+  arithmetic prediction and two confirm that the arithmetic is the whole story.
 - AC: `depressionScale()` no longer contains the number 72.
 - AC: the KDoc on `cameraDistance` says what unit the parameter is in, because the platform API's
   own documentation says "pixels" and is wrong.

@@ -320,6 +320,14 @@ the same tile tilts about six times flatter on Android than on the desktop. And 
 in `TiltIndication.kt` hard-codes the `× 72`, which makes the sinking it computes correct on three
 targets and wrong on the fourth.
 
+**Measured, once the second renderer existed.** On a Pixel 6a at 420 dpi the same tile pressed dead
+centre draws 413 px at rest and 381 px pressed — **0.9225**, against the desktop's 0.9685. The
+arithmetic above predicts 0.9213 for that density (`576 / (576 + 18.75 × 2.625)`), so the
+measurement and the reading agree to within edge antialiasing. The consequence is sharper than
+"wrong on the fourth target": the depression is converted to pixels and the depth is not, so **a
+press sinks deeper the denser the screen** — the defect is a function of the device, and every
+desktop test in this repository is at density 1 where it cannot appear.
+
 This is [B-25](../backlog/B-25-tilt-camera-is-in-inches.md), and it was not what
 [B-01](../backlog/B-01-spike-tilt-indication.md) expected to leave behind — it expected a
 frame-budget measurement. It is also the argument for the D14 amendment above: the defect was found

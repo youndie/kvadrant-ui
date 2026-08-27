@@ -2,11 +2,17 @@ package io.github.youndie.kvadrant.sample
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
@@ -84,10 +91,15 @@ public fun KvadrantSampleApp(initialScale: Float) {
     ) {
         // A Metro page always paints PhoneBackgroundBrush. Nothing below does it — a Pivot is a
         // control, not a page — so the root has to, or the window shows through white.
+        // The background is painted edge to edge and the content is inset, in that order. Painting
+        // only the safe area leaves the status bar showing the platform's own colour, and insetting
+        // nothing puts the Pivot header under the clock — which is what the first Android build did.
+        // `safeDrawing` is zero on the desktop, so this is one expression for both.
         Column(
             Modifier
                 .fillMaxSize()
-                .background(KvadrantTheme.colors.background),
+                .background(KvadrantTheme.colors.background)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
             KvadrantPivot(
                 titles = listOf("start", "почта", "settings"),
@@ -128,7 +140,16 @@ public fun KvadrantSampleApp(initialScale: Float) {
                 listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
                     .forEach { colour ->
                         KvadrantAppBarButton(onClick = {}) {
-                            KvadrantTile(TileSize.Small, Modifier.padding(0.dp), colour) {}
+                            // A stand-in until there is an icon set (B-18), and it has to be sized
+                            // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
+                            // 74.25, so a tile here draws a square straight through the circle the
+                            // button is made of.
+                            Box(
+                                Modifier
+                                    .size(KvadrantAppBarGlyphSize)
+                                    .clip(CircleShape)
+                                    .background(colour),
+                            )
                         }
                     }
             }

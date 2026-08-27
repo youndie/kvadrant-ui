@@ -49,7 +49,7 @@ item must never move its file.
 | [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
 | [B-08](docs/backlog/B-08-tilt-indication.md) `[~]` | TiltIndication in production quality | P0 | L | B-01 |
 | [B-14](docs/backlog/B-14-material-adapter.md) `[ ]` | KvadrantMaterialAdapter and the ripple shim | P0 | M | B-04 |
-| [B-25](docs/backlog/B-25-tilt-camera-is-in-inches.md) `[ ]` | The tilt camera is measured in inches, and the backends disagree about it | P0 | S | B-24 |
+| [B-25](docs/backlog/B-25-tilt-camera-is-in-inches.md) `[ ]` | The tilt camera is measured in inches, and the backends disagree about it | P0 | S | - |
 | [B-15](docs/backlog/B-15-motion-easing-and-turnstile.md) `[~]` | Motion: the easing catalogue and the turnstile transitions | P1 | M | B-05 |
 | [B-16](docs/backlog/B-16-screenshot-tests.md) `[ ]` | Screenshot regression suite, and an honest statement of what it does not cover | P1 | M | B-05 |
 | [B-18](docs/backlog/B-18-icon-set.md) `[ ]` | Draw the base icon set and a generator for it | P1 | L | - |
