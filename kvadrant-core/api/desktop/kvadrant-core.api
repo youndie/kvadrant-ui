@@ -33,7 +33,7 @@ public final class io/github/youndie/kvadrant/components/ComposableSingletons$Kv
 }
 
 public final class io/github/youndie/kvadrant/components/ControlsKt {
-	public static final fun KvadrantButton (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantButton (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/interaction/MutableInteractionSource;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantListItem (Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantPasswordBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantProgressBar (FLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
@@ -46,6 +46,12 @@ public final class io/github/youndie/kvadrant/components/KvadrantAppBarKt {
 	public static final fun KvadrantAppBar (Landroidx/compose/ui/Modifier;ZLjava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantAppBarButton (Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getKvadrantAppBarGlyphSize ()F
+}
+
+public final class io/github/youndie/kvadrant/components/KvadrantButtonDefaults {
+	public static final field $stable I
+	public static final field INSTANCE Lio/github/youndie/kvadrant/components/KvadrantButtonDefaults;
+	public final fun getContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantContextMenuKt {

@@ -114,11 +114,11 @@ public fun KvadrantMessageBox(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     val confirm: @Composable () -> Unit = {
-                        KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
+                        KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic = cyrillic)
                     }
                     val cancel: @Composable () -> Unit = {
                         if (onCancel != null) {
-                            KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
+                            KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic = cyrillic)
                         }
                     }
                     if (win8ButtonOrder) {

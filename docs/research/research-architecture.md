@@ -930,6 +930,37 @@ took a person saying "crooked tick" to send the search back out.
 template is in that XAML too and has not been read yet; the thumb dimensions remain this project's
 and stay parameters until it is.
 
+**Correction — it was two controls, and the second one nobody thought to count.** The paragraph
+above was written while looking at the controls the reconstruction had *known* it was guessing at.
+`KvadrantButton` was not on that list, because a bordered rectangle that inverts on press reads as
+too simple to have got wrong. It was wrong in four ways, and the file that settles them is the one
+already named in the table above:
+
+| | as built | `PhoneButtonBase` |
+|---|---|---|
+| type | `PhoneFontSizeNormal` 20, Normal | **`PhoneFontSizeMediumLarge` 25.333, `PhoneFontFamilySemiBold`** |
+| padding | `18,6` symmetric, invented | **`10,3,10,5`** — three above the line, five below |
+| hit area | the frame is the target | the `Border` carries **`Margin="{StaticResource PhoneTouchTargetOverhang}"`** (12) inside a `Grid` with `Background="Transparent"`: twelve pixels of invisible button on every side |
+| disabled | did not exist | text and border to `PhoneDisabledBrush`, background forced back to `Transparent` |
+
+**Consequence — "no source" and "source not consulted" look identical from inside the code, and
+only one of them is an excuse.** Two of the four numbers above were this project's own and neither
+said so, which is the thing [D5](#d5-metro-pixels-become-dp-and-sp-at-075-everywhere) and the KDoc
+rule exist to prevent; the rule was followed for every control somebody had flagged as a guess, and
+skipped for the one nobody had. The check that would have caught it is not a test — it is asking, of
+each component in turn, *which file was open when this was written*.
+
+**Consequence 2 — the file covers seventeen `TargetType`s, and the library has read five.** It
+carries `Button`, `ButtonBase`, `CheckBox`, `ContentControl`, `HyperlinkButton`, `ListBox`,
+`ListBoxItem`, `PasswordBox`, `ProgressBar`, `RadioButton`, `RepeatButton`, `ScrollBar`,
+`ScrollViewer`, `Slider`, `TextBox`, `Thumb` and `ToggleButton`. Every remaining one of those in
+this library is currently a reconstruction with a reference sitting unread —
+[B-32](../backlog/B-32-read-the-remaining-platform-templates.md).
+
+*Extraction note, because it cost an hour twice:* the cabinets are **LZX**, not MSZIP, so a
+hand-rolled `zlib` reader silently produces the right number of wrong bytes — the file sizes match
+and the content is noise. `cabextract` reads them; libarchive's `bsdtar` rejects the header outright.
+
 ### 1.13 The second renderer cost four compatibility walls and no code
 
 [B-24](../backlog/B-24-add-the-android-target-next.md) added Android because it is the only planned

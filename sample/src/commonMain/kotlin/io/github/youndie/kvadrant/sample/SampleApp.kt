@@ -513,12 +513,16 @@ private fun SettingsPage(
             cyrillic = cyrillic,
         )
 
+        // The third one is here to be looked at rather than pressed: the Disabled state is the one
+        // the button never had, and it is invisible unless something on screen is in it. The row's
+        // 9 dp gap reads as 27 because each button carries the template's 12 px touch overhang.
         Row(
             Modifier.padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             KvadrantButton("диалог", { onDialog() }, cyrillic = cyrillic)
             KvadrantButton("тост", { onToast() }, cyrillic = cyrillic)
+            KvadrantButton("нельзя", {}, enabled = false, cyrillic = cyrillic)
         }
     }
 }

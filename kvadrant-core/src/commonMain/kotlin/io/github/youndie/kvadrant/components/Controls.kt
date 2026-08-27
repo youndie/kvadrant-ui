@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,44 +37,113 @@ import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
+import io.github.youndie.kvadrant.theme.KvadrantWeights
 import io.github.youndie.kvadrant.theme.contrastOn
 import kotlinx.coroutines.delay
 
 /**
- * A Metro button: a rectangle, a thick border, no fill — and the fill arrives on press, inverted.
+ * A Metro button, from `PhoneButtonBase` in the SDK's own `System.Windows.xaml`.
  *
- * There is no elevation, no corner radius and no ripple; the press feedback is the theme's tilt.
+ * A rectangle with a thick border and no fill; pressing inverts it — the border colour floods the
+ * background and the text turns the colour of the page. There is no elevation, no corner radius
+ * (`CornerRadius="0"` is written out in the template) and no ripple; the rest of the press feedback
+ * is the theme's tilt.
+ *
+ * **The visible rectangle is smaller than the button.** In the template the `Border` carries
+ * `Margin="{StaticResource PhoneTouchTargetOverhang}"` — 12 px on every side — inside a `Grid` whose
+ * `Background="Transparent"` makes it hit-testable. So twelve pixels of invisible button surround
+ * the frame in every direction, and two buttons side by side sit 24 px apart while looking 24 px
+ * apart plus a gap. Reproducing the frame without the overhang, which is what this used to do,
+ * gives a control that measures right and is harder to hit.
+ *
+ * Every number here is Microsoft's, at this library's canonical 0.75 of a Metro pixel:
+ * `BorderThickness` 3, the overhang 12, `Padding="10,3,10,5"` — asymmetric top to bottom, 3 above
+ * and 5 below — and `PhoneFontSizeMediumLarge` 25.333 in `PhoneFontFamilySemiBold`. The type slot
+ * matters: this was set in [KvadrantTypography.normal] and so came out two steps of the ramp too
+ * small and a weight too light.
+ *
+ * [interactionSource] is hoisted for the same reason Material hoists it — a caller that wants to
+ * observe or drive the press — and here it is also the only way to photograph the pressed state,
+ * which a golden otherwise cannot reach.
+ *
+ * [enabled] is the template's `Disabled` state and nothing more: text and border go to
+ * [KvadrantColors.disabled], the background is forced back to transparent — so a button disabled
+ * mid-press does not stay filled — and the tilt is not raised, because a disabled `ButtonBase`
+ * never entered the pressed state to begin with.
  */
 @Composable
 public fun KvadrantButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = KvadrantButtonDefaults.ContentPadding,
+    interactionSource: MutableInteractionSource? = null,
     cyrillic: FontFamily? = null,
 ) {
     val colors = KvadrantTheme.colors
     val metrics = KvadrantTheme.metrics
-    val interaction = remember { MutableInteractionSource() }
+    val interaction = interactionSource ?: remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
+    val active = enabled && pressed
+
+    // The line of the frame, and what it does to the text inside it. Disabled wins over pressed:
+    // the template's Disabled storyboard sets Background back to Transparent explicitly.
+    val line = if (enabled) colors.foreground else colors.disabled
+    val fill = if (active) colors.foreground else Color.Transparent
+    val ink =
+        when {
+            !enabled -> colors.disabled
+            pressed -> colors.background
+            else -> colors.foreground
+        }
 
     Box(
         modifier
+            // D7: the canonical target is the frame plus its overhang, which already clears the
+            // modern minimum at the default type — this holds it when a caller shrinks the text.
             .defaultMinSize(minHeight = metrics.touchTargetMin)
-            .clickable(interactionSource = interaction, indication = LocalIndication.current, onClick = onClick)
-            .border(metrics.borderThickness, colors.foreground, RectangleShape)
-            .background(if (pressed) colors.foreground else Color.Transparent)
-            .padding(horizontal = 18.dp, vertical = 6.dp),
+            .clickable(
+                interactionSource = interaction,
+                indication = LocalIndication.current,
+                enabled = enabled,
+                onClick = onClick,
+            )
+            // The Grid's transparent, hit-testable margin. Everything below is the Border.
+            .padding(metrics.touchTargetOverhang),
         contentAlignment = Alignment.Center,
     ) {
-        KvadrantText(
-            text,
-            style =
-                KvadrantTheme.typography.normal.copy(
-                    color = if (pressed) colors.background else colors.foreground,
-                ),
-            cyrillic = cyrillic,
-        )
+        Box(
+            Modifier
+                .border(metrics.borderThickness, line, RectangleShape)
+                .background(fill)
+                // XAML reserves the border thickness and then applies Padding inside it; Compose
+                // draws the border over the bounds and insets nothing, so the thickness is added.
+                .padding(metrics.borderThickness)
+                .padding(contentPadding),
+            contentAlignment = Alignment.Center,
+        ) {
+            KvadrantText(
+                text,
+                style =
+                    KvadrantTheme.typography.mediumLarge.copy(
+                        color = ink,
+                        fontWeight = KvadrantWeights.SemiBold,
+                    ),
+                cyrillic = cyrillic,
+            )
+        }
     }
+}
+
+/** The button's defaults, so the one number a caller is likely to want is reachable. */
+public object KvadrantButtonDefaults {
+    /**
+     * `Padding="10,3,10,5"` at 0.75. Asymmetric on purpose — it is asymmetric in the template, and
+     * the extra pixel and a half below is what stops a line of Segoe from sitting low in the frame.
+     */
+    public val ContentPadding: PaddingValues =
+        PaddingValues(start = 7.5.dp, top = 2.25.dp, end = 7.5.dp, bottom = 3.75.dp)
 }
 
 /**

@@ -155,7 +155,7 @@ private fun ContactsShowcase(
                     }
                 }
             }
-            KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
+            KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic = cyrillic)
         }
     }
 }
@@ -200,7 +200,7 @@ private fun PickerShowcase(
                 cyrillic = cyrillic,
             )
         }
-        KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
+        KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic = cyrillic)
     }
 }
 
@@ -242,7 +242,7 @@ private fun PanoramaShowcase(
                     "избранное" to { PhotoStrip(KvadrantAccents.Magenta) },
                 ),
         )
-        KvadrantButton("назад", onBack, Modifier.align(Alignment.BottomStart).padding(9.dp), cyrillic)
+        KvadrantButton("назад", onBack, Modifier.align(Alignment.BottomStart).padding(9.dp), cyrillic = cyrillic)
     }
 }
 
@@ -294,7 +294,7 @@ private fun MotionShowcase(
                 }
             }
         }
-        KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
+        KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic = cyrillic)
     }
 }
 
