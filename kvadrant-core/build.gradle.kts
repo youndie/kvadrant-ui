@@ -68,6 +68,35 @@ kotlin {
     }
 }
 
+// B-14's third criterion, as a check rather than a promise: the core must still declare no Material
+// dependency once the adapter ships. Asserted over the runtime classpath a *consumer* resolves, not
+// over the source, because the way this breaks is transitively — somebody adds a convenience that
+// drags material3 in and nothing in the source of this module mentions it.
+//
+// Material 2 is a different matter and is not checked for: `compose.desktop.currentOs` brings it
+// into the test source set, which is between us and skiko rather than between a consumer and this.
+val resolvedForConsumers =
+    configurations.named("desktopRuntimeClasspath").flatMap { configuration ->
+        configuration.incoming.artifacts.resolvedArtifacts.map { artifacts ->
+            artifacts.map { it.id.componentIdentifier.displayName }
+        }
+    }
+
+val noMaterialInTheCore by tasks.registering {
+    // A `Provider`, not the configuration itself: a task that closes over a `Configuration` cannot
+    // be serialised for the configuration cache and fails with a null field at execution time.
+    val components = resolvedForConsumers
+    inputs.property("components", components)
+    doLast {
+        val offenders = components.get().filter { "material3" in it }
+        check(offenders.isEmpty()) {
+            "kvadrant-core resolves Material 3, which it must not: ${offenders.joinToString()}"
+        }
+    }
+}
+
+tasks.named("check") { dependsOn(noMaterialInTheCore) }
+
 // `ScreenshotSuiteTest` reads the golden directory, so the task has to say so. Without this Gradle
 // sees no input change when a golden is added, renamed or deleted, leaves `desktopTest` UP-TO-DATE,
 // and the guard reports the last run's verdict about a set that has since changed — which is how it

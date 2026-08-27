@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.viddik)
 }
 
 kotlin {
@@ -25,4 +27,10 @@ kotlin {
             implementation(compose.uiTest)
         }
     }
+}
+
+// The side-by-side is the only place the adapter's claim can be judged, so it is inside the gate
+// like the core's suite. Desktop only, and that says nothing about Android — B-29.
+viddik {
+    verifyOnCheck.set(true)
 }
