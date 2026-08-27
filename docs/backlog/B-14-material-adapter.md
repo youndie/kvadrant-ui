@@ -74,9 +74,26 @@ ramp, all six `Shapes` slots `RectangleShape`, `LocalRippleConfiguration provide
   fails on any `material3` component — **checked**, and verified by adding one and watching it fail.
   It asserts nothing about Material 2, which `compose.desktop.currentOs` brings into the core's own
   test source set and which sits between us and skiko rather than between a consumer and the core.
-- AC: **no ripple** is still unasserted. `LocalRippleConfiguration provides null` is set and
-  compiles; that a press draws no ripple has not been measured, and after the button it is exactly
-  the kind of claim this item has already been wrong about once.
+- AC: **no ripple** — unmet, and the attempt is worth more than the criterion. Four measurements
+  were tried and each was refuted by the next: counting distinct shades in the fill gave 14 under
+  every configuration including a bare `MaterialTheme`, so the metric was reading text antialiasing;
+  the fill's peak brightness never moved; the lit-pixel count never moved either, in any
+  configuration, **including with the tilt provided** — and the tilt demonstrably works.
+  The positive control settled it: the same harness pressing a `KvadrantButton` takes it from 1023
+  lit pixels to 3950. So the harness delivers the press, and **a Material `Button` in
+  M3 1.5.0-alpha22 does not change a single pixel while held down** — no ripple to suppress, and
+  `LocalIndication` no more reaches it than `LocalRippleConfiguration` does. It manages its own.
+
+  What follows is that "there is no ripple under the adapter" cannot be distinguished here from
+  "there is no ripple anywhere in this setup", so the criterion stays open rather than being claimed.
+  It also means the two locals in the adapter are, for buttons, doing nothing at all — which is an
+  argument for the wrappers below rather than against the adapter.
+
+  The test written for this was deleted rather than kept green. It passed because its positive
+  control was `bare > 1` against a metric that returns 14 for any button — a control that cannot
+  fail is not a control, and a test that passes for the wrong reason is worse than no test.
 - AC: wrappers for the three components the picture shows as foreign — button, switch, slider. That
-  is the ~10 category and it is the rest of this item.
+  is the ~10 category and it is the rest of this item, and the ripple measurement above strengthens
+  the case: a Material `Button` takes neither the theme's shape nor its indication, so a wrapper is
+  not a convenience for it but the only route.
 - Anchors (to be created): `kvadrant-material-adapter/src/commonMain/kotlin/`
