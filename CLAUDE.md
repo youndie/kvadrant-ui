@@ -34,10 +34,16 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
   must be declared in the **root** build file or the Compose plugin cannot see its classes —
   research §1.13 before touching the build.
-- **Screenshots**: a `@ViddikScreenshot` fixture must always exist in the module. With none, KSP
-  reports SKIPPED and the verify task passes green with no tests in it. Name goldens in ASCII —
-  non-ASCII collapses into colliding filenames. Desktop only, so a green suite says nothing about
-  any other renderer.
+- **Screenshots**: `ScreenshotSuiteTest` guards the set — empty registry, fixture without a golden,
+  golden without a fixture. Name goldens in ASCII; non-ASCII collapses into colliding filenames.
+  A test that reads the golden directory must declare it as a task input, or Gradle leaves the test
+  UP-TO-DATE and reports the last run's verdict about a set that has changed.
+- **The suite is desktop only, and not for want of wiring**: viddik's capture engine publishes JVM
+  variants only. A green suite says the skiko renderer is unchanged and nothing about Android, where
+  the one defect that mattered so far (B-25) lived. That is B-29.
+- **Every glyph in a golden comes from a bundled file.** That is what makes these images portable
+  across operating systems, and it rules out fixtures whose point is a *missing* font — the host
+  supplies one and the golden records the recording machine.
 - **Style is in `.editorconfig`**, not in the build script.
 
 ## Rules that are easy to get wrong here

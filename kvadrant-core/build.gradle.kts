@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.PathSensitivity
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
@@ -57,6 +58,17 @@ kotlin {
             implementation(compose.uiTest)
         }
     }
+}
+
+// `ScreenshotSuiteTest` reads the golden directory, so the task has to say so. Without this Gradle
+// sees no input change when a golden is added, renamed or deleted, leaves `desktopTest` UP-TO-DATE,
+// and the guard reports the last run's verdict about a set that has since changed — which is how it
+// stayed green through two deliberate breakages before anyone noticed it had not run.
+tasks.named<Test>("desktopTest") {
+    inputs
+        .dir(layout.projectDirectory.dir("src/desktopTest/snapshots"))
+        .withPropertyName("viddikSnapshots")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 // Without this the package is derived from the directory names - `kvadrant_ui.kvadrant_core` - and
