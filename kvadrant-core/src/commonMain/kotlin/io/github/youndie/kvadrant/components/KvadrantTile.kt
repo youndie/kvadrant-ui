@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontFamily
@@ -80,7 +81,11 @@ public fun KvadrantTile(
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 onClick = onClick,
-            ).background(color),
+            ).background(color)
+            // A tile is a hard rectangle and nothing leaves it. Without this the cycle tile's
+            // outgoing face — translated by a full tile height — draws above the tile, and the flip
+            // tile's perspective spills past its edges: text from one tile appearing over another.
+            .clipToBounds(),
         content = content,
     )
 }

@@ -96,6 +96,8 @@ public fun KvadrantSampleApp() {
     // play: it is a *page* transition, not something a Pivot does between its own items — the phone
     // slid those sideways. Without a page to enter, `KvadrantTurnstile` was code nobody called.
     var openTile by remember { mutableStateOf<String?>(null) }
+    var dialog by remember { mutableStateOf(false) }
+    var toast by remember { mutableStateOf(false) }
 
     // The system back gesture. Without it the page is an overlay that swallows back, and B-30 names
     // that as the single most reliable way to make an application feel foreign on Android — it was
@@ -163,6 +165,8 @@ public fun KvadrantSampleApp() {
                                         density = scale ?: (fitted.margin / KvadrantMetrics().margin),
                                         onDensity = { scale = it },
                                         cyrillic = cyrillic,
+                                        onDialog = { dialog = true },
+                                        onToast = { toast = true },
                                     )
                                 }
                             }
@@ -190,6 +194,31 @@ public fun KvadrantSampleApp() {
                                 }
                         }
                     }
+                    // A message box is modal and a toast lands over the status bar, so both belong
+                    // to the root rather than to the page that raises them. They were children of
+                    // the settings page's Column, where a Column does what a Column does and pushed
+                    // the settings apart to make room — the same mistake as the detail page, in the
+                    // same file, two hours apart.
+                    if (dialog) {
+                        KvadrantMessageBox(
+                            title = "удалить письмо?",
+                            message = "его нельзя будет вернуть",
+                            onConfirm = { dialog = false },
+                            onCancel = { dialog = false },
+                            confirmText = "удалить",
+                            cancelText = "отмена",
+                            cyrillic = cyrillic,
+                        )
+                    }
+                    KvadrantToast(
+                        visible = toast,
+                        title = "Анна Петрова",
+                        message = "встреча в четверг",
+                        onDismiss = { toast = false },
+                        onClick = { toast = false },
+                        cyrillic = cyrillic,
+                    )
+
                     // The page, over the screen, entering and leaving on the turnstile. Nothing
                     // needs to hold the other half composed here — the screen underneath is always
                     // there — which is the second thing an overlay buys over a row in a column.
@@ -197,10 +226,15 @@ public fun KvadrantSampleApp() {
                         visible = openTile != null,
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        val name = openTile
-                        if (name != null) {
-                            Showcase(name, cyrillic, onBack = { openTile = null })
-                        }
+                        // The *last* name, kept after `openTile` goes null, so the page still has
+                        // something to draw while it turns away. Reading `openTile` directly means
+                        // the content vanishes on the frame the flag flips and the turnstile
+                        // animates an empty box — which is why going in was animated and coming
+                        // back was not. B-15 records this exact trap; I wrote it down and then
+                        // walked into it.
+                        val name = remember { mutableStateOf("") }
+                        openTile?.let { name.value = it }
+                        Showcase(name.value, cyrillic, onBack = { openTile = null })
                     }
                 }
             }
@@ -342,6 +376,8 @@ private fun SettingsPage(
     density: Float,
     onDensity: (Float) -> Unit,
     cyrillic: androidx.compose.ui.text.font.FontFamily,
+    onDialog: () -> Unit,
+    onToast: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var preview by remember { mutableStateOf(true) }
@@ -350,8 +386,6 @@ private fun SettingsPage(
     var pickerOpen by remember { mutableStateOf(false) }
     var brightness by remember { mutableStateOf(0.65f) }
     var password by remember { mutableStateOf("") }
-    var dialog by remember { mutableStateOf(false) }
-    var toast by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -417,31 +451,8 @@ private fun SettingsPage(
             Modifier.padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
-            KvadrantButton("диалог", { dialog = true }, cyrillic = cyrillic)
-            KvadrantButton("тост", { toast = true }, cyrillic = cyrillic)
+            KvadrantButton("диалог", { onDialog() }, cyrillic = cyrillic)
+            KvadrantButton("тост", { onToast() }, cyrillic = cyrillic)
         }
     }
-
-    // The two surfaces that cover the screen rather than sit in it, which is why they are outside
-    // the Column: a message box is modal and a toast lands over the status bar. Both existed only
-    // as screenshot fixtures until now.
-    if (dialog) {
-        KvadrantMessageBox(
-            title = "удалить письмо?",
-            message = "его нельзя будет вернуть",
-            onConfirm = { dialog = false },
-            onCancel = { dialog = false },
-            confirmText = "удалить",
-            cancelText = "отмена",
-            cyrillic = cyrillic,
-        )
-    }
-    KvadrantToast(
-        visible = toast,
-        title = "Анна Петрова",
-        message = "встреча в четверг",
-        onDismiss = { toast = false },
-        onClick = { toast = false },
-        cyrillic = cyrillic,
-    )
 }
