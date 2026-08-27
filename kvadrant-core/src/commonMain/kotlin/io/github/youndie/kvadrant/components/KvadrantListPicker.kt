@@ -68,70 +68,51 @@ public fun KvadrantListPicker(
                 cyrillic,
             )
         }
+
+        // One box that grows, which is what the template says and what two attempts at this missed.
+        // `controls:ListPicker` is a `Border` wrapped around `Canvas x:Name="ItemsPresenterHost"`,
+        // and it is the canvas whose `Height` the storyboard animates — so the *bordered box itself*
+        // goes from one item tall to the whole list, and the closed state is that same list scrolled
+        // to the selected item by the `TranslateTransform`. A separate closed field with a list
+        // unfolding underneath reaches the same end state and never shows the control grow, which is
+        // exactly what it looked like.
         Box(
             Modifier
                 .fillMaxWidth()
                 .border(KvadrantTheme.metrics.borderThickness, colors.border, RectangleShape)
                 .clickable { onExpandRequest(mode) }
-                .padding(horizontal = 9.dp, vertical = 9.dp),
+                .clipToBounds()
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints)
+                    val itemHeight = placeable.height / items.size.coerceAtLeast(1)
+                    // `MinHeight="46"` on the canvas, so a one-line picker is never thinner than
+                    // that even if its single row would be.
+                    val closed = maxOf(itemHeight, MIN_CONTENT_HEIGHT.roundToPx())
+                    val height = closed + ((placeable.height - closed) * openness).roundToInt()
+                    // The item height as an even division. The original read the selected
+                    // container's real layout slot and did not need to assume it; this is exact
+                    // while the labels are one line each, which is what a five-item picker is for.
+                    val slide = -(itemHeight * selectedIndex * (1f - openness)).roundToInt()
+                    layout(placeable.width, height) { placeable.place(0, slide) }
+                },
         ) {
-            KvadrantText(
-                items.getOrElse(selectedIndex) { "" },
-                // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:ListPicker"`,
-                // toolkit `Generic.xaml`.
-                style = KvadrantTheme.typography.mediumLarge,
-                cyrillic = cyrillic,
-            )
-        }
-
-        if (openness > 0f && mode == KvadrantListPickerMode.Expanded) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    // `Height`, the layout property, the way `ListPicker.cs` animates it — not a
-                    // `scaleY` on a graphics layer, which is what this used to be. The difference is
-                    // the whole of what the control does to the page: a visual scale leaves the list
-                    // at full height in layout from the first frame, so everything below it jumps
-                    // aside at once and then waits; animating the measured height pushes them apart
-                    // over the same 200 ms. It also stops the text being squashed on the way, which
-                    // a scale cannot help doing.
-                    //
-                    // There is no fade. The storyboard in `ListPicker.cs` holds two animations,
-                    // Height and TranslateTransform.Y, and no opacity — the alpha that used to be
-                    // here was ours.
-                    //
-                    // The second animation is the one that makes this read as a list unfolding
-                    // rather than a curtain lifting, and leaving it out was visible immediately.
-                    // In the original the control is one window: closed, its height is a single item
-                    // and the presenter is translated so the *selected* item is the one showing;
-                    // open, the height is the whole list and `_translateAnimation.To = 0` puts the
-                    // first item at the top. So the content slides while the window grows. Pinning
-                    // the content at the top instead leaves every item at a fixed position and only
-                    // moves the clip, which is the same end state reached without the movement.
-                    //
-                    // The item height is taken as an even division, which the original did not need
-                    // to do — it read the selected container's real layout slot. It is exact while
-                    // the labels are one line each, which is what a five-item picker is for, and it
-                    // is wrong only mid-animation if one ever wraps.
-                    .clipToBounds()
-                    .layout { measurable, constraints ->
-                        val placeable = measurable.measure(constraints)
-                        val height = (placeable.height * openness).roundToInt()
-                        val itemHeight = placeable.height / items.size.coerceAtLeast(1)
-                        val slide = -(itemHeight * selectedIndex * (1f - openness)).roundToInt()
-                        layout(placeable.width, height) { placeable.place(0, slide) }
-                    }.background(colors.chrome),
-            ) {
+            Column(Modifier.fillMaxWidth()) {
                 items.forEachIndexed { index, label ->
+                    // Highlighted only while open: `SizeForExpandedMode` sets `IsSelected` on the
+                    // selected container and `SizeForNormalMode` clears it, so a closed picker shows
+                    // its selection as plain text rather than as an accent bar.
+                    val highlighted = expanded && index == selectedIndex
                     KvadrantText(
                         label,
                         Modifier
                             .fillMaxWidth()
                             .clickable { onSelect(index) }
-                            .background(if (index == selectedIndex) colors.accent else Color.Transparent)
+                            .background(if (highlighted) colors.accent else Color.Transparent)
                             .padding(horizontal = 9.dp, vertical = 9.dp),
+                        // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:ListPicker"`,
+                        // toolkit `Generic.xaml`.
                         KvadrantTheme.typography.mediumLarge.copy(
-                            color = if (index == selectedIndex) colors.onAccent else colors.foreground,
+                            color = if (highlighted) colors.onAccent else colors.foreground,
                         ),
                         cyrillic,
                     )
@@ -149,3 +130,6 @@ public const val FULL_MODE_THRESHOLD: Int = 5
 
 /** `Duration duration = TimeSpan.FromSeconds(0.2)` in `ListPicker.cs`, read out of the source. */
 private const val EXPAND_MILLIS = 200
+
+/** `MinHeight="46"` on `Canvas x:Name="ItemsPresenterHost"` in the toolkit template. */
+private val MIN_CONTENT_HEIGHT = 34.5.dp
