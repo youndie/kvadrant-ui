@@ -17,11 +17,37 @@ package is pinned to `io.github.youndie.kvadrant.resources` rather than the `kva
 the generator derives from directory names. Fifteen of the sixteen font goldens came back
 byte-identical, which is the evidence that the new path renders what the old one did.
 
-**Still open:** there is no `kvadrant-resources` module — the fonts live in `kvadrant-core`, and
-whether they should move out is a packaging question nobody has been forced to answer yet. The POM
-does not declare the font licence separately from the code licence. iOS and wasm are unverified
-because those targets do not exist. And four of the five Metro weights are still uncalibrated: only
-SemiLight has its 370.
+**The weights are calibrated, and the gap turned out to be a defect rather than a refinement.** The
+companion family held a *single* font instanced at 370, so Compose matched it for every requested
+weight and the axis never moved: a `SemiBold` heading rendered Latin bold with its Cyrillic at 370
+beside it, and Cyrillic could not be made bold at all. It is five entries now, one per Metro weight.
+
+The axis values were measured rather than derived — ink coverage, lit pixels over the area of the
+drawn line, Selawik at the Metro weight against Source Sans at each candidate:
+
+| Metro | Selawik | Source Sans `wght` |
+|---|---|---|
+| Light | W200 | 330 |
+| SemiLight | W300 | **370** |
+| Normal | W400 | 420 |
+| SemiBold | W600 | 640 |
+| Bold | W700 | 690 |
+
+**The method's control is that it rediscovers 370**, which B-03 had found by eye — and it does,
+exactly, on a ten-step grid. That is why the other four are trusted. They do not sit on a line and no
+offset produces them: +130 at Light becomes −10 at Bold, because Source Sans runs relatively heavier
+than Selawik at the thin end and lighter at the thick end. A rule fitted to one weight would have
+been wrong at the other. `InkParityTest` re-measures each in a window around its value.
+
+Twenty-seven goldens moved with it, most of them body text — Cyrillic at `Normal` had been rendering
+at 370 where it should be 420.
+
+**Still open, all of it blocked rather than pending:** there is no `kvadrant-resources` module, and
+whether the fonts should move out of `kvadrant-core` is a packaging question that only matters once
+something is published — [B-21](B-21-maven-coordinates.md). The POM cannot declare the font licence
+separately from the code licence for the same reason: there is no POM. iOS and wasm are unverified
+because those targets do not exist (D14), so the criterion naming them cannot be met by working
+harder on this item.
 
 Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)), bundled in
 `kvadrant-resources` and reachable from every target through

@@ -23,7 +23,16 @@ android-compileSdk = "37"
 android-minSdk = "24"
 activityCompose = "1.11.0"
 # The one place a Material version is allowed to be written down (research §1.2, consequence 4).
-# Which of the two candidate graphs this ends up on is decided by rendering, not by reading POMs.
+#
+# `org.jetbrains.compose.material3:material3:1.12.0-alpha03` resolves to **Jetpack
+# `androidx.compose.material3:material3:1.5.0-alpha22`**, which is the pair CMP 1.12.0 releases
+# itself with. The alternative was `material3:1.9.0` on Jetpack M3 1.4.0 stable — both render and
+# both carry the ripple switch, so the choice fell to which failure is cheaper: that one is a mixed
+# graph and fails at runtime in a consumer's application, this one is an alpha API and fails at
+# compile time here. Research §1.2.
+#
+# Alpha, so **expect this to need re-checking** rather than to hold: Jetpack M3 1.5 has been in
+# alpha long enough to reach alpha26, and the ripple corner is exactly what is being reshaped.
 composeMaterial3 = "1.12.0-alpha03"
 # Test-only, to read the vendored token dump. Matches the core already on the Compose graph.
 kotlinxSerialization = "1.7.3"

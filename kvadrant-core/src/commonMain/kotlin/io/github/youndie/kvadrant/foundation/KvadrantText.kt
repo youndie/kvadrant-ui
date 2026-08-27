@@ -69,4 +69,16 @@ internal fun splitByScript(
 /** Calibrated against Selawik SemiLight by ink parity; see B-03. */
 public const val CYRILLIC_SEMILIGHT_WEIGHT: Int = 370
 
+/** Source Sans 3's `wght` matching Selawik Light, by ink parity. See [kvadrantCyrillic]. */
+public const val CYRILLIC_LIGHT_WEIGHT: Int = 330
+
+/** Source Sans 3's `wght` matching Selawik Regular, by ink parity. */
+public const val CYRILLIC_NORMAL_WEIGHT: Int = 420
+
+/** Source Sans 3's `wght` matching Selawik SemiBold, by ink parity. */
+public const val CYRILLIC_SEMIBOLD_WEIGHT: Int = 640
+
+/** Source Sans 3's `wght` matching Selawik Bold, by ink parity. */
+public const val CYRILLIC_BOLD_WEIGHT: Int = 690
+
 private fun Char.isCyrillic(): Boolean = this in 'Ѐ'..'ӿ'

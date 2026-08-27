@@ -100,10 +100,14 @@ by hand and an application does not:
 **Left:** the Material adapter module and with it the version question below, publishing, ABI
 validation, and the remaining targets.
 
-- AC: `./gradlew build` compiles every declared target from a clean checkout.
+- AC met: `./gradlew build` compiles every declared target — four modules, desktop and Android —
+  in 2m46s.
 - AC: a Material `OutlinedTextField` renders under the adapter on the chosen graph — on Android and
   on desktop — before the graph is written into the catalog.
-- AC: the version catalog names each Material coordinate with the Jetpack version it maps to in a
+- AC met: `composeMaterial3` in the catalog names the Jetpack version it resolves to, the graph it
+  was chosen over, and why — and says to expect it to need re-checking, because it is an alpha whose
+  ripple corner is the part being reshaped.
+- AC superseded: the version catalog names each Material coordinate with the Jetpack version it maps to in a
   comment, and no coordinate appears as a string anywhere else.
 - AC: the answer to the option (a)/(b) question is written into
   [research §D3](../research/research-architecture.md), with what actually failed if one failed.

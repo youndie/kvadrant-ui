@@ -34,18 +34,54 @@ public fun kvadrantLatin(): FontFamily =
     )
 
 /**
- * Source Sans 3, instanced on its `wght` axis at [weight].
+ * Source Sans 3, instanced on its `wght` axis once per Metro weight.
  *
- * The default is not a round number and not a static weight: Selawik's SemiLight sits between Light
- * and Regular, and 370 is where the two scripts stop reading as two weights when their ink coverage
- * is compared. Only this slot is calibrated so far.
+ * **Five entries, not one, and that was a defect rather than a refinement.** The family used to hold
+ * a single font at 370, so Compose matched it for every requested weight and the axis stayed where
+ * it was: a `SemiBold` heading rendered Latin bold and its Cyrillic at 370 beside it, visibly
+ * lighter. Cyrillic could not be made bold at all.
+ *
+ * The axis values are **measured, not derived**. Ink coverage — lit pixels over the area of the
+ * drawn line — is compared between Selawik at the Metro weight and Source Sans at each candidate,
+ * and the closest wins. The method's own control is that it rediscovers **370** for SemiLight, which
+ * B-03 had found by eye; it does, exactly, which is why the other four are trusted.
+ *
+ * | Metro | Selawik | Source Sans wght |
+ * |---|---|---|
+ * | Light | W200 | 330 |
+ * | SemiLight | W300 | **370** |
+ * | Normal | W400 | 420 |
+ * | SemiBold | W600 | 640 |
+ * | Bold | W700 | 690 |
+ *
+ * They do not sit on a straight line and there is no offset that produces them — Source Sans runs
+ * relatively heavier than Selawik at the thin end and lighter at the thick end, so +130 at Light
+ * becomes −10 at Bold. Any rule fitted to one weight would have been wrong at the other, which is
+ * the argument for measuring five times rather than once. `InkParityTest` holds them.
  */
 @Composable
-public fun kvadrantCyrillic(weight: Int = CYRILLIC_SEMILIGHT_WEIGHT): FontFamily =
+public fun kvadrantCyrillic(): FontFamily =
     FontFamily(
-        Font(
-            Res.font.source_sans_3_variable,
-            FontWeight(weight),
-            variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
-        ),
+        cyrillicAt(FontWeight.W200, CYRILLIC_LIGHT_WEIGHT),
+        cyrillicAt(FontWeight.W300, CYRILLIC_SEMILIGHT_WEIGHT),
+        cyrillicAt(FontWeight.W400, CYRILLIC_NORMAL_WEIGHT),
+        cyrillicAt(FontWeight.W600, CYRILLIC_SEMIBOLD_WEIGHT),
+        cyrillicAt(FontWeight.W700, CYRILLIC_BOLD_WEIGHT),
     )
+
+/**
+ * The companion at one weight, for a caller that wants a single instance — the fitting fixtures do,
+ * and so does anything comparing two axis values side by side.
+ */
+@Composable
+public fun kvadrantCyrillic(weight: Int): FontFamily = FontFamily(cyrillicAt(FontWeight(weight), weight))
+
+@Composable
+private fun cyrillicAt(
+    slot: FontWeight,
+    axis: Int,
+) = Font(
+    Res.font.source_sans_3_variable,
+    slot,
+    variationSettings = FontVariation.Settings(FontVariation.weight(axis)),
+)
