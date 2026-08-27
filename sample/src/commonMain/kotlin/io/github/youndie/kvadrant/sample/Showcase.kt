@@ -77,32 +77,36 @@ private fun ContactsShowcase(
             "B" to listOf("build server"),
         )
 
-    KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = "почта", cyrillic = cyrillic) {
-        KvadrantButton(
-            if (jumping) "назад к списку" else "перейти к букве",
-            { jumping = !jumping },
-            cyrillic = cyrillic,
-        )
-
-        if (jumping) {
-            KvadrantJumpList(
-                letters = ('А'..'Я').map(Char::toString),
-                enabled = groups.map { it.first }.toSet(),
-                onLetterClick = { jumping = false },
+    // One host around the whole page, which is what its KDoc says it is for: the menu is an overlay
+    // and the page goes *behind* it, scaled to 0.94. Wrapping each row in one — which is what this
+    // did first — puts a full-screen host inside every list item, so the menu opens by pushing the
+    // list apart from inside the row it belongs to instead of covering the page.
+    KvadrantContextMenuHost(
+        expanded = menuFor != null,
+        items = listOf("закрепить на экране", "удалить", "изменить"),
+        onDismiss = { menuFor = null },
+        onItemClick = { menuFor = null },
+        cyrillic = cyrillic,
+    ) {
+        KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = "почта", cyrillic = cyrillic) {
+            KvadrantButton(
+                if (jumping) "назад к списку" else "перейти к букве",
+                { jumping = !jumping },
                 cyrillic = cyrillic,
-                modifier = Modifier.padding(top = 9.dp),
             )
-        } else {
-            groups.forEach { (letter, names) ->
-                KvadrantGroupHeader(letter, Modifier.padding(top = 9.dp), onClick = { jumping = true })
-                names.forEach { who ->
-                    KvadrantContextMenuHost(
-                        expanded = menuFor == who,
-                        items = listOf("закрепить на экране", "удалить", "изменить"),
-                        onDismiss = { menuFor = null },
-                        onItemClick = { menuFor = null },
-                        cyrillic = cyrillic,
-                    ) {
+
+            if (jumping) {
+                KvadrantJumpList(
+                    letters = ('А'..'Я').map(Char::toString),
+                    enabled = groups.map { it.first }.toSet(),
+                    onLetterClick = { jumping = false },
+                    cyrillic = cyrillic,
+                    modifier = Modifier.padding(top = 9.dp),
+                )
+            } else {
+                groups.forEach { (letter, names) ->
+                    KvadrantGroupHeader(letter, Modifier.padding(top = 9.dp), onClick = { jumping = true })
+                    names.forEach { who ->
                         KvadrantListItem(
                             who,
                             subtitle = "нажмите для контекстного меню",
@@ -113,8 +117,8 @@ private fun ContactsShowcase(
                     }
                 }
             }
+            KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
         }
-        KvadrantButton("назад", onBack, Modifier.padding(top = 18.dp), cyrillic)
     }
 }
 
