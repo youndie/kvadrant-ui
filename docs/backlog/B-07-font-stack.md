@@ -42,6 +42,18 @@ been wrong at the other. `InkParityTest` re-measures each in a window around its
 Twenty-seven goldens moved with it, most of them body text — Cyrillic at `Normal` had been rendering
 at 370 where it should be 420.
 
+**The licence ships, and the criterion below reads as though it does not.** `Selawik-OFL.txt` and
+`SourceSans3-OFL.txt` are in `commonMain/composeResources/files/`, each the full OFL 1.1 with its own
+copyright line, and both land in the jar beside the fonts — verified by unzipping
+`kvadrant-core-desktop.jar`. What is missing is only the *path* the criterion names,
+`META-INF/licenses/OFL.txt`, which is a packaging convention and belongs with the module and the POM
+rather than here. A third copy of the same text was written and thrown away instead: the two files
+that exist carry the copyright each font's `name` table declares, and one merged file would carry
+neither.
+
+**A screenshot of the whole ramp in both scripts exists** — `TypeRampScreenshots.kt`, dark and light —
+so that criterion is met.
+
 **Still open, all of it blocked rather than pending:** there is no `kvadrant-resources` module, and
 whether the fonts should move out of `kvadrant-core` is a packaging question that only matters once
 something is published — [B-21](B-21-maven-coordinates.md). The POM cannot declare the font licence
