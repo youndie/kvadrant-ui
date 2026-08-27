@@ -20,7 +20,7 @@ public final class io/github/youndie/kvadrant/components/ComposableSingletons$Kv
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPanoramaKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPanoramaKt;
 	public fun <init> ()V
-	public final fun getLambda$463475935$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$959669487$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantTileKt {
@@ -98,8 +98,7 @@ public final class io/github/youndie/kvadrant/components/KvadrantPageKt {
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantPanoramaKt {
-	public static final field DEFAULT_BACKGROUND_RATE F
-	public static final fun KvadrantPanorama (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/foundation/ScrollState;FLkotlin/jvm/functions/Function3;Ljava/util/List;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantPanorama (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/foundation/ScrollState;Lkotlin/jvm/functions/Function3;Ljava/util/List;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantPivotKt {

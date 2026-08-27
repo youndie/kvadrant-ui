@@ -46,6 +46,7 @@ import io.github.youndie.kvadrant.components.KvadrantSurface
 import io.github.youndie.kvadrant.components.KvadrantSwivel
 import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.SlideDirection
+import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantTheme
@@ -210,17 +211,11 @@ private fun PanoramaShowcase(
     cyrillic: FontFamily,
     onBack: () -> Unit,
 ) {
-    // The one showcase not built out of `KvadrantPage`, because a panorama *is* the page — so it
-    // does not get the page's insets either, and had none at all. Top and sides; the bottom is
-    // nobody's here, there being no app bar on this screen.
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(KvadrantTheme.colors.background)
-            .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-            ),
-    ) {
+    // No insets here, and that is the correction rather than the omission it looks like. A panorama
+    // *is* the page, and its background image reaches the top of the glass; inset the whole thing
+    // and you get a band of page colour above an image that should have run under the status bar.
+    // `KvadrantPanorama` holds its own content clear and lets the background through.
+    Box(Modifier.fillMaxSize().background(KvadrantTheme.colors.background)) {
         KvadrantPanorama(
             title = "фото",
             cyrillic = cyrillic,
@@ -235,23 +230,95 @@ private fun PanoramaShowcase(
                     ).forEach { Box(Modifier.width(320.dp).fillMaxSize().background(it)) }
                 }
             },
+            // Four sections of four different widths, and that is the demonstration.
+            //
+            // A panorama is not a pager: a section is as wide as its content, the viewport shows
+            // whatever falls inside it, and two sections are visible at once whenever the first one
+            // is narrow. The old example had three sections of identical three-tile strips, so it
+            // showed a horizontal scroller and none of that — no section wider than the screen to
+            // scroll *into*, nothing narrow enough to sit beside its neighbour, and the title's
+            // parallax against a uniform rhythm to compare it with.
             sections =
                 listOf(
-                    "недавние" to { PhotoStrip(KvadrantAccents.Amber) },
-                    "альбомы" to { PhotoStrip(KvadrantAccents.Emerald) },
-                    "избранное" to { PhotoStrip(KvadrantAccents.Magenta) },
+                    // Wider than any phone: two rows of five. The one section you scroll through
+                    // rather than past, and where the title and background visibly lag behind.
+                    "недавние" to {
+                        Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                            repeat(2) { row ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                                    repeat(5) { column ->
+                                        KvadrantTile(
+                                            TileSize.Medium,
+                                            color = PHOTO_COLOURS[(row * 5 + column) % PHOTO_COLOURS.size],
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    // Narrower than the viewport, so its neighbour's header is already on screen —
+                    // the panorama's whole promise that the page continues past the edge.
+                    "альбомы" to {
+                        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            ALBUMS.forEach { (name, count) ->
+                                KvadrantListItem(name, subtitle = count, onClick = {}, cyrillic = cyrillic)
+                            }
+                        }
+                    },
+                    // One wide tile and a caption: a section can be a single object.
+                    "избранное" to {
+                        Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                            KvadrantTile(TileSize.Wide, color = KvadrantAccents.Magenta) {
+                                KvadrantText(
+                                    "лето",
+                                    Modifier.align(Alignment.BottomStart).padding(9.dp),
+                                    style = KvadrantTheme.typography.large,
+                                    cyrillic = cyrillic,
+                                )
+                            }
+                            KvadrantText(
+                                "снято в июле",
+                                style = KvadrantTheme.typography.subtle,
+                                cyrillic = cyrillic,
+                            )
+                        }
+                    },
+                    // Prose, wrapped to a width the section chooses for itself. The phone's own
+                    // panoramas ended on something quiet like this rather than on more tiles.
+                    "о панораме" to {
+                        KvadrantText(
+                            "секция шириной со своё содержимое, а не со экран.\n" +
+                                "заголовок и фон едут медленнее секций,\n" +
+                                "и список не кончается — он замкнут.",
+                            Modifier.width(280.dp),
+                            cyrillic = cyrillic,
+                        )
+                    },
                 ),
         )
         KvadrantButton("назад", onBack, Modifier.align(Alignment.BottomStart).padding(9.dp), cyrillic = cyrillic)
     }
 }
 
-@Composable
-private fun PhotoStrip(colour: Color) {
-    Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-        repeat(3) { KvadrantTile(io.github.youndie.kvadrant.components.TileSize.Small, color = colour) {} }
-    }
-}
+/** Enough hues that a ten-tile grid does not read as a repeating pattern. */
+private val PHOTO_COLOURS =
+    listOf(
+        KvadrantAccents.Amber,
+        KvadrantAccents.Emerald,
+        KvadrantAccents.Cobalt,
+        KvadrantAccents.Crimson,
+        KvadrantAccents.Violet,
+        KvadrantAccents.Teal,
+        KvadrantAccents.Magenta,
+    )
+
+private val ALBUMS =
+    listOf(
+        "камера" to "241 снимок",
+        "скриншоты" to "58 снимков",
+        "сохранённые" to "12 снимков",
+        "панорамы" to "3 снимка",
+    )
 
 /** The four transitions that were written and never watched outside a still. */
 @Composable

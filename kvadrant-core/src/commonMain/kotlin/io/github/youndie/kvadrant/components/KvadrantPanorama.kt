@@ -5,10 +5,16 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,10 +47,22 @@ import kotlin.math.roundToInt
  * So a layer's rate is its overflow divided by the content's, which is what the original's pair of
  * `TranslateTransform`s does and the reason the effect holds at any number of sections.
  *
- * **It wraps.** Past the last section comes the first, as the original does with its
- * `LeftWraparound` and `RightWraparound` borders: the sections are laid out twice and the scroll
- * position is folded back by one copy's width whenever it crosses into the second, so there is
- * never an end to reach and never a jump to see.
+ * **It wraps, and wrapping is what makes the parallax rates derivable.** Past the last section
+ * comes the first, as the original does with its `LeftWraparound` and `RightWraparound` borders:
+ * the sections are laid out twice and the scroll position is folded back by one copy's width
+ * whenever it crosses into the second.
+ *
+ * That fold is invisible only for a layer that is **periodic with the same fold**. This used to
+ * offset each layer by `scroll * rate` with the layer drawn once, so at every fold the background
+ * snapped sideways by `copyWidth * rate` — a distance that is a period of nothing. The paragraph
+ * here claimed "never a jump to see" and there was one, on every wrap; the title escaped notice
+ * only because a title narrower than the viewport had its rate coerced to zero and did not move at
+ * all.
+ *
+ * The correct model is a set of **cylinders**. Scrolling one content copy has to advance each layer
+ * by exactly one of its own circumferences, so a layer's rate is *its own period* over the content's
+ * — not a coefficient anybody gets to pick. Each layer is drawn twice and offset modulo its period,
+ * and the fold then lands on a seam that is identical to where it started.
  */
 @Composable
 public fun KvadrantPanorama(
@@ -52,13 +70,13 @@ public fun KvadrantPanorama(
     modifier: Modifier = Modifier,
     cyrillic: FontFamily? = null,
     scroll: ScrollState = rememberScrollState(),
-    backgroundRate: Float = DEFAULT_BACKGROUND_RATE,
     background: @Composable (Modifier) -> Unit = {},
     sections: List<Pair<String, @Composable () -> Unit>>,
 ) {
     var viewport by remember { mutableIntStateOf(0) }
     var titleWidth by remember { mutableIntStateOf(0) }
     var copyWidth by remember { mutableIntStateOf(0) }
+    var backgroundWidth by remember { mutableIntStateOf(0) }
 
     // The fold. Crossing into the second copy puts the scroll back at the same place in the first,
     // which is invisible because the two are identical — and is why there is no end to hit.
@@ -68,27 +86,55 @@ public fun KvadrantPanorama(
         }
     }
 
-    val contentOverflow = (copyWidth.takeIf { it > 0 } ?: scroll.maxValue).coerceAtLeast(1)
-
-    fun rateFor(width: Int): Float = ((width - viewport).coerceAtLeast(0).toFloat() / contentOverflow).coerceIn(0f, 1f)
+    // A layer of period `period` advances by exactly one period per content copy, so it is where it
+    // started whenever the content is — which is the only arrangement in which the fold cannot be
+    // seen. Zero period means the layer does not move, which is what a title narrower than the
+    // viewport does.
+    fun drift(period: Int): Int =
+        if (period <= 0 || copyWidth <= 0) {
+            0
+        } else {
+            -((scroll.value.toFloat() * period / copyWidth) % period).roundToInt()
+        }
 
     Box(modifier.fillMaxSize().onSizeChanged { viewport = it.width }) {
-        // The background spans both rows in the original and drifts slowest of the three.
-        background(
-            Modifier.offset { IntOffset(-(scroll.value * backgroundRate).roundToInt(), 0) },
-        )
+        // The background spans both rows in the original and drifts slowest of the three. **No
+        // insets**: on the phone the image runs under the status bar and only the content is held
+        // clear of it, so insetting the whole panorama — which the sample did — leaves a band of
+        // page colour above an image that was supposed to reach the top of the glass.
+        Row(Modifier.fillMaxHeight().offset { IntOffset(drift(backgroundWidth), 0) }) {
+            repeat(COPIES) { copy ->
+                Box(Modifier.onSizeChanged { if (copy == 0) backgroundWidth = it.width }) {
+                    background(Modifier.fillMaxHeight())
+                }
+            }
+        }
 
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+                ),
+        ) {
             // Margin 10,-34,0,0: the title deliberately sits above the top of its row.
-            KvadrantText(
-                title,
-                Modifier
-                    .offset { IntOffset(-(scroll.value * rateFor(titleWidth)).roundToInt(), 0) }
-                    .onSizeChanged { titleWidth = it.width }
-                    .padding(start = 7.5.dp),
-                KvadrantTheme.typography.panoramaTitle,
-                cyrillic,
-            )
+            //
+            // Drawn twice for the same reason the sections are, and only when it is wide enough to
+            // move: a title narrower than the viewport has no overflow to traverse, stays put, and
+            // a second copy of it would simply be a second title on screen.
+            val titleMoves = titleWidth > viewport
+            Row(Modifier.offset { IntOffset(if (titleMoves) drift(titleWidth) else 0, 0) }) {
+                repeat(if (titleMoves) COPIES else 1) { copy ->
+                    KvadrantText(
+                        title,
+                        Modifier
+                            .onSizeChanged { if (copy == 0) titleWidth = it.width }
+                            .padding(start = 7.5.dp),
+                        KvadrantTheme.typography.panoramaTitle,
+                        cyrillic,
+                    )
+                }
+            }
 
             // No fillMaxWidth: a row inside a horizontal scroll must be free to exceed the viewport,
             // and constraining it is what makes a panorama scroll a few pixels instead of pages.
@@ -118,13 +164,13 @@ public fun KvadrantPanorama(
 }
 
 /**
- * How fast the background drifts, as a fraction of the content's rate.
+ * Two of everything: one copy to look at, one to wrap into.
  *
- * Unlike the title's rate this one is **not** derivable: the original's background is an image whose
- * width the application chooses, and Microsoft never published the coefficient. **This number is
- * this project's invention**, which is why it is a parameter of [KvadrantPanorama] rather than a
- * constant inside it — anyone who measures the real thing can pass their own without a fork.
+ * There used to be a `DEFAULT_BACKGROUND_RATE` here — 0.35, this project's invention, exposed as a
+ * parameter precisely because Microsoft never published a coefficient and nobody could check ours.
+ * It is gone, and not because a better number turned up: **once the panorama wraps there is no
+ * coefficient to choose.** The background's rate is its own width over the content's, and any other
+ * value tears the seam. An invented number that had to be a parameter turned out to be a derivation
+ * that had no business being one.
  */
-public const val DEFAULT_BACKGROUND_RATE: Float = 0.35f
-
 private const val COPIES = 2
