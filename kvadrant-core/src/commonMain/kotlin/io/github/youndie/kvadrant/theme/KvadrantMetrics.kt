@@ -45,6 +45,18 @@ public data class KvadrantMetrics(
      * not touch.
      */
     val tiltDepression: Dp = 18.75.dp,
+    /**
+     * `PhoneButtonBase`'s `Padding="10,3,10,5"` — the button's content inset, asymmetric top to
+     * bottom.
+     *
+     * It lives here rather than beside the button because it has to be scaled by [scaled] with
+     * everything else. Left as a constant in the component it stayed at 7.5/2.25/3.75 dp while the
+     * type ramp grew with the metric set, and a scaled-up button came out with its text pressed
+     * against the frame.
+     */
+    val buttonPaddingHorizontal: Dp = 7.5.dp,
+    val buttonPaddingTop: Dp = 2.25.dp,
+    val buttonPaddingBottom: Dp = 3.75.dp,
     /** Tile sizes: 99 / 210 / 432×210 px, gap 12 px. */
     val tileSmall: Dp = 74.25.dp,
     val tileMedium: Dp = 157.5.dp,
@@ -96,6 +108,9 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         // Not scaled either, and this one is worth the paragraph in the doc above: it looks like
         // an oversight and is not.
         tiltDepression = tiltDepression,
+        buttonPaddingHorizontal = buttonPaddingHorizontal * factor,
+        buttonPaddingTop = buttonPaddingTop * factor,
+        buttonPaddingBottom = buttonPaddingBottom * factor,
         tileSmall = tileSmall * factor,
         tileMedium = tileMedium * factor,
         tileWide = tileWide * factor,

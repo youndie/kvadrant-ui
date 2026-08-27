@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,7 +78,7 @@ public fun KvadrantButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    contentPadding: PaddingValues = KvadrantButtonDefaults.ContentPadding,
+    contentPadding: PaddingValues = KvadrantButtonDefaults.contentPadding,
     interactionSource: MutableInteractionSource? = null,
     cyrillic: FontFamily? = null,
 ) {
@@ -139,11 +140,24 @@ public fun KvadrantButton(
 /** The button's defaults, so the one number a caller is likely to want is reachable. */
 public object KvadrantButtonDefaults {
     /**
-     * `Padding="10,3,10,5"` at 0.75. Asymmetric on purpose — it is asymmetric in the template, and
-     * the extra pixel and a half below is what stops a line of Segoe from sitting low in the frame.
+     * `Padding="10,3,10,5"` at 0.75, **as the current theme has scaled it**.
+     *
+     * Composable rather than a constant, and that is the whole point: it is read out of
+     * [KvadrantMetrics] so a caller that scales the metric set scales this with it. As a constant
+     * it was the one measurement on a button that did not move, and a scaled-up button came out
+     * with a grown line of text inside an ungrown frame.
      */
-    public val ContentPadding: PaddingValues =
-        PaddingValues(start = 7.5.dp, top = 2.25.dp, end = 7.5.dp, bottom = 3.75.dp)
+    public val contentPadding: PaddingValues
+        @Composable @ReadOnlyComposable
+        get() =
+            with(KvadrantTheme.metrics) {
+                PaddingValues(
+                    start = buttonPaddingHorizontal,
+                    top = buttonPaddingTop,
+                    end = buttonPaddingHorizontal,
+                    bottom = buttonPaddingBottom,
+                )
+            }
 }
 
 /**

@@ -26,6 +26,19 @@ public data class KvadrantColors(
     val inactive: Color,
     val textBox: Color,
     val textBoxEditBackground: Color,
+    /**
+     * `PhoneRadioCheckBoxPressedColor` — what fills a check box or a radio ring while it is held.
+     *
+     * **Not the accent, and this used to be.** Research §1.12 recorded the accent's role as "the
+     * pressed state, and only that", read off the *name* `PhoneRadioCheckBoxPressedBrush` without
+     * resolving it. Resolved, it is `#FFFFFFFF` in the dark theme and `#00000000` — fully
+     * transparent — in the light one. Exactly one colour differs between the twenty accent
+     * dictionaries, and it is `PhoneAccentColor`; the accent marks selection and progress, never
+     * touch.
+     */
+    val checkBoxPressed: Color,
+    /** `PhoneRadioCheckBoxPressedBorderColor`, which parts company with [checkBoxPressed] in light. */
+    val checkBoxPressedBorder: Color,
     val isDark: Boolean,
 ) {
     /** Black or white, whichever stays legible on [accent]. */
@@ -47,6 +60,8 @@ public data class KvadrantColors(
                 inactive = Color(0x33FFFFFF),
                 textBox = Color(0xBFFFFFFF),
                 textBoxEditBackground = Color(0xFFFFFFFF),
+                checkBoxPressed = Color(0xFFFFFFFF),
+                checkBoxPressedBorder = Color(0xFFFFFFFF),
                 isDark = true,
             )
 
@@ -65,6 +80,11 @@ public data class KvadrantColors(
                 inactive = Color(0x33000000),
                 textBox = Color(0x26000000),
                 textBoxEditBackground = Color(0x00000000),
+                // Held down, a light-theme box goes *emptier* — its 15 % fill drops to nothing while
+                // the border darkens. The dark theme floods to solid white. Neither is the other
+                // inverted, which is the light theme's rule and not an exception to it.
+                checkBoxPressed = Color(0x00000000),
+                checkBoxPressedBorder = Color(0xDE000000),
                 isDark = false,
             )
     }

@@ -40,7 +40,9 @@ import io.github.youndie.kvadrant.theme.KvadrantTheme
  *
  * Three things it does that a reconstruction gets wrong. The box is **32 px square** with the same
  * 3 px border everything else uses. Its background stays **transparent** when checked — what appears
- * is the tick, in the **foreground** colour; the accent shows only while the box is held down. And
+ * is the tick, in the **foreground** colour; held down it fills with
+ * [KvadrantColors.checkBoxPressed], which is white in the dark theme and transparent in the light
+ * one — not the accent, whatever the token's name suggested. And
  * the tick is a **filled path**, not two strokes: `M0,123 L39,93 L124,164 L256,18 L295,49 L124,240`,
  * stretched to 23×21, which is why its two arms have different weights and why a pair of straight
  * lines never looks quite like it.
@@ -74,8 +76,8 @@ public fun KvadrantCheckBox(
         Box(
             Modifier
                 .size(boxSize)
-                .background(if (pressed) colors.accent else Color.Transparent)
-                .border(BORDER, outline, RectangleShape),
+                .background(if (pressed) colors.checkBoxPressed else Color.Transparent)
+                .border(BORDER, if (pressed) colors.checkBoxPressedBorder else outline, RectangleShape),
             contentAlignment = Alignment.Center,
         ) {
             if (checked) {
@@ -126,7 +128,8 @@ private fun Tick(
 
 /**
  * The phone's radio button: a 32 px ring with a 3 px stroke and a 16 px dot — exactly half — both in
- * the foreground colour, on a transparent fill. The accent appears only while it is held.
+ * the foreground colour, on a transparent fill. Held down it takes
+ * [KvadrantColors.checkBoxPressed] and [KvadrantColors.checkBoxPressedBorder] — not the accent.
  */
 @Composable
 public fun KvadrantRadioButton(
@@ -158,8 +161,8 @@ public fun KvadrantRadioButton(
         Box(
             Modifier
                 .size(size)
-                .background(if (pressed) colors.accent else Color.Transparent, CircleShape)
-                .border(BORDER, outline, CircleShape),
+                .background(if (pressed) colors.checkBoxPressed else Color.Transparent, CircleShape)
+                .border(BORDER, if (pressed) colors.checkBoxPressedBorder else outline, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             if (selected) {

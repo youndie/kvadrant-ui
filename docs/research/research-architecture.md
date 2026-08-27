@@ -914,7 +914,7 @@ phone's templates were in the same cabinet, in a **XAML file rather than an asse
 | | reconstructed | actual |
 |---|---|---|
 | check box, checked | filled with the accent | **transparent**; the tick appears in the **foreground** colour |
-| accent's role | the checked state | the **pressed** state, and only that (`PhoneRadioCheckBoxPressedBrush`) |
+| accent's role | the checked state | **neither** — see the correction below |
 | the tick | two straight strokes | a **filled path**, `M0,123 L39,93 L124,164 L256,18 L295,49 L124,240`, stretched to 23×21 — its two arms have different weights |
 | box and ring | 28 px, guessed | **32 px**, with the same 3 px border as everything else |
 | radio dot | half the ring, guessed | **16 px against 32** — half, correct by luck |
@@ -930,7 +930,35 @@ took a person saying "crooked tick" to send the search back out.
 template is in that XAML too and has not been read yet; the thumb dimensions remain this project's
 and stay parameters until it is.
 
-**Correction — it was two controls, and the second one nobody thought to count.** The paragraph
+**Correction — the accent has no part in a press, and this document said it did.** The row above
+used to read "the accent's role is the **pressed** state, and only that (`PhoneRadioCheckBoxPressedBrush`)".
+That was the brush's *name* being read instead of its value. Resolved against the theme dictionary
+it is:
+
+| token | dark | light |
+|---|---|---|
+| `PhoneRadioCheckBoxColor` | `#BFFFFFFF` | `#26000000` |
+| `PhoneRadioCheckBoxPressedColor` | `#FFFFFFFF` | **`#00000000`** |
+| `PhoneRadioCheckBoxPressedBorderColor` | `#FFFFFFFF` | `#DE000000` |
+| `PhoneRadioCheckBoxCheckColor` | `#FF000000` | `#DE000000` |
+| `PhoneRadioCheckBoxDisabledColor` | `#66FFFFFF` | **`#00000000`** |
+| `PhoneRadioCheckBoxCheckDisabledColor` | `#66000000` | `#4D000000` |
+
+**The decisive check is cheaper than any of this reasoning: diff two accent dictionaries.** The
+twenty `*ThemeResXaml` files differ in exactly one `<Color>` — `PhoneAccentColor`, `#FF1BA1E2` blue
+against `#FFE51400` red — and the seventeen control templates are **byte-identical across all
+twenty**. So the accent cannot enter a template except through `PhoneAccentBrush`, and every one of
+its six appearances is a selection or a progress fill: `ListBoxItem` Selected, `PasswordBox` and
+`TextBox` focus, `ProgressBar`, `Slider`. None is a press. *Consequence:* in Metro, **the accent
+marks state, and touch is signalled by inversion.** The tilt, the button flooding to foreground and
+the check box flooding to white are one rule, and `PhoneRadioCheckBoxPressedBrush` was the only name
+that looked like an exception.
+
+*Consequence 2 — light is not dark inverted, again.* Held down, a dark box floods to solid white; a
+light box's 15 % fill drops to **nothing** while its border darkens. The rule was already written
+down and still nearly got overridden by "the pressed state fills".
+
+**Correction 2 — it was two controls, and the second one nobody thought to count.** The paragraph
 above was written while looking at the controls the reconstruction had *known* it was guessing at.
 `KvadrantButton` was not on that list, because a bordered rectangle that inverts on press reads as
 too simple to have got wrong. It was wrong in four ways, and the file that settles them is the one
