@@ -78,7 +78,7 @@ public final class io/github/youndie/kvadrant/components/KvadrantLoopingSelector
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantMessageBoxKt {
-	public static final fun KvadrantMessageBox (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ljava/lang/String;ZLandroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantMessageBox (ZLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ljava/lang/String;ZLandroidx/compose/ui/text/font/FontFamily;ZLandroidx/compose/runtime/Composer;III)V
 	public static final fun KvadrantScrim (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 }
 

@@ -110,8 +110,21 @@ private const val UP_DOWN_OUT = 250
 private const val SWIVEL_IN_FROM = -45f
 private const val SWIVEL_FORWARD_OUT_TO = 90f
 private const val SWIVEL_BACKWARD_OUT_TO = 60f
-private const val SWIVEL_IN_MILLIS = 350
-private const val SWIVEL_OUT_MILLIS = 250
+
+/**
+ * How long a swivel takes, in and out.
+ *
+ * Public because anything that swivels *itself out* has to stay composed for exactly this long — a
+ * surface removed on the frame its flag moves has nothing to animate, and hard-coding 250 at each
+ * call site duplicates a number that lives here.
+ */
+public const val KVADRANT_SWIVEL_IN_MILLIS: Int = 350
+
+/** @see KVADRANT_SWIVEL_IN_MILLIS */
+public const val KVADRANT_SWIVEL_OUT_MILLIS: Int = 250
+
+private const val SWIVEL_IN_MILLIS = KVADRANT_SWIVEL_IN_MILLIS
+private const val SWIVEL_OUT_MILLIS = KVADRANT_SWIVEL_OUT_MILLIS
 
 /**
  * A page turning in its own plane, a quarter or a half turn either way.

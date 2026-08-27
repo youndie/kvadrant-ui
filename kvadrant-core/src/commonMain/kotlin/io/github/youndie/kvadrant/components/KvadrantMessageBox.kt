@@ -1,6 +1,7 @@
 package io.github.youndie.kvadrant.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantTheme
+import kotlinx.coroutines.delay
 
 /**
  * The phone's message box: a full-width band across the top of the screen, not a floating card.
@@ -31,6 +38,7 @@ import io.github.youndie.kvadrant.theme.KvadrantTheme
  */
 @Composable
 public fun KvadrantMessageBox(
+    visible: Boolean,
     title: String,
     message: String,
     onConfirm: () -> Unit,
@@ -40,6 +48,12 @@ public fun KvadrantMessageBox(
     cancelText: String = "cancel",
     win8ButtonOrder: Boolean = false,
     cyrillic: FontFamily? = null,
+    /**
+     * Tap the dimmed area to dismiss. **Not the phone's behaviour** — `CustomMessageBox` hands its
+     * overlay no handler at all and is closed by a button or by the back key — so it is a parameter,
+     * off by default, and a caller that wants it says so.
+     */
+    dismissOnOutsideClick: Boolean = false,
 ) {
     val colors = KvadrantTheme.colors
 
@@ -52,37 +66,69 @@ public fun KvadrantMessageBox(
     // background**, not a fixed black. In the light theme it is a white veil, which is why
     // `PhoneSemitransparentBrush` — black at 0.667, and a real token used elsewhere — is the wrong
     // one to reach for here.
-    Box(modifier.fillMaxSize().background(colors.background.copy(alpha = OVERLAY_ALPHA))) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(colors.chrome)
-                // The overlay above covers the whole display, system bars included, because a
-                // scrim that stops at the status bar is a scrim with a bright strip across the
-                // top. The box insets its own content instead.
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 18.dp, vertical = 21.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            KvadrantText(title, style = KvadrantTheme.typography.large, cyrillic = cyrillic)
-            KvadrantText(message, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)
+    // Two flags, and both are needed. `shown` is `false` on the frame this is first composed and is
+    // flipped by an effect on the next, because a transition handed its target on the frame it is
+    // born has nothing to run. `onScreen` outlives it by the length of the exit, because a surface
+    // removed when its flag moves has nothing to animate *out*. Getting one right and not the other
+    // gives an animation in one direction only, which is how this looked twice.
+    var shown by remember { mutableStateOf(false) }
+    var onScreen by remember { mutableStateOf(false) }
+    if (visible) onScreen = true
+    LaunchedEffect(visible) {
+        shown = visible
+        if (!visible) {
+            delay(KVADRANT_SWIVEL_OUT_MILLIS.toLong())
+            onScreen = false
+        }
+    }
+    if (!onScreen) return
 
-            Row(
-                Modifier.fillMaxWidth().padding(top = 9.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+    // `SwivelTransitionMode.BackwardIn` on show and `BackwardOut` on dismiss, both from
+    // `CustomMessageBox.cs`. Not a slide: the box tips in around its top edge.
+    KvadrantSwivel(visible = shown, backward = true) {
+        Box(
+            modifier
+                .fillMaxSize()
+                .background(colors.background.copy(alpha = OVERLAY_ALPHA))
+                .then(
+                    if (dismissOnOutsideClick && onCancel != null) {
+                        Modifier.clickable(indication = null, interactionSource = null, onClick = onCancel)
+                    } else {
+                        Modifier
+                    },
+                ),
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(colors.chrome)
+                    // The overlay above covers the whole display, system bars included, because a
+                    // scrim that stops at the status bar is a scrim with a bright strip across the
+                    // top. The box insets its own content instead.
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(horizontal = 18.dp, vertical = 21.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                val confirm: @Composable () -> Unit = {
-                    KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
-                }
-                val cancel: @Composable () -> Unit = {
-                    if (onCancel != null) KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
-                }
-                if (win8ButtonOrder) {
-                    cancel()
-                    confirm()
-                } else {
-                    confirm()
-                    cancel()
+                KvadrantText(title, style = KvadrantTheme.typography.large, cyrillic = cyrillic)
+                KvadrantText(message, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)
+
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 9.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    val confirm: @Composable () -> Unit = {
+                        KvadrantButton(confirmText, onConfirm, Modifier.weight(1f), cyrillic)
+                    }
+                    val cancel: @Composable () -> Unit = {
+                        if (onCancel != null) KvadrantButton(cancelText, onCancel, Modifier.weight(1f), cyrillic)
+                    }
+                    if (win8ButtonOrder) {
+                        cancel()
+                        confirm()
+                    } else {
+                        confirm()
+                        cancel()
+                    }
                 }
             }
         }

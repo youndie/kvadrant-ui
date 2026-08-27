@@ -235,17 +235,33 @@ public fun KvadrantSampleApp() {
                     // the settings page's Column, where a Column does what a Column does and pushed
                     // the settings apart to make room — the same mistake as the detail page, in the
                     // same file, two hours apart.
-                    if (dialog) {
-                        KvadrantMessageBox(
-                            title = "удалить письмо?",
-                            message = "его нельзя будет вернуть",
-                            onConfirm = { dialog = false },
-                            onCancel = { dialog = false },
-                            confirmText = "удалить",
-                            cancelText = "отмена",
-                            cyrillic = cyrillic,
+                    // A layer that eats one tap and closes the app bar's menu, above the page and
+                    // below the bar itself. It is the caller's job only because there is no app-bar
+                    // host to put it in — the context menu has one and this does not, which is an
+                    // asymmetry worth removing rather than a design.
+                    if (menuOpen) {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = null,
+                                ) { menuOpen = false },
                         )
                     }
+
+                    KvadrantMessageBox(
+                        visible = dialog,
+                        title = "удалить письмо?",
+                        message = "его нельзя будет вернуть",
+                        onConfirm = { dialog = false },
+                        onCancel = { dialog = false },
+                        confirmText = "удалить",
+                        cancelText = "отмена",
+                        cyrillic = cyrillic,
+                        // Not the phone's behaviour, which is why the component makes it ask.
+                        dismissOnOutsideClick = true,
+                    )
                     KvadrantToast(
                         visible = toast,
                         title = "Анна Петрова",

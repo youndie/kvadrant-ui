@@ -96,6 +96,9 @@ internal fun MessageBox() {
     Themed(KvadrantColors.dark()) {
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             KvadrantMessageBox(
+                // The fixture holds it open. `visible` also drives a swivel now, and a still frame is
+                // taken once the transition has settled.
+                visible = true,
                 title = "удалить письмо?",
                 message = "оно будет удалено с телефона и с сервера.",
                 onConfirm = {},
