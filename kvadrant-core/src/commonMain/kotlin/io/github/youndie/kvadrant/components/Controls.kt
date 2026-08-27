@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
@@ -232,6 +233,15 @@ public fun KvadrantTextBox(
 /**
  * Two lines: the title at 20 px and the second line at 18.667 px in the subtle colour. The whole row
  * is the touch target, and it tilts.
+ *
+ * **[titleStyle] is a parameter because Microsoft published no number for it.** The page default is
+ * `PhoneFontSizeNormal` and a list item that overrides nothing gets it — that is the whole of what
+ * the SDK's dictionary and the toolkit's six `FontSize` overrides say, and none of the six is a
+ * list. The phone's own Mail, People and Messaging lists were visibly larger than 20 px, and they
+ * were larger because each of those *applications* said so, in a data template that shipped inside
+ * the application and not in any dictionary. So the default here is the only defensible one and it
+ * is also, on a modern screen, the one that reads as small — which is why the way out is an
+ * argument rather than a different constant. Research §1.10.
  */
 @Composable
 public fun KvadrantListItem(
@@ -240,6 +250,7 @@ public fun KvadrantListItem(
     subtitle: String? = null,
     onClick: (() -> Unit)? = null,
     cyrillic: FontFamily? = null,
+    titleStyle: TextStyle = KvadrantTheme.typography.normal,
 ) {
     val colors = KvadrantTheme.colors
     val interaction = remember { MutableInteractionSource() }
@@ -258,7 +269,7 @@ public fun KvadrantListItem(
                 },
             ).padding(vertical = 6.dp),
     ) {
-        KvadrantText(title, style = KvadrantTheme.typography.normal, cyrillic = cyrillic)
+        KvadrantText(title, style = titleStyle, cyrillic = cyrillic)
         if (subtitle != null) {
             KvadrantText(
                 subtitle,

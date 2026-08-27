@@ -201,7 +201,17 @@ private fun MailPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
             "build server" to "nightly is green",
             "Дмитрий" to "документы отправил",
         ).forEach { (who, what) ->
-            KvadrantListItem(who, subtitle = what, onClick = {}, cyrillic = cyrillic)
+            // The demo's choice, not the library's and not Microsoft's: the phone's Mail set its
+            // sender line above the page default in its own data template, and no dictionary
+            // records what it used. A demo imitating Mail has to make that call somewhere visible,
+            // which is here rather than inside `KvadrantListItem`.
+            KvadrantListItem(
+                who,
+                subtitle = what,
+                onClick = {},
+                cyrillic = cyrillic,
+                titleStyle = KvadrantTheme.typography.mediumLarge,
+            )
         }
         KvadrantProgressDots(Modifier.padding(top = 12.dp))
     }

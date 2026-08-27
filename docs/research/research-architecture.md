@@ -629,6 +629,20 @@ the Compose runtime above it was not built against. The only version this projec
 Eight numeric gaps remain in total; they are listed in `metro-compose-brief/02-metro-spec.md` §9 and
 each names how it could be closed.
 
+**The text size of a list item.** Raised by eye — *"но список в почте мелкий, это норм?"* — and
+searched for properly: the SDK's own dictionary sets `FontSize` in exactly one place
+(`local:PhoneApplicationFrame`, `PhoneFontSizeNormal`), and the toolkit's `Generic.xaml` overrides it
+in six styles, none of them a list. The UX guidelines document the LongListSelector's jump-list tiles
+and group headers to the pixel and say nothing about the item's type. So a list item that overrides
+nothing is 20 px, and that is all Microsoft published.
+
+The memory of the phone's lists being larger is almost certainly right and it is not contradicted by
+any of this: Mail, People and Messaging each shipped their own data templates, inside the
+application, and those never appeared in a theme dictionary. **What is absent is the number, not the
+practice.** `KvadrantListItem.titleStyle` is therefore a parameter with the published default, and
+the sample — which is imitating Mail — passes `mediumLarge` and says in a comment that it is the
+demo's call.
+
 ### 1.11 The Pivot is documented everywhere except in the numbers that matter
 
 The spike went after the WP8 metrics along every route that does not require the SDK. Three things
