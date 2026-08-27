@@ -1,13 +1,19 @@
 ---
 id: B-32
 title: "Twelve platform templates sit unread while the controls above them are guesses"
-status: open
+status: done
 priority: P1
 size: M
 stage: stage-2-controls
 ---
 
 # B-32 — Twelve platform templates sit unread while the controls above them are guesses
+
+**Done, and the count was the misleading part.** Of the eleven unread `TargetType`s this library has
+components over exactly two — `Slider` and `PasswordBox` — and the second turned out to be
+`TextBox` with one number changed. Both were transcribed; the other nine have nothing above them to
+correct and are read when something needs them. What the item was really about is the hit rate, and
+it was three for three: every template opened this session contradicted the code above it.
 
 The SDK's design-time `System.Windows.xaml` — the file named in research §1.12, the one Blend's
 "Edit a Copy" reads — carries the phone's default template for seventeen `TargetType`s:
@@ -33,6 +39,19 @@ Whoever ticks a control off this list should say which *states* were transcribed
 a text search in a file already on disk. The button was assumed right for the same reason all of
 these are — the shape is simple — and it was wrong about its type ramp, its padding, its hit area
 and a state it did not have.
+
+## What the two said
+
+| | as built | template |
+|---|---|---|
+| slider thumb | a 9×24 foreground block, "this project's own" | `PhoneSimpleThumb` is `<Rectangle Fill="Transparent"/>`; the thumb is 1 px wide with `ScaleX="32"` — a handle for the finger, nothing to see |
+| slider track | 4 px, the progress bar's line | **`Height="12"`**, three times thicker, `Margin="0,22,0,50"` inside `PhoneHorizontalMargin` |
+| slider track colour | `PhoneInactiveBrush` | `PhoneContrastBackgroundBrush` at `Opacity="0.2"` — within a hair of the same thing, now derived rather than coincidental |
+| slider disabled | did not exist | track opacity to 0.1, fill to `PhoneDisabledBrush` |
+| text box fill | transparent | **`PhoneTextBoxBrush`** — 75 % white on a dark page, 15 % black on a light one. A Metro field is a light box with dark text in *both* themes |
+| text box focus | border to the accent | `PhoneTextBoxEditBorderBrush`, which is the page's foreground; the accent has no part in it |
+| text box ink | the page's foreground | `PhoneTextBoxForegroundBrush`, dark on that fill either way — a new token, because `contrastForeground` inverts to white-on-white in the light theme |
+| text box geometry | 6/6 padding, no overhang | border inside `PhoneTouchTargetOverhang`, `Padding="2"` plus an inner margin of `1,2` — and `3,2` for the password box, the only structural difference between the two templates |
 
 ## Acceptance
 

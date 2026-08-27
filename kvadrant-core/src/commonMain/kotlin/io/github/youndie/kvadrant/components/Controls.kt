@@ -263,11 +263,23 @@ private const val DISABLED_OPACITY = 0.3f
 public fun onAccent(): Color = contrastOn(KvadrantTheme.colors.accent)
 
 /**
- * A Metro text field: a rectangle with a thick border and a placeholder that vanishes.
+ * A Metro text box, from `PhoneTextBox` in the SDK's own `System.Windows.xaml`.
  *
- * Two behaviours here look like defects and are canon, so they are written down rather than fixed.
- * The placeholder disappears the moment the field has focus, not the moment it has text — so an
- * empty focused field shows nothing at all. And the field does not scroll internally; it grows.
+ * **It is a light box in both themes, and this drew a transparent one.** `Background` and
+ * `BorderBrush` are both `PhoneTextBoxBrush` — 75 % white on a dark page, 15 % black on a light one
+ * — and `Foreground` is `PhoneTextBoxForegroundBrush`, dark on that fill either way. What this had
+ * was a transparent field with the page's own text colour in it, which reads as a Material outlined
+ * field and is the single most recognisable thing about a Windows Phone form got wrong.
+ *
+ * Focus does **not** bring in the accent. `PhoneTextBoxEditBorderBrush` is white on dark and 87 %
+ * black on light — the page's foreground — and `PhoneTextBoxEditBackgroundBrush` goes to solid
+ * white on dark and to *transparent* on light. So focusing brightens a dark theme's box and empties
+ * a light theme's, which is the light theme not being an inversion again.
+ *
+ * Geometry is the template's: the border sits inside `PhoneTouchTargetOverhang`, so twelve pixels of
+ * invisible field surround it exactly as they surround a button, and the content carries
+ * `Padding="2"` plus `PhoneTextBoxInnerMargin` of `1,2`. [contentPadding] is a parameter only
+ * because `PhonePasswordBox` differs from this in one number — its inner margin is `3,2`.
  */
 @Composable
 public fun KvadrantTextBox(
@@ -275,24 +287,45 @@ public fun KvadrantTextBox(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = KvadrantTextBoxDefaults.ContentPadding,
     cyrillic: FontFamily? = null,
 ) {
     val colors = KvadrantTheme.colors
     val metrics = KvadrantTheme.metrics
     var focused by remember { mutableStateOf(false) }
+    val active = focused && enabled
+
+    // The Disabled storyboard swaps the whole border for one that is transparent with a disabled
+    // outline, so it wins over focus rather than blending with it.
+    val line =
+        when {
+            !enabled -> colors.disabled
+            active -> colors.foreground
+            else -> colors.textBox
+        }
+    val fill =
+        when {
+            !enabled -> Color.Transparent
+            active -> colors.textBoxEditBackground
+            else -> colors.textBox
+        }
+    val ink = if (enabled) colors.textBoxForeground else colors.disabled
 
     Box(
         modifier
             .defaultMinSize(minHeight = metrics.touchTargetMin)
-            .border(metrics.borderThickness, if (focused) colors.accent else colors.textBox, RectangleShape)
-            .background(if (focused) colors.textBoxEditBackground else Color.Transparent)
-            .padding(horizontal = 6.dp, vertical = 6.dp),
+            .padding(metrics.touchTargetOverhang)
+            .border(metrics.borderThickness, line, RectangleShape)
+            .background(fill)
+            .padding(metrics.borderThickness)
+            .padding(contentPadding),
         contentAlignment = Alignment.CenterStart,
     ) {
-        if (value.isEmpty() && !focused && placeholder.isNotEmpty()) {
+        if (value.isEmpty() && !active && placeholder.isNotEmpty()) {
             KvadrantText(
                 placeholder,
-                style = KvadrantTheme.typography.mediumLarge.copy(color = colors.subtle),
+                style = KvadrantTheme.typography.mediumLarge.copy(color = ink.copy(alpha = PLACEHOLDER_ALPHA)),
                 cyrillic = cyrillic,
             )
         }
@@ -300,19 +333,35 @@ public fun KvadrantTextBox(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth().onFocusChanged { focused = it.isFocused },
+            enabled = enabled,
             // `PhoneFontSizeMediumLarge`, 25.333 px: `Style TargetType="controls:PhoneTextBox"`
             // in the toolkit's `Generic.xaml`. Typing into a field happens at a size above the
             // page's body text, which is a thing every screenshot of the phone shows and no
             // amount of looking at our own output would have suggested.
-            textStyle =
-                KvadrantTheme.typography.mediumLarge.copy(
-                    color = if (focused) colors.contrastForeground else colors.foreground,
-                ),
-            cursorBrush = SolidColor(if (focused) colors.contrastForeground else colors.foreground),
+            textStyle = KvadrantTheme.typography.mediumLarge.copy(color = ink),
+            cursorBrush = SolidColor(ink),
             singleLine = true,
         )
     }
 }
+
+/** The two inner margins the platform gives a field, which are the only thing that differs. */
+public object KvadrantTextBoxDefaults {
+    /** `Padding="2"` plus `PhoneTextBoxInnerMargin="1,2"`, at 0.75. */
+    public val ContentPadding: PaddingValues = PaddingValues(horizontal = 2.25.dp, vertical = 3.dp)
+
+    /** The same, with `PhonePasswordBoxInnerMargin="3,2"` instead. */
+    public val PasswordContentPadding: PaddingValues = PaddingValues(horizontal = 3.75.dp, vertical = 3.dp)
+}
+
+/**
+ * How much of the field's own ink a placeholder gets.
+ *
+ * **This project's number.** The template has no placeholder at all — `PhoneTextBox`'s hint text is
+ * the Toolkit's `PhoneTextBox`, a different control, and it sets the hint with a brush this
+ * dictionary does not contain.
+ */
+private const val PLACEHOLDER_ALPHA = 0.5f
 
 /**
  * Two lines: the title at 20 px and the second line at 18.667 px in the subtle colour. The whole row
@@ -448,6 +497,9 @@ public fun KvadrantPasswordBox(
         },
         modifier = modifier,
         placeholder = placeholder,
+        // `PhonePasswordBoxInnerMargin="3,2"` where a text box has `1,2`. Two Metro pixels, and the
+        // only structural difference between the two templates in the whole dictionary.
+        contentPadding = KvadrantTextBoxDefaults.PasswordContentPadding,
         cyrillic = cyrillic,
     )
 }

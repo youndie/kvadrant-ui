@@ -37,7 +37,7 @@ public final class io/github/youndie/kvadrant/components/ControlsKt {
 	public static final fun KvadrantListItem (Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantPasswordBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantProgressBar (FLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantTextBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantTextBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZLandroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantToggleSwitch (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLandroidx/compose/runtime/Composer;II)V
 	public static final fun onAccent (Landroidx/compose/runtime/Composer;I)J
 }
@@ -116,7 +116,14 @@ public final class io/github/youndie/kvadrant/components/KvadrantProgressKt {
 public final class io/github/youndie/kvadrant/components/KvadrantSelectionKt {
 	public static final fun KvadrantCheckBox-iHT-50w (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;FZLandroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantRadioButton-iHT-50w (ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Ljava/lang/String;FZLandroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantSlider-6PoWaU8 (FLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;FFLandroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantSlider (FLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLandroidx/compose/runtime/Composer;II)V
+}
+
+public final class io/github/youndie/kvadrant/components/KvadrantTextBoxDefaults {
+	public static final field $stable I
+	public static final field INSTANCE Lio/github/youndie/kvadrant/components/KvadrantTextBoxDefaults;
+	public final fun getContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
+	public final fun getPasswordContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantTileKt {
@@ -290,7 +297,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantAccessibleKt {
 public final class io/github/youndie/kvadrant/theme/KvadrantColors {
 	public static final field $stable I
 	public static final field Companion Lio/github/youndie/kvadrant/theme/KvadrantColors$Companion;
-	public synthetic fun <init> (JJJJJJJJJJJJJJJZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JJJJJJJJJJJJJJJJZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-0d7_KjU ()J
 	public final fun component10-0d7_KjU ()J
 	public final fun component11-0d7_KjU ()J
@@ -298,7 +305,8 @@ public final class io/github/youndie/kvadrant/theme/KvadrantColors {
 	public final fun component13-0d7_KjU ()J
 	public final fun component14-0d7_KjU ()J
 	public final fun component15-0d7_KjU ()J
-	public final fun component16 ()Z
+	public final fun component16-0d7_KjU ()J
+	public final fun component17 ()Z
 	public final fun component2-0d7_KjU ()J
 	public final fun component3-0d7_KjU ()J
 	public final fun component4-0d7_KjU ()J
@@ -307,8 +315,8 @@ public final class io/github/youndie/kvadrant/theme/KvadrantColors {
 	public final fun component7-0d7_KjU ()J
 	public final fun component8-0d7_KjU ()J
 	public final fun component9-0d7_KjU ()J
-	public final fun copy-H9fFfjM (JJJJJJJJJJJJJJJZ)Lio/github/youndie/kvadrant/theme/KvadrantColors;
-	public static synthetic fun copy-H9fFfjM$default (Lio/github/youndie/kvadrant/theme/KvadrantColors;JJJJJJJJJJJJJJJZILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantColors;
+	public final fun copy-64gwKD8 (JJJJJJJJJJJJJJJJZ)Lio/github/youndie/kvadrant/theme/KvadrantColors;
+	public static synthetic fun copy-64gwKD8$default (Lio/github/youndie/kvadrant/theme/KvadrantColors;JJJJJJJJJJJJJJJJZILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantColors;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAccent-0d7_KjU ()J
 	public final fun getBackground-0d7_KjU ()J
@@ -326,6 +334,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantColors {
 	public final fun getSubtle-0d7_KjU ()J
 	public final fun getTextBox-0d7_KjU ()J
 	public final fun getTextBoxEditBackground-0d7_KjU ()J
+	public final fun getTextBoxForeground-0d7_KjU ()J
 	public fun hashCode ()I
 	public final fun isDark ()Z
 	public fun toString ()Ljava/lang/String;
@@ -372,8 +381,8 @@ public final class io/github/youndie/kvadrant/theme/KvadrantFontSizes {
 
 public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public static final field $stable I
-	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()F
 	public final fun component10-D9Ej5fM ()F
 	public final fun component11-D9Ej5fM ()F
@@ -384,6 +393,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun component16-D9Ej5fM ()F
 	public final fun component17-D9Ej5fM ()F
 	public final fun component18-D9Ej5fM ()F
+	public final fun component19-D9Ej5fM ()F
 	public final fun component2-D9Ej5fM ()F
 	public final fun component3-D9Ej5fM ()F
 	public final fun component4-D9Ej5fM ()F
@@ -392,8 +402,8 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun component7-D9Ej5fM ()F
 	public final fun component8-D9Ej5fM ()F
 	public final fun component9-D9Ej5fM ()F
-	public final fun copy-SDcLgz4 (FFFFFFFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
-	public static synthetic fun copy-SDcLgz4$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public final fun copy-qGP-i5I (FFFFFFFFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public static synthetic fun copy-qGP-i5I$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBorderThickness-D9Ej5fM ()F
 	public final fun getButtonPaddingBottom-D9Ej5fM ()F
@@ -405,6 +415,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun getPivotItemTopMargin-D9Ej5fM ()F
 	public final fun getProgressThickness-D9Ej5fM ()F
 	public final fun getScale ()F
+	public final fun getSliderThickness-D9Ej5fM ()F
 	public final fun getTileGap-D9Ej5fM ()F
 	public final fun getTileMedium-D9Ej5fM ()F
 	public final fun getTileSmall-D9Ej5fM ()F

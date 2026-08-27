@@ -66,6 +66,13 @@ public data class KvadrantMetrics(
      * theme got a row of specks — which is what it looked like.
      */
     val progressThickness: Dp = 3.dp,
+    /**
+     * `Height="12"` on the slider's track and fill — **not** the progress bar's 4.
+     *
+     * They read as the same line and are not: a slider is three times thicker. This library drew
+     * them at one number for months because nobody had opened `PhoneSlider`.
+     */
+    val sliderThickness: Dp = 9.dp,
     /** Tile sizes: 99 / 210 / 432×210 px, gap 12 px. */
     val tileSmall: Dp = 74.25.dp,
     val tileMedium: Dp = 157.5.dp,
@@ -121,6 +128,7 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         buttonPaddingTop = buttonPaddingTop * factor,
         buttonPaddingBottom = buttonPaddingBottom * factor,
         progressThickness = progressThickness * factor,
+        sliderThickness = sliderThickness * factor,
         tileSmall = tileSmall * factor,
         tileMedium = tileMedium * factor,
         tileWide = tileWide * factor,

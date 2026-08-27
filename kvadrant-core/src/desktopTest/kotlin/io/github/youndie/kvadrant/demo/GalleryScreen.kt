@@ -53,7 +53,7 @@ private fun Gallery(colors: KvadrantColors) {
         ) {
             KvadrantText("controls", style = KvadrantTheme.typography.extraLarge, cyrillic = cyrillic)
 
-            KvadrantTextBox("", {}, Modifier.fillMaxWidth(), "введите имя", cyrillic)
+            KvadrantTextBox("", {}, Modifier.fillMaxWidth(), "введите имя", cyrillic = cyrillic)
             KvadrantTextBox("готово", {}, Modifier.fillMaxWidth(), cyrillic = cyrillic)
 
             Row(

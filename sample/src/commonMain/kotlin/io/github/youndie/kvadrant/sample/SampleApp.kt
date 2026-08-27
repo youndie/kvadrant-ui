@@ -496,7 +496,7 @@ private fun SettingsPage(
         )
 
         KvadrantText("имя", cyrillic = cyrillic)
-        KvadrantTextBox(name, { name = it }, Modifier.fillMaxWidth(), "введите имя", cyrillic)
+        KvadrantTextBox(name, { name = it }, Modifier.fillMaxWidth(), "введите имя", cyrillic = cyrillic)
 
         KvadrantText("масштаб метрик", cyrillic = cyrillic)
         KvadrantSlider((density - 1f) / 1.5f, { onDensity(1f + it * 1.5f) })

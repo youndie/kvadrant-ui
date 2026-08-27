@@ -180,75 +180,104 @@ public fun KvadrantRadioButton(
 }
 
 /**
- * A thin straight line with a rectangular thumb.
+ * Two bars meeting at the value, from `PhoneSlider` in the SDK's own `System.Windows.xaml`.
  *
- * Material's slider is a round thumb on a rounded track with a halo and tick marks; Metro's is a
- * line and a block. The track's thickness follows the specification — the same 4 px the progress bar
- * draws. **The thumb's size is this project's**, and stays a parameter because of it: the phone's
- * `Slider` template is not among those recovered.
+ * **There is no thumb, and this drew one.** `HorizontalThumb` is `Width="1"` with a
+ * `ScaleTransform ScaleX="32"` and the template `PhoneSimpleThumb`, which is
+ * `<Rectangle Fill="Transparent"/>` — an invisible thirty-two pixel handle for the finger to find,
+ * and nothing to look at. What a Metro slider shows is the accent up to the value and the track
+ * after it, meeting at a hard edge. The block this used to draw was named in its own KDoc as this
+ * project's own, on the grounds that the template "is not among those recovered"; it is now, and it
+ * says the block should not exist.
  *
- * It answers a drag as well as a tap, and inside a Pivot that is not a nicety: a tap-only slider
- * does not merely fail to drag — the horizontal movement is still a gesture and the pager still
- * wants it, so sliding the thumb turns the page. `SliderDragTest` puts one inside a real Pivot for
- * exactly that reason.
+ * **And the track is three times thicker than it was.** `Height="12"`, not the 4 the progress bar
+ * uses — they are not the same line. It sits high in its row, `Margin="0,22,0,50"`, with the whole
+ * horizontal template inside `PhoneHorizontalMargin`.
+ *
+ * The track's colour is `PhoneContrastBackgroundBrush` at `Opacity="0.2"` — white at a fifth on a
+ * dark page, 87 % black at a fifth on a light one. [KvadrantColors.inactive] is within a hair of
+ * that in both themes and was what this used; the derivation is written out instead so the next
+ * reader can check it against the template rather than against a coincidence.
  */
 @Composable
 public fun KvadrantSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    thumbWidth: Dp = DEFAULT_THUMB_WIDTH,
-    thumbHeight: Dp = DEFAULT_THUMB_HEIGHT,
+    enabled: Boolean = true,
 ) {
     val colors = KvadrantTheme.colors
+    val metrics = KvadrantTheme.metrics
     val fraction = value.coerceIn(0f, 1f)
 
-    BoxWithConstraints(
+    // `To="0.1"` on the track and `PhoneDisabledBrush` on the fill, both from the Disabled state.
+    val track = colors.contrastBackground.copy(alpha = if (enabled) TRACK_ALPHA else TRACK_ALPHA * DISABLED_TRACK)
+    val fill = if (enabled) colors.accent else colors.disabled
+
+    Box(
         modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = KvadrantTheme.metrics.touchTargetMin)
-            .pointerInput(thumbWidth) {
-                // Both gestures map the *thumb's centre* to the finger, so a tap and the drag that
-                // follows it cannot disagree about where the value is.
-                fun fractionAt(x: Float): Float {
-                    val travel = size.width - thumbWidth.toPx()
-                    return if (travel <= 0f) 0f else ((x - thumbWidth.toPx() / 2f) / travel).coerceIn(0f, 1f)
-                }
-                detectTapGestures { offset -> onValueChange(fractionAt(offset.x)) }
-            }.pointerInput(thumbWidth) {
-                fun fractionAt(x: Float): Float {
-                    val travel = size.width - thumbWidth.toPx()
-                    return if (travel <= 0f) 0f else ((x - thumbWidth.toPx() / 2f) / travel).coerceIn(0f, 1f)
-                }
-                var x = 0f
-                detectHorizontalDragGestures(
-                    onDragStart = { start ->
-                        x = start.x
-                        onValueChange(fractionAt(x))
-                    },
-                    onHorizontalDrag = { change, delta ->
-                        // Not what wins the gesture from an enclosing pager, though it reads like
-                        // it: `detectHorizontalDragGestures` already consumes at the slop threshold,
-                        // and `SliderDragTest` still passes with this line commented out. It is here
-                        // so that nothing further up treats the same movement as its own.
-                        change.consume()
-                        x += delta
-                        onValueChange(fractionAt(x))
-                    },
-                )
-            },
+            .defaultMinSize(minHeight = metrics.touchTargetMin)
+            // The gestures sit **outside** the horizontal margin, because the template's root is a
+            // `Grid Background="Transparent"` that spans the control and only `HorizontalTemplate`
+            // carries `PhoneHorizontalMargin`. Putting them inside, which this did for a moment,
+            // means a swipe starting at the edge of the control begins outside the handler and
+            // nothing moves — which reads as a slider that has stopped responding.
+            .then(
+                if (!enabled) {
+                    Modifier
+                } else {
+                    Modifier
+                        .pointerInput(metrics.margin) {
+                            // With no thumb the value is simply where the finger is: a tap and the
+                            // drag that follows it cannot disagree, and the arithmetic that used to
+                            // keep a thumb's centre under the finger goes away with the thumb.
+                            val inset = metrics.margin.toPx()
+                            detectTapGestures { offset -> onValueChange(fractionAt(offset.x, size.width, inset)) }
+                        }.pointerInput(metrics.margin) {
+                            val inset = metrics.margin.toPx()
+                            var x = 0f
+                            detectHorizontalDragGestures(
+                                onDragStart = { start ->
+                                    x = start.x
+                                    onValueChange(fractionAt(x, size.width, inset))
+                                },
+                                onHorizontalDrag = { change, delta ->
+                                    // Not what wins the gesture from an enclosing pager, though it
+                                    // reads like it: `detectHorizontalDragGestures` already consumes
+                                    // at the slop threshold, and `SliderDragTest` still passes with
+                                    // this line commented out. It is here so that nothing further up
+                                    // treats the same movement as its own.
+                                    change.consume()
+                                    x += delta
+                                    onValueChange(fractionAt(x, size.width, inset))
+                                },
+                            )
+                        }
+                },
+            ),
         contentAlignment = Alignment.CenterStart,
     ) {
-        val travel = maxWidth - thumbWidth
-        Box(Modifier.fillMaxWidth().height(TRACK).background(colors.inactive))
-        Box(Modifier.fillMaxWidth(fraction).height(TRACK).background(colors.accent))
-        Box(
-            Modifier
-                .offset(x = travel * fraction)
-                .size(thumbWidth, thumbHeight)
-                .background(colors.foreground),
-        )
+        // `Margin="{StaticResource PhoneHorizontalMargin}"` on `HorizontalTemplate`, inside the
+        // hit-testable root rather than around it.
+        Box(Modifier.fillMaxWidth().padding(horizontal = metrics.margin)) {
+            // `Margin="0,22,0,50"`: the bar is not centred in its row, it rides high in it.
+            Box(Modifier.padding(top = TRACK_TOP, bottom = TRACK_BOTTOM)) {
+                Box(Modifier.fillMaxWidth().height(metrics.sliderThickness).background(track))
+                Box(Modifier.fillMaxWidth(fraction).height(metrics.sliderThickness).background(fill))
+            }
+        }
     }
+}
+
+/** The finger's place along the bar, which starts one horizontal margin in from the control. */
+private fun fractionAt(
+    x: Float,
+    width: Int,
+    inset: Float,
+): Float {
+    val travel = width - inset * 2f
+    return if (travel <= 0f) 0f else ((x - inset) / travel).coerceIn(0f, 1f)
 }
 
 private val BOX = 24.dp // 32 px
@@ -256,6 +285,13 @@ private val BORDER = 2.25.dp // PhoneBorderThickness / PhoneStrokeThickness, bot
 private val TICK_WIDTH = 17.25.dp // 23 px
 private val TICK_HEIGHT = 15.75.dp // 21 px
 private val CONTENT_GAP = 9.dp // the content's 12,0,0,0 margin
-private val DEFAULT_THUMB_WIDTH = 9.dp
-private val DEFAULT_THUMB_HEIGHT = 24.dp
-private val TRACK = 3.dp // 4 px, the same line the progress bar draws
+
+/** `Opacity="0.2"` on `HorizontalTrack`. */
+private const val TRACK_ALPHA = 0.2f
+
+/** `To="0.1"` on the same rectangle in the Disabled state, which is a fifth of the fifth. */
+private const val DISABLED_TRACK = 0.5f
+
+/** `Margin="0,22,0,50"` at 0.75: the bar rides high in its row rather than sitting centred. */
+private val TRACK_TOP = 16.5.dp
+private val TRACK_BOTTOM = 37.5.dp

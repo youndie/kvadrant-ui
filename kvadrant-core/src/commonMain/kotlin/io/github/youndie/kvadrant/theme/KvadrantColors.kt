@@ -27,6 +27,15 @@ public data class KvadrantColors(
     val textBox: Color,
     val textBoxEditBackground: Color,
     /**
+     * `PhoneTextBoxForegroundColor` — what is typed into a text box, and **not** [foreground].
+     *
+     * A Metro text box is a *light* box in both themes: [textBox] is 75 % white on a dark page and
+     * 15 % black on a light one, and the text on it is dark either way. Reaching for
+     * [contrastForeground] instead looks right in the dark theme and inverts to white-on-white in
+     * the light one, which is why this is its own token rather than a reuse.
+     */
+    val textBoxForeground: Color,
+    /**
      * `PhoneRadioCheckBoxPressedColor` — what fills a check box or a radio ring while it is held.
      *
      * **Not the accent, and this used to be.** Research §1.12 recorded the accent's role as "the
@@ -60,6 +69,7 @@ public data class KvadrantColors(
                 inactive = Color(0x33FFFFFF),
                 textBox = Color(0xBFFFFFFF),
                 textBoxEditBackground = Color(0xFFFFFFFF),
+                textBoxForeground = Color(0xFF000000),
                 checkBoxPressed = Color(0xFFFFFFFF),
                 checkBoxPressedBorder = Color(0xFFFFFFFF),
                 isDark = true,
@@ -80,6 +90,7 @@ public data class KvadrantColors(
                 inactive = Color(0x33000000),
                 textBox = Color(0x26000000),
                 textBoxEditBackground = Color(0x00000000),
+                textBoxForeground = Color(0xDE000000),
                 // Held down, a light-theme box goes *emptier* — its 15 % fill drops to nothing while
                 // the border darkens. The dark theme floods to solid white. Neither is the other
                 // inverted, which is the light theme's rule and not an exception to it.
