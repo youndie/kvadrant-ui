@@ -1,6 +1,12 @@
 package io.github.youndie.kvadrant.components
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -31,7 +38,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
+import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
@@ -79,6 +88,8 @@ public fun KvadrantPanorama(
     var titleWidth by remember { mutableIntStateOf(0) }
     var copyWidth by remember { mutableIntStateOf(0) }
     var backgroundWidth by remember { mutableIntStateOf(0) }
+    // The left edge of every section in the first copy, which is where a release has to land.
+    val sectionWidths = remember(sections.size) { mutableStateListOf(*Array(sections.size) { 0 }) }
 
     // The fold. Crossing into the second copy puts the scroll back at the same place in the first,
     // which is invisible because the two are identical — and is why there is no end to hit.
@@ -159,14 +170,41 @@ public fun KvadrantPanorama(
 
             // No fillMaxWidth: a row inside a horizontal scroll must be free to exceed the viewport,
             // and constraining it is what makes a panorama scroll a few pixels instead of pages.
-            Row(Modifier.horizontalScroll(scroll)) {
+            //
+            // The fling snaps. `ff941126`: a vertical `PanoramaItem` "will snap only to the left
+            // side of the screen during a gesture movement", and the items layer "moves in a 1:1
+            // fashion with the pan gesture; so whatever content is beneath the finger at the
+            // beginning of the pan remains until the finger is lifted" — so the settling happens on
+            // release and never during the drag, which is what a `FlingBehavior` is and what
+            // reaching for a pager instead would have got wrong.
+            Row(
+                Modifier.horizontalScroll(
+                    scroll,
+                    flingBehavior =
+                        remember(scroll) {
+                            SectionSnap(scroll) { stops(sectionWidths, copyWidth, scroll.maxValue) }
+                        },
+                ),
+            ) {
                 // Twice: one copy to look at, one to wrap into.
                 repeat(COPIES) { copy ->
                     Row(
                         Modifier.onSizeChanged { if (copy == 0) copyWidth = it.width },
                     ) {
-                        sections.forEach { (header, body) ->
-                            Column(Modifier.padding(start = 9.dp, end = 18.dp)) {
+                        sections.forEachIndexed { index, (header, body) ->
+                            Column(
+                                Modifier
+                                    // **Before the padding, not after.** A section's stop is where
+                                    // its header lands on the margin, so the width that matters
+                                    // includes the 9 before it and the 18 after; measured inside
+                                    // the padding the stops came out 27 short per section, and a
+                                    // release settled a little further left each time.
+                                    .onSizeChanged {
+                                        if (copy == 0 && index < sectionWidths.size) {
+                                            sectionWidths[index] = it.width
+                                        }
+                                    }.padding(start = 9.dp, end = 18.dp),
+                            ) {
                                 // Margin 12,-2,0,38 at Metro's pixels.
                                 KvadrantText(
                                     header,
@@ -183,6 +221,69 @@ public fun KvadrantPanorama(
         }
     }
 }
+
+/**
+ * Every scroll position a release is allowed to settle on: the left edge of each section, in both
+ * copies, plus the far end.
+ *
+ * Both copies, because a fling launched near the end of the first has to be able to land in the
+ * second — the fold then moves it back and the seam is the one the wrap already hides.
+ */
+private fun stops(
+    widths: List<Int>,
+    copyWidth: Int,
+    maxValue: Int,
+): List<Int> {
+    if (widths.isEmpty() || widths.any { it <= 0 }) return emptyList()
+    val withinOne = widths.runningFold(0) { acc, w -> acc + w }.dropLast(1)
+    return (0 until COPIES)
+        .flatMap { copy -> withinOne.map { it + copy * copyWidth } }
+        .plus(maxValue)
+        .filter { it in 0..maxValue }
+        .distinct()
+        .sorted()
+}
+
+/**
+ * Where a fling ends, rounded to the nearest section edge.
+ *
+ * The prediction is a decay from the release velocity — where the finger *would* have thrown it —
+ * and the nearest stop to that is where it goes instead. Rounding the current position rather than
+ * the predicted one would make a hard flick travel exactly one section however hard it was thrown,
+ * which is a pager and not a panorama.
+ */
+private class SectionSnap(
+    private val scroll: ScrollState,
+    private val stops: () -> List<Int>,
+) : FlingBehavior {
+    override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+        val landings = stops()
+        if (landings.size < 2) return initialVelocity
+        val from = scroll.value.toFloat()
+        val predicted = from + exponentialDecay<Float>().calculateTargetValue(0f, initialVelocity)
+        val target = landings.minBy { abs(it - predicted) }.toFloat()
+        var last = from
+        animate(
+            initialValue = from,
+            targetValue = target,
+            initialVelocity = initialVelocity,
+            animationSpec = tween(SETTLE_MILLIS, easing = KvadrantEasing.ExponentialOut6),
+        ) { value, _ ->
+            last += scrollBy(value - last)
+        }
+        return 0f
+    }
+}
+
+/**
+ * How long the settle takes.
+ *
+ * **This project's number.** Microsoft published neither the duration nor the curve of a panorama's
+ * settle, and spec §2.3 already lists the sibling unknowns — the peek of the next section and the
+ * parallax coefficient. The curve is the theme's own exponential-out, which every other Metro
+ * settle here uses; the duration is the phone's ordinary page-transition length.
+ */
+private const val SETTLE_MILLIS = 300
 
 /**
  * Two of everything: one copy to look at, one to wrap into.

@@ -52,7 +52,7 @@ item must never move its file.
 | [B-28](docs/backlog/B-28-remastered-flag.md) `[ ]` | One flag for every deviation from canon: remastered | P1 | M | - |
 | [B-29](docs/backlog/B-29-android-screenshot-coverage.md) `[ ]` | Android has no screenshot coverage, and viddik cannot give it | P1 | L | - |
 | [B-32](docs/backlog/B-32-read-the-remaining-platform-templates.md) `[ ]` | Twelve platform templates sit unread while the controls above them are guesses | P1 | M | - |
-| [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[ ]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
+| [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
 | [B-27](docs/backlog/B-27-tilt-does-not-follow-the-finger.md) `[ ]` | The tilt is fixed at touch-down where the original followed the finger | P2 | S | - |
 | [B-30](docs/backlog/B-30-list-picker-full-mode.md) `[ ]` | A picker with six options reports Full mode and nothing happens | P2 | M | - |
 | [B-22](docs/backlog/B-22-win8-branch.md) `[?]` | Is the Windows 8 profile part of this library or a separate one? | P3 | XL | - |

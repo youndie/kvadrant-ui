@@ -1,13 +1,20 @@
 ---
 id: B-33
 title: "The panorama free-scrolls where the phone snapped to a section"
-status: open
+status: wip
 priority: P1
 size: M
 stage: stage-2-controls
 ---
 
 # B-33 — The panorama free-scrolls where the phone snapped to a section
+
+**Half done. The snap is in and held by `PanoramaSnapTest`; the title's exit-and-re-entry is not,
+and the reason is a number rather than an effort.** The out-and-in animation has no published
+duration and no published curve, and inventing them would put two more of this project's figures
+into a control that already carries the settle's 300 ms. The deviation stays named in the KDoc until
+somebody measures a device — the same condition §2.3 already puts on the peek and the parallax
+coefficient.
 
 `KvadrantPanorama` is a horizontal scroller with a wraparound. The original is an **item model**,
 and two behaviours follow from that which this does not have.
@@ -42,7 +49,10 @@ to the index.
 
 ## Acceptance
 
-- Releasing a drag settles with a section header at the left margin.
+- ~~Releasing a drag settles with a section header at the left margin.~~ Done —
+  `PanoramaSnapTest`, which asserts the header's position on screen rather than the scroll offset,
+  because the offset is computed from the very boundaries under test. Verified by removing the
+  fling behaviour and watching it fail.
 - A scenario naming which section is selected after a flick of a given size.
 - The title's KDoc deviation is removed because the behaviour it stands in for exists.
 
