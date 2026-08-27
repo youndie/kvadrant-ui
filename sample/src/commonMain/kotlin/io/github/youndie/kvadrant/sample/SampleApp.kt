@@ -114,64 +114,68 @@ public fun KvadrantSampleApp() {
                 typography = KvadrantTypography.default(kvadrantLatin()),
                 metrics = scale?.let { KvadrantMetrics().scaled(it) } ?: fitted,
             ) {
-                Column(Modifier.fillMaxSize()) {
-                    KvadrantPivot(
-                        titles = listOf("start", "почта", "settings"),
-                        title = "KVADRANT UI",
-                        cyrillic = cyrillic,
-                        modifier = Modifier.weight(1f),
-                    ) { page ->
-                        when (page) {
-                            0 -> {
-                                StartPage(cyrillic, onOpen = { openTile = it })
-                            }
+                // A Box, so the page can sit *over* the screen. It was a sibling in the Column
+                // below, and `fillMaxSize` there takes the whole height: the weighted Pivot was left
+                // with none, and the phone showed an app bar at the top and nothing else. An overlay
+                // is what a page transition is, and a row in a column is not one.
+                Box(Modifier.fillMaxSize()) {
+                    Column(Modifier.fillMaxSize()) {
+                        KvadrantPivot(
+                            titles = listOf("start", "почта", "settings"),
+                            title = "KVADRANT UI",
+                            cyrillic = cyrillic,
+                            modifier = Modifier.weight(1f),
+                        ) { page ->
+                            when (page) {
+                                0 -> {
+                                    StartPage(cyrillic, onOpen = { openTile = it })
+                                }
 
-                            1 -> {
-                                MailPage(cyrillic)
-                            }
+                                1 -> {
+                                    MailPage(cyrillic)
+                                }
 
-                            else -> {
-                                SettingsPage(
-                                    dark = dark,
-                                    onDark = { dark = it },
-                                    accessible = accessible,
-                                    onAccessible = { accessible = it },
-                                    accent = accent,
-                                    onAccent = { accent = it },
-                                    density = scale ?: (fitted.margin / KvadrantMetrics().margin),
-                                    onDensity = { scale = it },
-                                    cyrillic = cyrillic,
-                                )
-                            }
-                        }
-                    }
-                    KvadrantAppBar(
-                        menuItems = listOf("Настройки", "О программе"),
-                        menuExpanded = menuOpen,
-                        onMenuToggle = { menuOpen = !menuOpen },
-                        cyrillic = cyrillic,
-                    ) {
-                        listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
-                            .forEach { colour ->
-                                KvadrantAppBarButton(onClick = {}) {
-                                    // A stand-in until there is an icon set (B-18), and it has to be sized
-                                    // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
-                                    // 74.25, so a tile here draws a square straight through the circle the
-                                    // button is made of.
-                                    Box(
-                                        Modifier
-                                            .size(KvadrantAppBarGlyphSize)
-                                            .clip(CircleShape)
-                                            .background(colour),
+                                else -> {
+                                    SettingsPage(
+                                        dark = dark,
+                                        onDark = { dark = it },
+                                        accessible = accessible,
+                                        onAccessible = { accessible = it },
+                                        accent = accent,
+                                        onAccent = { accent = it },
+                                        density = scale ?: (fitted.margin / KvadrantMetrics().margin),
+                                        onDensity = { scale = it },
+                                        cyrillic = cyrillic,
                                     )
                                 }
                             }
+                        }
+                        KvadrantAppBar(
+                            menuItems = listOf("Настройки", "О программе"),
+                            menuExpanded = menuOpen,
+                            onMenuToggle = { menuOpen = !menuOpen },
+                            cyrillic = cyrillic,
+                        ) {
+                            listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
+                                .forEach { colour ->
+                                    KvadrantAppBarButton(onClick = {}) {
+                                        // A stand-in until there is an icon set (B-18), and it has to be sized
+                                        // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
+                                        // 74.25, so a tile here draws a square straight through the circle the
+                                        // button is made of.
+                                        Box(
+                                            Modifier
+                                                .size(KvadrantAppBarGlyphSize)
+                                                .clip(CircleShape)
+                                                .background(colour),
+                                        )
+                                    }
+                                }
+                        }
                     }
-
-                    // The page, over everything, entering and leaving on the turnstile. Both are
-                    // composed at once on purpose: an exit that unmounts the moment the flag flips
-                    // never plays, and that is the ordinary way a leaving animation is lost.
-                    KvadrantTurnstile(visible = openTile == null) {}
+                    // The page, over the screen, entering and leaving on the turnstile. Nothing
+                    // needs to hold the other half composed here — the screen underneath is always
+                    // there — which is the second thing an overlay buys over a row in a column.
                     KvadrantTurnstile(
                         visible = openTile != null,
                         modifier = Modifier.fillMaxSize(),
