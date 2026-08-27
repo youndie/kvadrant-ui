@@ -5,6 +5,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -182,6 +183,11 @@ public fun KvadrantRadioButton(
  * line and a block. The track's thickness follows the specification — the same 4 px the progress bar
  * draws. **The thumb's size is this project's**, and stays a parameter because of it: the phone's
  * `Slider` template is not among those recovered.
+ *
+ * It answers a drag as well as a tap, and inside a Pivot that is not a nicety: a tap-only slider
+ * does not merely fail to drag — the horizontal movement is still a gesture and the pager still
+ * wants it, so sliding the thumb turns the page. `SliderDragTest` puts one inside a real Pivot for
+ * exactly that reason.
  */
 @Composable
 public fun KvadrantSlider(
@@ -198,8 +204,35 @@ public fun KvadrantSlider(
         modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = KvadrantTheme.metrics.touchTargetMin)
-            .pointerInput(Unit) {
-                detectTapGestures { offset -> onValueChange((offset.x / size.width).coerceIn(0f, 1f)) }
+            .pointerInput(thumbWidth) {
+                // Both gestures map the *thumb's centre* to the finger, so a tap and the drag that
+                // follows it cannot disagree about where the value is.
+                fun fractionAt(x: Float): Float {
+                    val travel = size.width - thumbWidth.toPx()
+                    return if (travel <= 0f) 0f else ((x - thumbWidth.toPx() / 2f) / travel).coerceIn(0f, 1f)
+                }
+                detectTapGestures { offset -> onValueChange(fractionAt(offset.x)) }
+            }.pointerInput(thumbWidth) {
+                fun fractionAt(x: Float): Float {
+                    val travel = size.width - thumbWidth.toPx()
+                    return if (travel <= 0f) 0f else ((x - thumbWidth.toPx() / 2f) / travel).coerceIn(0f, 1f)
+                }
+                var x = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { start ->
+                        x = start.x
+                        onValueChange(fractionAt(x))
+                    },
+                    onHorizontalDrag = { change, delta ->
+                        // Not what wins the gesture from an enclosing pager, though it reads like
+                        // it: `detectHorizontalDragGestures` already consumes at the slop threshold,
+                        // and `SliderDragTest` still passes with this line commented out. It is here
+                        // so that nothing further up treats the same movement as its own.
+                        change.consume()
+                        x += delta
+                        onValueChange(fractionAt(x))
+                    },
+                )
             },
         contentAlignment = Alignment.CenterStart,
     ) {
