@@ -106,38 +106,11 @@ internal fun MessageBox() {
     }
 }
 
-/** The turnstile's geometry, held still: the axis is the left edge, not the middle. */
-@ViddikScreenshot(name = "turnstile axis", group = "gallery", width = 400, height = 300)
-@Composable
-internal fun TurnstileAxis() {
-    Themed(KvadrantColors.dark()) {
-        Column(
-            Modifier.fillMaxSize().padding(9.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            listOf(0f, -40f, -80f).forEach { angle ->
-                Box(
-                    Modifier
-                        .graphicsLayer {
-                            rotationY = angle
-                            transformOrigin = TransformOrigin(0f, 0.5f)
-                            cameraDistance = 8f
-                        }.background(KvadrantTheme.colors.accent)
-                        .fillMaxWidth()
-                        .padding(9.dp),
-                ) {
-                    KvadrantText(
-                        "turnstile ${angle.toInt()}°",
-                        style =
-                            KvadrantTheme.typography.normal.copy(
-                                color = KvadrantTheme.colors.onAccent,
-                            ),
-                    )
-                }
-            }
-        }
-    }
-}
+// There is no turnstile fixture. It was pointed at the real component — the previous one guarded a
+// hand-written copy of its `graphicsLayer` block — and then the recording showed why a picture
+// cannot do this job: the component's two *resting* states are "square on and opaque" and "fully
+// transparent", so the goldens came back as a plain rectangle and a black square. The rotation only
+// exists between them. `TurnstileTest` stops the clock in between instead.
 
 @ViddikScreenshot(name = "panorama", group = "gallery", width = 400, height = 500)
 @Composable

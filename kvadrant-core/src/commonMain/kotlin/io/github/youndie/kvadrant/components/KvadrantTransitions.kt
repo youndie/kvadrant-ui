@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 
 /** Which way a slide travels. */
@@ -95,7 +96,7 @@ public fun KvadrantSwivel(
         modifier.graphicsLayer {
             rotationX = angle.value
             transformOrigin = TransformOrigin(0.5f, 0f)
-            cameraDistance = 8f
+            cameraDistance = kvadrantCameraUnits()
         },
     ) { content() }
 }

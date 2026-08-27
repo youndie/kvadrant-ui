@@ -10,6 +10,28 @@ blocked_by: [B-05]
 
 # B-15 — Motion: the easing catalogue and the turnstile transitions
 
+**Audited, and it was worse than "not finished".** `KvadrantTurnstile` and `KvadrantTurnstileFeather`
+were written and **never called** — not by the sample, not by a test, not by the fixtures that carry
+their names. Those fixtures reimplemented the rotation inline, so the goldens guarded a copy; the
+copy still said `cameraDistance = 8f` after B-25 had changed what that means, and nothing noticed
+because the copy and the component were never compared.
+
+Pointing the fixtures at the real components then showed why a picture cannot guard this at all: the
+resting states are "square on and opaque" and "fully transparent", so the goldens came back as a
+plain rectangle and a black square. The rotation exists only in between. Both fixtures are gone and
+`TurnstileTest` stops the clock in between instead — verified by moving the axis to the centre and
+by removing the rotation, and watching it fail for each.
+
+**One finding for this item to act on:** the alpha runs on `tween`'s *default* easing, which is
+Compose's fast-out-slow-in, not one of Metro's curves. The angle is on exponential-out(6) and is
+most of the way home while the alpha has barely started — at 70 ms of a 350 ms entry the brightest
+pixel on screen was 14 of 255. Whether the original faded on the same exponential is unverified, and
+until it is, this is an undeclared deviation of exactly the kind [B-28](B-28-remastered-flag.md)
+exists to make legible.
+
+**Still open:** the turnstile does not play on page entry anywhere — the sample's Pivot does not use
+it, so the AC below is unmet and the component is still, in effect, unused code.
+
 **Done:** `KvadrantEasing` — the primary bezier plus the two exponentials, which have no bezier
 equivalent and so are the formula — and `KvadrantTurnstile`: −80° in over 350 ms, +50° out over
 250 ms, about the left edge. The asymmetry is the original's and is what makes leaving feel quicker

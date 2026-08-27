@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import kotlinx.coroutines.delay
@@ -208,7 +209,7 @@ public fun KvadrantFlipTile(
         Box(
             Modifier.fillMaxSize().graphicsLayer {
                 rotationX = rotation
-                cameraDistance = 8f
+                cameraDistance = kvadrantCameraUnits()
             },
         ) {
             if (rotation < 90f) front() else Box(Modifier.graphicsLayer { rotationX = 180f }) { back() }

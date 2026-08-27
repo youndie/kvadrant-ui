@@ -20,27 +20,31 @@ that happened to be plugged in — which is not a check, it is an anecdote with 
 variants — `metadataApiElements`, `jvmApiElements-published`, `jvmRuntimeElements-published`. It is
 JVM-only. Read out of the Gradle module metadata at 0.2.0.14, not assumed from the artefact names.
 
-So the choice is between tools nobody here has measured:
+**A second screenshot tool is ruled out.** Not on evidence — on ownership: viddik is this project's
+own, and running a Robolectric-based renderer beside it would mean two golden formats, two ways to
+record, two things to keep in step with the Compose line, and a second answer to "is the suite
+green". The cost of that lands on every future change; the cost of Android being uncovered lands
+only where Android differs.
 
-- **Robolectric-based, on the JVM** (Roborazzi and relatives). It would run inside `check` with no
-  device, which is the whole prize. **The question that decides it is whether a host-side Android
-  renderer reproduces `RenderNode.setCameraDistance` at all.** If it does not, the golden is a
-  picture of a tilt that never tilted, and the suite would go green over the exact defect it was
-  built to catch — which is worse than having no suite, because it also stops anyone looking.
-- **Instrumented, on a device or emulator.** Real hwui, therefore real answers, and it cannot run in
-  the default `check`. A guard that only runs when somebody remembers to plug a phone in is a guard
-  that reports on whichever branch its owner was standing on.
+So the options are two, and neither is "pick something off the shelf":
 
-**Start with the measurement, not the tool.** Render one bottom-edge press under the candidate and
-solve the camera out of the trapezoid the way `CameraProbeTest` does — 1.0461 on the real device,
-1.0487 on the desktop. A candidate that comes back without perspective has answered the question,
-and it has answered it in an afternoon rather than after a suite exists.
+- **viddik grows an Android target.** Its annotations already publish one; the capture engine is
+  what is JVM-only. This is work in another repository and it is the only path that ends with
+  Android goldens inside `check`.
+- **Android stays uncovered, and that is written down as a confirmed absence.** Then the guard for
+  anything Android-specific has to be numeric rather than pictorial — `CameraProbeTest` solves a
+  camera out of a rendered trapezoid and would work anywhere the geometry can be measured, which is
+  a smaller claim than a golden and a claim that can actually be made.
 
-- AC: the perspective probe is run under the candidate renderer and the number is written down,
-  whatever it is.
-- AC: if a host-side renderer works, the Android goldens are in `check` and the suite is shown to
-  fail on a changed golden rather than assumed to.
-- AC: if it does not, that is written into research §1.9 as a confirmed absence, and the Android
-  guard becomes an explicit, named, device-only task — with the contributing notes saying so, so a
-  green `check` is not read as covering Android.
+**Either way, start with the measurement.** The probe is one bottom-edge press and the arithmetic
+that turns it into a camera distance: 1.0461 on the real device against 1.0487 on the desktop. It
+costs an afternoon, it is the thing any tooling decision rests on, and it is worth having before
+either option is chosen.
+
+- AC: the decision between the two is recorded with its reason, not left to whoever next needs an
+  Android golden.
+- AC: if Android stays uncovered, that is written into research §1.9 as a confirmed absence, and the
+  contributing notes say so, so a green `check` is never read as covering Android.
+- AC: whichever way it goes, at least one Android-specific behaviour is guarded by a number rather
+  than by a person having looked once — B-25 is currently guarded by neither.
 - Anchors: `kvadrant-core/build.gradle.kts`, `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/indication/CameraProbeTest.kt`

@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 
 /**
@@ -57,7 +58,7 @@ public fun KvadrantTurnstile(
             // The axis is the left edge of the content, which is what makes it a turnstile rather
             // than a card flipping about its middle.
             transformOrigin = TransformOrigin(0f, 0.5f)
-            cameraDistance = DEFAULT_CAMERA
+            cameraDistance = kvadrantCameraUnits()
         },
     ) { content() }
 }
@@ -66,10 +67,3 @@ private const val IN_ANGLE = -80f
 private const val OUT_ANGLE = 50f
 private const val IN_MILLIS = 350
 private const val OUT_MILLIS = 250
-
-/**
- * Compose's own default. Note that it means different things per backend — skiko reads it as inches
- * at 72 px each, Android hands it to `RenderNode` where the display's dpi applies. See B-25; the
- * same caveat that applies to the tilt applies here.
- */
-private const val DEFAULT_CAMERA = 8f

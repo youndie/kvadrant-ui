@@ -104,38 +104,7 @@ internal fun ContextMenu() {
     }
 }
 
-/**
- * The feather's geometry, held still: every row on **one** axis off to the left, not each about its
- * own centre. Held at three angles because a still of a stagger is otherwise indistinguishable from
- * a still of nothing happening.
- */
-@ViddikScreenshot(name = "turnstile feather axis", group = "list", width = 400, height = 400)
-@Composable
-internal fun FeatherAxis() {
-    val cyrillic = kvadrantCyrillic()
-    Contacts(KvadrantColors.dark()) {
-        Column(
-            Modifier.fillMaxSize().padding(9.dp),
-            verticalArrangement = Arrangement.spacedBy(9.dp),
-        ) {
-            listOf(0f, -25f, -50f, -80f).forEachIndexed { index, angle ->
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer {
-                            rotationY = angle
-                            transformOrigin = TransformOrigin(-0.2f, 0.5f)
-                            cameraDistance = 8f
-                        }.background(KvadrantTheme.colors.chrome)
-                        .padding(9.dp),
-                ) {
-                    KvadrantText(
-                        "row $index · ${angle.toInt()}°",
-                        style = KvadrantTheme.typography.normal,
-                        cyrillic = cyrillic,
-                    )
-                }
-            }
-        }
-    }
-}
+// No feather fixture either, and for the same reason plus one of its own: at rest with `visible`
+// false every row is fully transparent, and the stagger that makes it a feather — 40 ms in, 50 ms
+// out — is in time rather than in angle. The fixture that used to stand here faked it by drawing
+// four rows at four different angles, which is a thing the component never does at any instant.

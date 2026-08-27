@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 
 /**
@@ -54,7 +55,7 @@ public fun KvadrantTurnstileFeather(
             this.alpha = alpha
             // The shared axis. Not the row's own edge, and emphatically not its centre.
             transformOrigin = TransformOrigin(SHARED_AXIS_X, 0.5f)
-            cameraDistance = 8f
+            cameraDistance = kvadrantCameraUnits()
         },
     ) { content() }
 }

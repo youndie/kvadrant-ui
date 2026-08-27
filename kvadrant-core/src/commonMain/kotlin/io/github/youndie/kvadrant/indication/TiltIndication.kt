@@ -19,7 +19,8 @@ import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import io.github.youndie.kvadrant.foundation.KvadrantCamera
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -66,24 +67,10 @@ public class TiltIndication(
 
     public companion object {
         /**
-         * Compose's own default camera, restated in dp: `8 * 72 = 576` px at density 1. At that
-         * distance the full 18.75 dp depression is a shrink of **0.9685**, on every screen.
+         * The library's one camera, [KvadrantCamera.Distance]. At that distance the full 18.75 dp
+         * depression is a shrink of **0.9685**, on every screen.
          */
-        public val DEFAULT_CAMERA_DISTANCE: Dp = 576.dp
-
-        /**
-         * Pixels of depth per unit of `GraphicsLayerScope.cameraDistance`.
-         *
-         * skiko says so in its source — `val depth = cameraDistance * 72f`, under the comment "The
-         * camera location is passed in inches, set in pt". Android's path says nothing: it hands the
-         * value to `RenderNode.setCameraDistance` untouched, whose documentation calls it pixels,
-         * which would put the default camera 8 px away and is plainly not what happens. So the
-         * Android figure is **measured, not read**: the same tile pressed on the centre of its
-         * bottom edge draws a trapezoid of 507/449 px on a Pixel 6a and 521/461 on the desktop —
-         * ratios of 1.1292 and 1.1301, which is the same camera to within a tenth of a percent.
-         * `CameraProbeTest` keeps the desktop half of that honest.
-         */
-        internal const val PIXELS_PER_UNIT: Float = 72f
+        public val DEFAULT_CAMERA_DISTANCE: Dp = KvadrantCamera.Distance
     }
 }
 
@@ -175,7 +162,7 @@ private class TiltNode(
                     )
                 val depthPx = this@TiltNode.cameraDistance.toPx()
                 placeable.placeWithLayer(0, 0) {
-                    this.cameraDistance = depthPx / TiltIndication.PIXELS_PER_UNIT
+                    this.cameraDistance = kvadrantCameraUnits(this@TiltNode.cameraDistance)
                     // Both negated. `tiltFor` reproduces `TiltEffect.cs` exactly, and Silverlight's
                     // `PlaneProjection` turns the opposite way from `graphicsLayer` on both axes:
                     // applied as written, the corner under the finger comes *towards* the eye, which

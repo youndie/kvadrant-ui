@@ -21,6 +21,13 @@ number 72, and `CameraProbeTest` solves the camera out of a rendered trapezoid s
 quietly stop reaching the layer. Every desktop golden is untouched, which is the point: at density 1
 the new default is the old camera exactly.
 
+**Closed too early, once.** The fix went into `TiltIndication` and stopped there, and
+`cameraDistance = 8f` was hard-coded in five more places — both turnstiles, the tile flip, the swivel
+transition and the looping selector. Every one of them had the identical defect, and the item read as
+finished because the thing it was named after was fixed. The camera now lives in one place,
+`KvadrantCamera`, and `grep cameraDistance` over `commonMain` returns that file and nothing else.
+Found while auditing an unrelated item; not by any check here, which is the part worth remembering.
+
 **Confirmed on the device**, both halves, with the same 497 px tile the defect was measured on:
 
 | | before | after | desktop |

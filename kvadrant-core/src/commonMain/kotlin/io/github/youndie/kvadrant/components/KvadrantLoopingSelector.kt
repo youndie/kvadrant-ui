@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.youndie.kvadrant.foundation.KvadrantText
+import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.theme.KvadrantWeights
@@ -105,7 +106,7 @@ public fun KvadrantPickerPage(
         modifier.graphicsLayer {
             rotationX = angle.value
             transformOrigin = TransformOrigin(0.5f, 0f)
-            cameraDistance = 8f
+            cameraDistance = kvadrantCameraUnits()
         },
         horizontalArrangement = Arrangement.spacedBy(ITEM_MARGIN),
     ) { content() }

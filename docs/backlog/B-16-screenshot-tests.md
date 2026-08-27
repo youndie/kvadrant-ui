@@ -29,7 +29,8 @@ Two things that came out of building it, both worth more than the fixtures:
 **Still open:** the Material comparison row, which needs [B-14](B-14-material-adapter.md), and the
 Win8 baseline-grid overlay, which needs a Win8 profile to exist at all
 ([B-22](B-22-win8-branch.md)). Android is **not** part of this item — see
-[B-29](B-29-android-screenshot-coverage.md), which exists because viddik turns out to be JVM-only.
+[B-29](B-29-android-screenshot-coverage.md), which exists because viddik turns out to be JVM-only —
+and where a second screenshot tool has been ruled out, so the suite stays one suite.
 
 **viddik** on the desktop target, wired into `check` and already running there
 ([B-23](B-23-viddik-pins-the-compose-line.md)). What this item adds is the matrix, once there are
