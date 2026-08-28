@@ -36,4 +36,14 @@ internal fun KvadrantTypography.portable(): KvadrantTypography =
         panoramaSectionHeader = panoramaSectionHeader.pinned(),
     )
 
+/**
+ * The same pin, for a fixture that builds its own [TextStyle] rather than taking one from the ramp.
+ *
+ * The type and font-stack fixtures do exactly that — they are *about* fonts, so they construct their
+ * styles by hand — and they went on failing on Linux after the ramp was pinned, because nothing in
+ * the ramp is what they use. Any fixture that writes `TextStyle(...)` needs this; there is no way to
+ * make that automatic short of banning the constructor.
+ */
+internal fun TextStyle.portable(): TextStyle = pinned()
+
 private fun TextStyle.pinned(): TextStyle = copy(platformStyle = ViddikPlatformTextStyle)

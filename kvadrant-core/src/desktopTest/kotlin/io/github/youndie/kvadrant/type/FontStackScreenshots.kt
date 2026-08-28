@@ -67,12 +67,12 @@ private fun Specimen(family: FontFamily) {
         Modifier.fillMaxSize().background(Color.Black).padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        BasicText("settings", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family))
-        BasicText("настройки", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family))
-        BasicText("inbox почта", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family))
+        BasicText("settings", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family).portable())
+        BasicText("настройки", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family).portable())
+        BasicText("inbox почта", style = TextStyle(Color.White, 54.sp, SemiLight, fontFamily = family).portable())
         BasicText(
             "choose a theme · выберите тему",
-            style = TextStyle(Color.White, 15.sp, FontWeight.W400, fontFamily = family),
+            style = TextStyle(Color.White, 15.sp, FontWeight.W400, fontFamily = family).portable(),
         )
     }
 }
@@ -137,15 +137,15 @@ private fun MixedSpecimen(
     ) {
         BasicText(
             mixed("settings настройки", latin, cyrillic, 54f, compensation),
-            style = TextStyle(Color.White, fontWeight = SemiLight),
+            style = TextStyle(Color.White, fontWeight = SemiLight).portable(),
         )
         BasicText(
             mixed("inbox почта", latin, cyrillic, 54f, compensation),
-            style = TextStyle(Color.White, fontWeight = SemiLight),
+            style = TextStyle(Color.White, fontWeight = SemiLight).portable(),
         )
         BasicText(
             mixed("choose a theme · выберите тему", latin, cyrillic, 15f, compensation),
-            style = TextStyle(Color.White, fontWeight = FontWeight.W400),
+            style = TextStyle(Color.White, fontWeight = FontWeight.W400).portable(),
         )
     }
 }

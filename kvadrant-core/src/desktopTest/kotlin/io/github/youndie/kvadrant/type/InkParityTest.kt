@@ -40,6 +40,12 @@ import kotlin.test.assertTrue
  * companion is built as a family with a single instanced weight, so a `SemiBold` heading renders
  * Latin bold and Cyrillic at 370 beside it.
  *
+ * **This one is deliberately *not* pinned to viddik's hinting, and the goldens around it are.** A
+ * golden is compared between machines and has to be identical; a measurement is about how the
+ * renderer actually renders, and pinning it measures a condition nothing ships in. Pinning it was
+ * tried by accident and moved SemiLight from 370 to **380** — which is not a better answer, it is an
+ * answer to a different question.
+ *
  * **The known 370 is this measurement's positive control.** If the metric cannot rediscover it at
  * `W300`, it has no business proposing values for the other four.
  */
