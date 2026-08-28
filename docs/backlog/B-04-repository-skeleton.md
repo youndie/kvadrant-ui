@@ -1,7 +1,7 @@
 ---
 id: B-04
 title: "Skeleton: modules, targets, version catalog, CI, snapshot publishing"
-status: wip
+status: done
 priority: P0
 size: M
 stage: stage-1-core
@@ -130,8 +130,12 @@ validation, and the remaining targets.
   ripple corner is the part being reshaped.
 - AC superseded: the version catalog names each Material coordinate with the Jetpack version it maps to in a
   comment, and no coordinate appears as a string anywhere else.
-- AC: the answer to the option (a)/(b) question is written into
-  [research §D3](../research/research-architecture.md), with what actually failed if one failed.
+- AC met: the answer is in [research §D3](../research/research-architecture.md) — option (b),
+  `material3:1.12.0-alpha03` — together with the part the procedure did not anticipate. Nothing
+  failed: *both* graphs resolve, compile and draw, so "build both and see which compiles" did not
+  separate them and the choice fell to which way of being wrong is cheaper. It lived only in this
+  item until now, which is the wrong layer for it: a backlog entry is closed and archived, and
+  research is what the next person reads.
 - AC met: `abiValidation` runs in `check`, which CI runs on every pull request — verified by adding
   a public function and watching `checkKotlinAbi` fail, naming the new symbol in both the desktop
   dump and the klib one. A task that is *in* a graph and a task that would *catch* something are
