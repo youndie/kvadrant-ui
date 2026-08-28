@@ -2,7 +2,7 @@
 id: B-31
 title: "Six goldens change between two recordings of unchanged source"
 status: open
-priority: P0
+priority: P2
 size: M
 stage: stage-2-release
 blocked_by: []
@@ -10,22 +10,21 @@ blocked_by: []
 
 # B-31 — Six goldens change between two recordings of unchanged source
 
-**Back at P0. CI reproduced it, which is what the trigger below was written for.**
+**Not reproduced by CI, and the escalation that said so was a misreading — withdrawn.**
 
-Two runs of the same commit range on the **same runner image and version** — `ubuntu24/20260823.283`,
-`20260819.586` — disagreed about thirty core goldens. The first failed two images, the second failed
-thirty, and nothing in `kvadrant-core` had changed between them. The failure message is the item's
-own arithmetic to the pixel:
+Two runs looked as though they disagreed about thirty core goldens on the same runner image: one
+failed two images, the next failed thirty, with nothing changed in that module between them. That is
+not what happened. `:kvadrant-core:viddikVerify` **never ran** in the first of them — the adapter's
+verify failed first and the build stopped — so the core suite was not green on Linux, it was
+unexecuted. Checked by looking for the task in the log rather than for its result.
 
-> `Screenshot mismatch for screen/start dark: 149/280000 px differ (0.05%, tolerance 0.05% or 16 px)`
+The numbers say the same thing more plainly: `type/ramp dark` differs by **1673 px** and
+`screen/start dark` by **149 px** in *both* runs, to the pixel. Linux is deterministic. What differs
+is Linux against macOS, which is a different problem with its own entry below, and this item stays at
+P2 with its trigger intact.
 
-**149 of 280 000 against a tolerance of 0.05 % is the threshold itself**, which is what the original
-finding said and what ten green local recordings could not show. The flake is real, it is not a
-macOS artefact, and a wider tolerance is still the wrong answer for the reason written below.
-
-CI now uploads `*_DIFF.png` on failure, because viddik names a diff file and that name pointed at a
-machine that no longer existed. The next step is to open one and see **what** those 149 pixels are —
-the original measurement said "shades around the cyan accent", which is a lead and not a cause.
+*The trigger is unchanged and it is worth restating after a false alarm:* if `make screenshots` ever
+names an image, or if two runs **that both executed** disagree, this comes back at P0.
 
 ---
 
