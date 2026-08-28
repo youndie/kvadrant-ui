@@ -108,10 +108,20 @@ another reason" all printed the same nothing. A four-level threshold reconciling
 should have been impossible on its face, and checking that is what caught it. The step now reports
 Gradle's own status beside the count and reruns the task.
 
-**So the goldens are verified on the operating system that recorded them.** A golden is a picture of
-a rasteriser; the Linux runner is not the one that took these. `check.yaml` gains a `screenshots`
-job on `macos-latest` and the Linux job excludes `viddikVerify` — a second runner, in exchange for a
-gate at full strength rather than a permanently red one.
+**So the suite runs on the operating system its numbers came from.** A golden is a picture of a
+rasteriser, and the Linux runner is not the one that took these.
+
+The first attempt split only the goldens onto a `macos-latest` job and left the rest on Linux. The
+goldens passed there immediately — which is the confirmation — but the Linux job went on failing,
+and on three tests that are not goldens at all: `TypeScaleTest`, `InkParityTest` and
+`WeightStepTest`. They count ink pixels, and `InkParityTest` picks the Cyrillic companion's weight by
+comparing coverage across candidates *ten apart*, which half a percent of ink is enough to flip. The
+edge difference reaches the suite twice over and splitting by artefact type does not separate the
+two. **The desktop suite is a rendering suite in whole**, so `check` runs on `macos-latest` and
+Linux keeps only the documentation job.
+
+What is given up is Linux as a second environment, which for a library with no native targets was
+buying a JVM that is already portable.
 
 **Three fixtures could never have been portable and are now a test.** `selawik only`, `selawik then
 inter` and `selawik then fira` had one MD5 between them, which *is* the finding: a `FontFamily` list

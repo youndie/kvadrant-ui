@@ -71,83 +71,24 @@ jobs:
   # laptop. A guard that runs in one place reports on whichever branch its owner happens to be
   # standing on.
   #
-  # **It runs now, and it is red.** The remote exists and this job has executed many times. Java 25
-  # from `setup-java` and the framebuffer below both work; what does not is the screenshot suite,
-  # which reports thirty-five mismatches on this runner — the same thirty-five with the same pixel
-  # counts on every run, so it is a difference and not a flake. B-35 has the measurement. Until that
-  # closes, a red mark on this job means "still B-35" far more often than it means "your branch".
+  # **macOS, and this is B-35's answer rather than a preference.**
+  #
+  # The desktop test suite is a *rendering* suite: it photographs components and it counts ink
+  # pixels. macOS and FreeType assign different values to the pixels at a glyph's edge — measured,
+  # with every glyph's bounding box identical to the pixel on both, so it is the edges and nothing
+  # else — and that difference reaches the suite twice over. It moves the goldens (34 of them differ
+  # at viddik's channel tolerance, and no tolerance closes the gap without also admitting a real
+  # regression), and it moves the calibration tests, which pick the Cyrillic companion's weight by
+  # comparing ink coverage across candidates ten apart.
+  #
+  # Neither half can be recalibrated for two rasterisers at once. So the suite runs on the one its
+  # numbers came from. What is given up is Linux as a second environment, which for a library with
+  # no native targets was buying a JVM that is already portable; what is bought back is a gate at
+  # full strength rather than a permanently red one, and a red build people stop reading is not a
+  # gate at all.
+  #
+  # No `xvfb-run`: the tests render offscreen and there is no X server here to emulate.
   gradle:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "25"
-
-      - uses: gradle/actions/setup-gradle@v4
-
-      # `check` shells out to python3 twice — `checkKvadrantTokens` and `checkKvadrantIcons` compare
-      # a committed generated file against the source it comes from. ubuntu-latest ships a python3,
-      # so this step buys a *declared* version rather than a working build; an undeclared interpreter
-      # is a dependency that changes under you without a diff.
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      # **`xvfb-run`.** The screenshot suite renders in a real Skiko window and a GitHub runner has
-      # no display server, so it renders into a virtual framebuffer. The worry when this was written
-      # was that a headless capture succeeds while producing an empty frame — it does not: the
-      # uploaded diffs below show text, tiles and controls drawn correctly, with the differences
-      # confined to particular glyphs. The framebuffer is not the problem; B-35 is.
-      #
-      # The same one target a contributor runs. `check` carries the tests on both renderers, ktlint,
-      # `viddikVerify`, `checkKotlinAbi`, `noMaterialInTheCore` and the two generator checks; naming
-      # them separately here is how the CI set and the local set start to differ.
-      #
-      # `connectedAndroidDeviceTest` is deliberately absent: it needs a phone, and B-29 records that
-      # a green `check` says nothing at all about Android.
-      # `viddikVerify` is excluded here and runs in the `screenshots` job below, on macOS. That
-      # exclusion is the kind that hides a hole, so read the job before removing it: a golden
-      # records a *rasteriser*, and this runner is not the one that recorded these.
-      - run: |
-          xvfb-run --auto-servernum ./gradlew check --no-daemon \
-            -x :kvadrant-core:viddikVerify -x :kvadrant-material-adapter:viddikVerify
-
-      # The test reports. The screenshot diffs come from the `screenshots` job instead, which is
-      # where the comparison now happens.
-      - if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/**
-          retention-days: 7
-          if-no-files-found: ignore
-
-      # Default branch only. `status: draft` is legal in a pull request, where it means "this
-      # branch will make it true", and a defect the moment it merges.
-      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: python3 scripts/docs_check.py --on-main
-
-  # **The goldens, on the operating system that recorded them.**
-  #
-  # This was the Linux job's problem and it is not fixable there. A golden is a picture of a
-  # *rasteriser*: macOS and FreeType assign different values to the pixels at a glyph's edge, and
-  # B-35 measured that they agree about everything else — every glyph's bounding box is identical to
-  # the pixel on both. Neither a rasterisation setting nor a tolerance closes it. Aliased rendering
-  # differs by fourteen pixels where antialiased differs by sixteen; 34 goldens differ at viddik's
-  # channel tolerance of 2, 21 at 4, and still 10 at 32. Buying the rest needs the percentage limit
-  # at about 1.4 %, and a real regression — the button's text from SemiBold to Normal — moves
-  # 0.27 %. The tolerance that admits FreeType admits the defect.
-  #
-  # So the suite runs where the images came from. It costs a second runner and buys back a gate at
-  # full strength rather than a permanently red one, which is a gate people stop reading.
-  #
-  # No `xvfb-run`: the tests render offscreen and macOS runners have no X server to emulate.
-  screenshots:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: macos-latest
     steps:
@@ -160,17 +101,42 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - run: |
-          ./gradlew --no-daemon \
-            :kvadrant-core:viddikVerify :kvadrant-material-adapter:viddikVerify
+      # `check` shells out to python3 three times — the token and icon generators compare a
+      # committed file against its source, and the component catalogue checks itself against the
+      # preview registry. The runner ships a python3, so this step buys a *declared* version rather
+      # than a working build; an undeclared interpreter changes under you without a diff.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
+      # The same one target a contributor runs, unsplit. `check` carries the tests, ktlint,
+      # `viddikVerify`, `checkKotlinAbi`, `noMaterialInTheCore` and the three generator checks;
+      # naming them separately here is how the CI set and the local set start to differ. An earlier
+      # version of this file excluded `viddikVerify` so the rest could stay on Linux, and that only
+      # moved the problem: the calibration tests count ink pixels and fail there too.
+      #
+      # `connectedAndroidDeviceTest` is deliberately absent: it needs a phone, and B-29 records that
+      # a green `check` says nothing at all about Android.
+      - run: ./gradlew check --no-daemon
+
+      # The diffs and the reports. viddik writes a `*_DIFF.png` beside every mismatch and names it
+      # in the failure message; without this that sentence points at a path on a machine that no
+      # longer exists, and a reader is left with a percentage. A screenshot defect is one that can
+      # only be looked at.
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: screenshot-diffs
-          path: "**/build/reports/screenshots/**"
+          path: |
+            **/build/reports/screenshots/**
+            **/build/reports/tests/**
           retention-days: 7
           if-no-files-found: ignore
+
+      # Default branch only. `status: draft` is legal in a pull request, where it means "this
+      # branch will make it true", and a defect the moment it merges.
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: python3 scripts/docs_check.py --on-main
 
   # Separate from the gate, and on a schedule rather than on a pull request, because an anchor rots
   # when somebody refactors a **different** repository. A pull request here is the least likely
