@@ -61,12 +61,16 @@ the OFL entry names the two files that ship the full text. A consumer's licence 
 rather than the jar, and one licence on an artefact that ships two is the kind of omission nobody
 notices until it is somebody's legal problem.
 
-**Still open, all of it blocked rather than pending:** there is no `kvadrant-resources` module, and
-whether the fonts should move out of `kvadrant-core` is a packaging question that only matters once
-something is published — [B-21](B-21-maven-coordinates.md). The POM cannot declare the font licence
-separately from the code licence for the same reason: there is no POM. iOS and wasm are unverified
-because those targets do not exist (D14), so the criterion naming them cannot be met by working
-harder on this item.
+**The resources module is folded in, and that is now a decision.** [B-21](B-21-maven-coordinates.md)
+is answered and two artefacts publish; a third carrying six font files, versioned and released in
+step with the rest for no benefit a consumer could name, is not worth having. It splits the day
+something wants the fonts without the components — the same reasoning [B-18](B-18-icon-set.md)
+reached about the icons, on the same evening, which is either consistency or a bias and is written
+down so the next reader can decide which.
+
+**What is left is one criterion and it cannot be worked harder at.** iOS and wasm are unverified
+because those targets do not exist ([D14](../research/research-architecture.md)). This item stays
+open holding exactly that, and closes when a target does.
 
 Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)), bundled in
 `kvadrant-resources` and reachable from every target through

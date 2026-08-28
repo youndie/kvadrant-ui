@@ -1,7 +1,7 @@
 ---
 id: B-18
 title: "Draw the base icon set and a generator for it"
-status: open
+status: done
 priority: P1
 size: L
 stage: stage-3-completeness
