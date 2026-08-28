@@ -24,6 +24,16 @@ internal val LocalKvadrantTypography =
 internal val LocalKvadrantMetrics = staticCompositionLocalOf { KvadrantMetrics() }
 internal val LocalKvadrantRemastered = staticCompositionLocalOf { false }
 
+/**
+ * Whether a [KvadrantTheme] is actually above this point, rather than the defaults standing in.
+ *
+ * The other locals all have working defaults — that is what makes a component usable in a test with
+ * no theme around it — and the price is that reading one tells you nothing about whether anybody
+ * provided it. Something that has to branch on "is this a Metro surface" needs a local that is false
+ * unless a theme said otherwise, and this is it.
+ */
+internal val LocalKvadrantThemePresent = staticCompositionLocalOf { false }
+
 /** The current theme. */
 public object KvadrantTheme {
     public val colors: KvadrantColors
@@ -55,6 +65,17 @@ public object KvadrantTheme {
     public val remastered: Boolean
         @Composable @ReadOnlyComposable
         get() = LocalKvadrantRemastered.current
+
+    /**
+     * Whether this point is inside a [KvadrantTheme] rather than reading its defaults.
+     *
+     * For code that has to choose between a Metro surface and a foreign one — the adapter's
+     * `AdaptiveWidget` is the only caller so far. Every other value here answers "what does the
+     * theme say"; this one answers "is there one".
+     */
+    public val present: Boolean
+        @Composable @ReadOnlyComposable
+        get() = LocalKvadrantThemePresent.current
 }
 
 /**
@@ -84,6 +105,7 @@ public fun KvadrantTheme(
         LocalKvadrantTypography provides scaled,
         LocalKvadrantMetrics provides metrics,
         LocalKvadrantRemastered provides remastered,
+        LocalKvadrantThemePresent provides true,
         LocalIndication provides
             TiltIndication(maxDepression = metrics.tiltDepression, animatePress = remastered),
         LocalKvadrantTextStyle provides scaled.normal,

@@ -447,6 +447,7 @@ public final class io/github/youndie/kvadrant/theme/KvadrantTheme {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/theme/KvadrantTheme;
 	public final fun getColors (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantColors;
 	public final fun getMetrics (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public final fun getPresent (Landroidx/compose/runtime/Composer;I)Z
 	public final fun getRemastered (Landroidx/compose/runtime/Composer;I)Z
 	public final fun getTypography (Landroidx/compose/runtime/Composer;I)Lio/github/youndie/kvadrant/theme/KvadrantTypography;
 }

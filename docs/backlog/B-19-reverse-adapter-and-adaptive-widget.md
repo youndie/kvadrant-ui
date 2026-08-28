@@ -1,7 +1,7 @@
 ---
 id: B-19
 title: "Reverse adapter and AdaptiveWidget"
-status: open
+status: done
 priority: P1
 size: M
 stage: stage-3-completeness
@@ -9,6 +9,23 @@ blocked_by: [B-14]
 ---
 
 # B-19 — Reverse adapter and AdaptiveWidget
+
+**Done.** `ColorScheme.toKvadrantColors()` takes the host's `primary` as the accent and its
+`background`'s luminance as dark-against-light; `KvadrantIsland` raises a theme from it;
+`AdaptiveWidget(kvadrant, material)` picks a branch. `reverse_island_in_material` is the frame: a
+Material host with a Metro island in it, where the same `AdaptiveWidget` call renders a square button
+inside the island and a pill outside.
+
+**The seam is asserted, not described.** `ReverseAdapterTest` requires the island's background to be
+`#FF000000` while the host's is a tinted near-black — the island does not meet the host half way, and
+that is D6 rather than an oversight. The first version of the fixture painted no background at all,
+so it produced a frame that agreed with the KDoc's sentences and not with its claim; the island paints
+its own surface now, which is also what a real one would do.
+
+**`AdaptiveWidget` needed something the theme did not have.** Every local in `KvadrantTheme` has a
+working default — that is what lets a component render in a test with no theme — so reading any of
+them says nothing about whether a theme is above you. `KvadrantTheme.present` is a local that is
+false unless a theme provided it, and it is the only honest basis for the branch.
 
 `KvadrantColors.fromMaterial()` for embedding a Kvadrant island in a Material application, and
 `AdaptiveWidget(kvadrant = {}, material = {})` on the model `compose-cupertino` proved — the only
