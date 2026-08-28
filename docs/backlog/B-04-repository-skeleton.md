@@ -32,6 +32,22 @@ must be available from `setup-java`, and the screenshot suite renders in a real 
 needs a runner that can give it one. Neither is checked. There is also a known account constraint —
 GitHub-hosted minutes are not paid for — so the runner question may not be answered by pushing.
 
+**The workflow is closer than it was and still unproven.** The `gradle` job now declares a Python —
+`check` shells out to it twice for the token and icon generators, and an undeclared interpreter is a
+dependency that changes without a diff — and wraps the build in `xvfb-run`, because a runner has no
+display server. **That `xvfb-run` line is the one to distrust**, and not only because it is untested:
+a headless capture can succeed and produce a frame with nothing in it, so the first green run of this
+job proves less than it appears to. Look at a golden by eye the first time it passes.
+
+**An attempt to settle the display question locally failed, and the failure is worth recording.**
+`./gradlew … -Djava.awt.headless=true` sets the property on the Gradle *daemon*, not on the forked
+test JVM, so the suite that came back byte-identical had not been run headless at all. Settling it
+properly needs Linux without a display — the machine in `CLAUDE.md` would do it, and was unreachable
+when this was written.
+
+**What is actually blocking, stated plainly:** a git remote, and a decision about where CI runs given
+that hosted minutes are not paid for. Both are the repository owner's, not this item's.
+
 **Done.** Kotlin's own `abiValidation` is on and `checkKotlinAbi` was already wired into `check` by
 the plugin — verified by adding a public function and watching the gate print the added line, not by
 reading that it should. The reference dump is `kvadrant-core/api/desktop/kvadrant-core.api`, 448

@@ -88,10 +88,28 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # `check` shells out to python3 twice — `checkKvadrantTokens` and `checkKvadrantIcons` compare
+      # a committed generated file against the source it comes from. ubuntu-latest ships a python3,
+      # so this step buys a *declared* version rather than a working build; an undeclared interpreter
+      # is a dependency that changes under you without a diff.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # **`xvfb-run`, and this line is the one to distrust.** The screenshot suite renders in a real
+      # Skiko window, and a GitHub runner has no display server; a virtual framebuffer is the
+      # standard answer and it has never been run here. It is also the failure mode that does not
+      # announce itself — a headless capture can succeed and produce a frame with nothing in it, so
+      # the first green run of this job proves less than it looks like it does. Compare a golden by
+      # eye the first time this passes.
+      #
       # The same one target a contributor runs. `check` carries the tests on both renderers, ktlint,
-      # `viddikVerify`, `checkKotlinAbi` and `noMaterialInTheCore`; naming them separately here is
-      # how the CI set and the local set start to differ.
-      - run: ./gradlew check --no-daemon
+      # `viddikVerify`, `checkKotlinAbi`, `noMaterialInTheCore` and the two generator checks; naming
+      # them separately here is how the CI set and the local set start to differ.
+      #
+      # `connectedAndroidDeviceTest` is deliberately absent: it needs a phone, and B-29 records that
+      # a green `check` says nothing at all about Android.
+      - run: xvfb-run --auto-servernum ./gradlew check --no-daemon
 
       # Default branch only. `status: draft` is legal in a pull request, where it means "this
       # branch will make it true", and a defect the moment it merges.
