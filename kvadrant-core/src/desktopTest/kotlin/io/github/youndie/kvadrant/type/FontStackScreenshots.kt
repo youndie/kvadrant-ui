@@ -52,9 +52,6 @@ private fun selawik() =
 @Composable
 private fun family(vararg files: Pair<String, FontWeight>) = FontFamily(classpath(*files))
 
-@Composable
-private fun selawikThen(vararg files: Pair<String, FontWeight>) = FontFamily(selawik() + classpath(*files))
-
 /**
  * The spike's evidence. Each stack renders the same three lines:
  *  - the Pivot header at its real size — 72 Metro px, which is 54 sp;
@@ -77,17 +74,13 @@ private fun Specimen(family: FontFamily) {
     }
 }
 
-@ViddikScreenshot(name = "selawik only", group = "font stack", width = 480, height = 300)
-@Composable
-internal fun StackSelawikOnly(): Unit = Specimen(FontFamily(selawik()))
-
-@ViddikScreenshot(name = "selawik then inter", group = "font stack", width = 480, height = 300)
-@Composable
-internal fun StackSelawikInter(): Unit = Specimen(selawikThen(*Inter))
-
-@ViddikScreenshot(name = "selawik then fira", group = "font stack", width = 480, height = 300)
-@Composable
-internal fun StackSelawikFira(): Unit = Specimen(selawikThen(*Fira))
+// **Three fixtures used to stand here and they are now `FontFallbackTest`.** `selawik only`,
+// `selawik then inter` and `selawik then fira` had one MD5 between them, which was the finding: a
+// `FontFamily` list is not a glyph-fallback chain, so the Cyrillic in all three came from the
+// *host's* font manager. A golden of that is a golden of whichever font the machine happened to
+// have — they differed by 5.4 % on a Linux runner, correctly, with nothing to fix. The claim is a
+// comparison within one run and is asserted as one now, which holds on any machine and says the
+// same thing. Research §1.7 points at the test.
 
 @ViddikScreenshot(name = "inter only", group = "font stack", width = 480, height = 300)
 @Composable

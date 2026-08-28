@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.resources.Res
 import io.github.youndie.kvadrant.resources.selawik_semilight
 import org.jetbrains.compose.resources.Font
@@ -78,6 +79,28 @@ class FontFallbackTest {
         assertNotEquals(selawik, inter, "Inter rendered the same as the host substitution")
         assertNotEquals(selawik, fira, "Fira rendered the same as the host substitution")
         assertNotEquals(inter, fira, "Inter and Fira rendered identically, which they are not")
+    }
+
+    /**
+     * The shipping stack does not reach the host at all.
+     *
+     * The test above establishes that a family list is inert and the host fills the gap. This is
+     * the consequence worth guarding: [kvadrantCyrillic] must render something *other* than that,
+     * because if compose-resources ever fails to deliver the companion the text still appears —
+     * in the host's font, looking like a slightly different design decision rather than like a
+     * missing asset. That is the failure this library would ship without noticing.
+     */
+    @Test
+    fun the_bundled_companion_is_used_rather_than_the_host() {
+        val host = render { FontFamily(Font(Res.font.selawik_semilight, WEIGHT)) }
+        val companion = render { kvadrantCyrillic() }
+
+        assertNotEquals(
+            host,
+            companion,
+            "kvadrantCyrillic() rendered exactly what a family with no Cyrillic renders, which " +
+                "means the bundled companion did not load and the host is drawing this text",
+        )
     }
 
     @Composable

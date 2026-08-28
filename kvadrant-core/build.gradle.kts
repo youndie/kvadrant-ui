@@ -216,15 +216,24 @@ compose.resources {
     packageOfResClass = "io.github.youndie.kvadrant.resources"
 }
 
+/** viddik's own default, restated here so the property override has something to fall back to. */
+val defaultChannelTolerance = 2
+
 // The screenshot suite has to be part of the one gate. Left out of `check` it becomes a command
 // somebody remembers to run, which means it runs on one machine and not on the branch.
 viddik {
     verifyOnCheck.set(true)
-    // Overridable so the number can be *measured* rather than guessed: B-35's sweep runs
-    // `viddikVerify` at several values and reads how many pixels survive each. See the property's
-    // permanent value below.
+    // Left at viddik's default. B-35 measured what raising it buys and the answer is: not enough
+    // to matter and too much to keep. On the Linux runner 34 goldens differ at 2, 21 at 4, 16 at 8
+    // and still 10 at 32 — and closing the remainder would mean taking the *percentage* limit from
+    // 0.05 % to about 1.4 %, which was measured to forgive a real regression: changing the button's
+    // text from SemiBold to Normal moves 0.27 % of the pixels. A tolerance that admits the
+    // difference between two rasterisers admits that too.
+    //
+    // Overridable so the sweep can be run again after a Compose or skiko bump:
+    //   ./gradlew :kvadrant-core:viddikVerify --rerun-tasks -PviddikChannelTolerance=N
     channelTolerance.set(
-        providers.gradleProperty("viddikChannelTolerance").map(String::toInt).orElse(0),
+        providers.gradleProperty("viddikChannelTolerance").map(String::toInt).orElse(defaultChannelTolerance),
     )
 }
 

@@ -585,8 +585,17 @@ scripts will have different rhythm", and it recommended `Selawik → Inter → N
 
 | Fact | Where verified |
 |---|---|
-| `FontFamily(Selawik…)`, `FontFamily(Selawik…, Inter…)` and `FontFamily(Selawik…, Fira…)` render **byte-identically** | `kvadrant-core/src/desktopTest/snapshots/font_stack_selawik_*.png` — one MD5 across all three |
-| The primary font *is* applied — `inter only` and `fira only` differ from each other and from the above | same directory |
+| `FontFamily(Selawik…)`, `FontFamily(Selawik…, Inter…)` and `FontFamily(Selawik…, Fira…)` render **identically** | `kvadrant-core/src/desktopTest/.../type/FontFallbackTest.kt` |
+| The primary font *is* applied — Inter and Fira differ from each other and from the above | same test, `a_family_that_has_the_glyphs_renders_differently` |
+
+**This used to be verified by three golden images having one MD5 between them, and that address
+could not leave the machine that recorded it.** The finding is that the Cyrillic in all three comes
+from *the host's own font manager* — so the pictures were pictures of whatever font the host
+happened to have, and on the CI runner they differed from the recorded ones by 5.4 %. Correctly, and
+with nothing to fix: the variable is the operating system. The claim itself is portable, because it
+is a comparison **within** one run — three families render the same, a fourth does not — so it is
+now a test that holds on any machine, and the three goldens are gone. See
+[B-35](../backlog/B-35-cyrillic-renders-differently-on-linux.md).
 
 A `FontFamily` list in Compose selects among **weight and style variants of one family**; it is not
 a glyph-fallback chain. The Cyrillic in those three renders came from the host's own font manager,
