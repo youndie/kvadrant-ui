@@ -73,3 +73,21 @@ either option is chosen.
 - AC: whichever way it goes, at least one Android-specific behaviour is guarded by a number rather
   than by a person having looked once — B-25 is currently guarded by neither.
 - Anchors: `kvadrant-core/build.gradle.kts`, `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/indication/CameraProbeTest.kt`
+
+## Re-checked at viddik 0.3.0.15 — the premise still holds
+
+Worth writing down because the obvious reading of the artefact list is the wrong one.
+`viddik-annotations` **does** have an `android` variant, published as an AAR, and it is not new —
+it is there at 0.2.0.14 as well. So a `@ViddikScreenshot` can compile in a shared or Android source
+set, which is a real capability and is easy to mistake for this item being answered.
+
+It is not. What decides this item is the *capture engine*, and `viddik-testing-core` publishes
+`jvm` variants only — at 0.2.0.14, at 0.3.0.15, and in the locally built 0.3.0 sitting in
+`~/.m2`. `viddik-testing-core-android` returns 404 at every version, the releases repository is
+empty, and the 0.3.0.15 Gradle plugin has no Android handling in it: the same ten extension
+properties and not one Android reference in the jar.
+
+**The annotation is the part that can compile anywhere; the part that renders and compares is still
+JVM.** Android's guard remains a number on a device rather than a picture — and that number is not
+being produced at all today, which is [B-36](B-36-the-on-device-guard-does-not-execute.md).
+

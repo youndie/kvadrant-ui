@@ -8,7 +8,19 @@ compose-multiplatform = "1.12.0"
 ksp = "2.3.10"
 # viddik ships the plugin, the annotations and the capture engine under one version, which is what
 # keeps the processor and the renderer in step.
-viddik = "0.2.0.14"
+#
+# **0.3.0.15 changes nothing this repository can see, and that was measured rather than hoped.**
+# All 117 goldens verify unchanged, and re-recording every one of them under the new version
+# produces **byte-identical** files — a stronger statement than `viddikVerify` alone makes, since
+# that compares within a tolerance and this compares bytes. Determinism holds too: three recordings,
+# nothing moved.
+#
+# What it does *not* bring is an Android capture engine. `viddik-annotations` has an `android`
+# variant and has had since 0.2.0.14, so a `@ViddikScreenshot` compiles in a shared or Android
+# source set — but `viddik-testing-core` publishes JVM variants only at every published version,
+# `viddik-testing-core-android` is a 404, and the 0.3.0.15 Gradle plugin contains no Android
+# handling at all. B-29's premise is unchanged and Android still has no goldens.
+viddik = "0.3.0.15"
 # The Gradle plugin and the ktlint it runs are separate versions on purpose: the plugin is a
 # launcher, the CLI is what decides how the code looks.
 # The API reference the documentation site publishes beside the component pages (B-34). 2.x is a
