@@ -14,3 +14,14 @@ screenshot verification in one `./gradlew check`. The components have not been w
 export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check
 ```
+
+## Licence
+
+Apache-2.0 for the code — [LICENSE](LICENSE).
+
+**The bundled fonts are not under it.** Selawik and Source Sans 3 are SIL OFL 1.1, and the full text
+of each ships in the artefact as `Selawik-OFL.txt` and `SourceSans3-OFL.txt`; the published POM
+declares both licences with a note saying which covers what, because licence tooling reads a POM and
+not a jar. **No Segoe asset is in this repository**, including test fixtures — Selawik is Microsoft's
+own metric-compatible stand-in and is the reason a typeface can ship here at all.
+
