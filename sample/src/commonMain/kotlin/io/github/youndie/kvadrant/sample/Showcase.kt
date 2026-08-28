@@ -39,6 +39,7 @@ import io.github.youndie.kvadrant.components.KvadrantListItem
 import io.github.youndie.kvadrant.components.KvadrantLoopingSelector
 import io.github.youndie.kvadrant.components.KvadrantPage
 import io.github.youndie.kvadrant.components.KvadrantPanorama
+import io.github.youndie.kvadrant.components.KvadrantPickerPage
 import io.github.youndie.kvadrant.components.KvadrantRoll
 import io.github.youndie.kvadrant.components.KvadrantRotate
 import io.github.youndie.kvadrant.components.KvadrantSlide
@@ -167,20 +168,22 @@ private fun PickerShowcase(
     cyrillic: FontFamily,
     onBack: () -> Unit,
 ) {
-    var day by remember { mutableStateOf(12) }
+    var day by remember { mutableStateOf(11) }
     var month by remember { mutableStateOf(7) }
     var year by remember { mutableStateOf(6) }
 
-    KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = "календарь", cyrillic = cyrillic) {
-        Row(
-            Modifier.fillMaxWidth().padding(top = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(9.dp),
-        ) {
+    KvadrantPage(applicationTitle = "KVADRANT UI", pageTitle = "выберите дату", cyrillic = cyrillic) {
+        // **`KvadrantPickerPage`, and the columns at their own size.** This used to be three
+        // selectors in a `Row` with `weight(1f)`, which squeezed 148 px squares into a third of the
+        // screen each and left the page with no animation at all — so what it demonstrated was that
+        // three columns of text exist, which nobody needed a page for. The phone's date picker is a
+        // page you navigate to, filling the screen, and it *tips in* from -50° and turns away to
+        // +90° rather than sliding; that rotation is the component and it was the part not shown.
+        KvadrantPickerPage(visible = true, modifier = Modifier.padding(top = 12.dp)) {
             KvadrantLoopingSelector(
                 (1..31).map(Int::toString),
                 day,
                 { day = it },
-                Modifier.weight(1f),
                 label = "день",
                 cyrillic = cyrillic,
             )
@@ -188,7 +191,6 @@ private fun PickerShowcase(
                 listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"),
                 month,
                 { month = it },
-                Modifier.weight(1f),
                 label = "месяц",
                 cyrillic = cyrillic,
             )
@@ -196,7 +198,6 @@ private fun PickerShowcase(
                 (2020..2030).map(Int::toString),
                 year,
                 { year = it },
-                Modifier.weight(1f),
                 label = "год",
                 cyrillic = cyrillic,
             )
