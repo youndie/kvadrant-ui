@@ -86,6 +86,21 @@ blindly produces a link that looks right and 404s. Forty-seven of forty-seven re
 transcription reaches it — `KvadrantTextBox`'s reference page carries the whole `PhoneTextBox`
 argument, including the sentence about what a transparent field would have got wrong.
 
+**The sample application is published beside the component pages**, at `demo.html`, and that is a
+deliberate reversal of one line in this item. "Rejected: embedding the demo as one page" was right
+about the *documentation format* — a component library is read one component at a time — and wrong
+to conclude the demo has no place here. The two answer different questions: a component page shows
+what one control looks like, and no number of them adds up to whether a screen made of them holds
+together. It is framed in an iframe rather than linked into directly, because the sample's own page
+is a full-screen canvas with no way back out of it.
+
+**The README opens with four goldens rather than with renders made for the occasion.** A component
+whose appearance changes fails `viddikVerify`, re-recording rewrites the PNG, and the README is
+current without anybody remembering it — which is the same argument as the running previews, applied
+to a place where a running preview cannot go. It opened a hole in the other direction, since the
+screenshot suite guards goldens against fixtures and not against documents, so
+[`scripts/doc_images.py`](../../scripts/doc_images.py) closes it.
+
 **Pages is switched on**, source *GitHub Actions*, which was the only setting that could work: the
 site is built rather than committed, so a branch source would have meant putting thirteen megabytes
 of generated wasm into this repository's history. The legacy Jekyll builder had been failing quietly
