@@ -4,8 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -59,7 +57,13 @@ public fun KvadrantListPickerPage(
         cyrillic = cyrillic,
         modifier = modifier,
     ) {
-        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+        // **No `verticalScroll` here.** [KvadrantPage] already scrolls its content, and a scrolling
+        // column inside a scrolling column is measured with an infinite maximum height — which
+        // Compose refuses outright, so the page did not merely lay out oddly, it crashed the
+        // application the moment a row was tapped. A long list is the one thing this page is for,
+        // which is how the mistake made itself so easy: the scroll looked obviously necessary and
+        // was already there one level up.
+        Column(Modifier.fillMaxWidth()) {
             items.forEachIndexed { index, label ->
                 KvadrantText(
                     label,
