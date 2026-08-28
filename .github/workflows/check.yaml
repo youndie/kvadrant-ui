@@ -120,6 +120,22 @@ jobs:
           xvfb-run --auto-servernum ./gradlew --no-daemon -i \
             :kvadrant-core:desktopTest --tests '*GlyphPortabilityProbeTest*' 2>&1 | grep PROBE
 
+      # B-35's second measurement. The first one established that the glyphs land in the same
+      # places on both platforms and only the *value* of an edge pixel differs; this asks by how
+      # much, by counting how many pixels survive as the per-channel threshold is raised. A number
+      # picked from this sweep is a number with a reason; one picked to make the build pass is how
+      # a tolerance ends up admitting the regression it exists to catch.
+      - name: channel tolerance sweep (B-35)
+        run: |
+          for t in 0 2 4 8 16 32; do
+            echo "SWEEP channelTolerance=$t"
+            xvfb-run --auto-servernum ./gradlew --no-daemon -PviddikChannelTolerance=$t \
+              :kvadrant-core:viddikVerify 2>&1 \
+              | grep -oE "Screenshot mismatch for [^:]+: [0-9]+/[0-9]+ px differ \([0-9.]+%" \
+              | sed "s/^/SWEEP $t /" || true
+            echo "SWEEP $t done"
+          done
+
       - run: xvfb-run --auto-servernum ./gradlew check --no-daemon
 
       # The diffs, when there are any. viddik writes a `*_DIFF.png` beside every mismatch and says

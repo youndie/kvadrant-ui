@@ -220,6 +220,12 @@ compose.resources {
 // somebody remembers to run, which means it runs on one machine and not on the branch.
 viddik {
     verifyOnCheck.set(true)
+    // Overridable so the number can be *measured* rather than guessed: B-35's sweep runs
+    // `viddikVerify` at several values and reads how many pixels survive each. See the property's
+    // permanent value below.
+    channelTolerance.set(
+        providers.gradleProperty("viddikChannelTolerance").map(String::toInt).orElse(0),
+    )
 }
 
 // compose-resources registers a copy task for every Android variant and leaves this one without an
