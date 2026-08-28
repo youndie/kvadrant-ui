@@ -18,7 +18,7 @@ import io.github.youndie.kvadrant.components.KvadrantTextBox
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -38,7 +38,7 @@ class TemplateShapeTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     Box(Modifier.size(300.dp, 120.dp).background(Color.Black).testTag("frame")) { content() }
                 }

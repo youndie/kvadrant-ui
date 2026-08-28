@@ -22,7 +22,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlinx.coroutines.runBlocking
 import kotlin.math.abs
 import kotlin.test.Test
@@ -75,7 +75,7 @@ class PanoramaFoldTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     scroll = remember { ScrollState(0) }
                     Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {

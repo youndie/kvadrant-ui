@@ -19,11 +19,11 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
 import io.github.youndie.kvadrant.theme.WCAG_AA
 import io.github.youndie.kvadrant.theme.accessibleAccent
 import io.github.youndie.kvadrant.theme.contrastOn
 import io.github.youndie.kvadrant.theme.contrastRatio
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -35,7 +35,7 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun Swatches(colors: KvadrantColors) {
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         Column(
             Modifier.fillMaxSize().background(KvadrantTheme.colors.background).padding(9.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),

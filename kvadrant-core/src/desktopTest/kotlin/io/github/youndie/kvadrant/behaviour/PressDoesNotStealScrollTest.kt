@@ -34,7 +34,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.indication.kvadrantTilt
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -53,7 +53,7 @@ class PressDoesNotStealScrollTest {
         var moved = 0
         runComposeUiTest {
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     val scroll = rememberScrollState()
                     Box(Modifier.size(300.dp, 400.dp).testTag("list")) {
                         Column(Modifier.fillMaxWidth().verticalScroll(scroll)) {
@@ -115,7 +115,7 @@ class PressDoesNotStealScrollTest {
         var released = false
         runComposeUiTest {
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     val scroll = rememberScrollState()
                     val source = remember { MutableInteractionSource() }
                     LaunchedEffect(source) {
@@ -197,7 +197,7 @@ class PressDoesNotStealScrollTest {
         var clicks = 0
         runComposeUiTest {
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     val scroll = rememberScrollState()
                     Box(Modifier.size(300.dp, 400.dp)) {
                         Column(Modifier.fillMaxWidth().verticalScroll(scroll)) {

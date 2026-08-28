@@ -23,7 +23,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 private val Groups =
@@ -38,7 +38,7 @@ private fun Contacts(
     colors: KvadrantColors,
     content: @Composable () -> Unit,
 ) {
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         Column(Modifier.fillMaxSize().background(KvadrantTheme.colors.background)) { content() }
     }
 }

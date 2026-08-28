@@ -8,7 +8,6 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,7 +31,7 @@ class ReverseAdapterTest {
                             surface = Color(0xFF161A22),
                         ),
                 ) {
-                    KvadrantIsland(KvadrantTypography.default(kvadrantLatin())) {
+                    KvadrantIsland(portableTypography(kvadrantLatin())) {
                         accent = KvadrantTheme.colors.accent
                         background = KvadrantTheme.colors.background
                     }
@@ -51,7 +50,7 @@ class ReverseAdapterTest {
         runComposeUiTest {
             setContent {
                 MaterialTheme(colorScheme = lightColorScheme(primary = hostAccent)) {
-                    KvadrantIsland(KvadrantTypography.default(kvadrantLatin())) {
+                    KvadrantIsland(portableTypography(kvadrantLatin())) {
                         isDark = KvadrantTheme.colors.isDark
                     }
                 }
@@ -68,7 +67,7 @@ class ReverseAdapterTest {
             setContent {
                 MaterialTheme {
                     AdaptiveWidget(kvadrant = { outside = "kvadrant" }, material = { outside = "material" })
-                    KvadrantIsland(KvadrantTypography.default(kvadrantLatin())) {
+                    KvadrantIsland(portableTypography(kvadrantLatin())) {
                         AdaptiveWidget(kvadrant = { inside = "kvadrant" }, material = { inside = "material" })
                     }
                 }

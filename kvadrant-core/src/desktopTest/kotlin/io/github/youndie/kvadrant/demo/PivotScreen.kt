@@ -23,7 +23,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 private val Titles = listOf("start", "почта", "settings")
@@ -36,7 +36,7 @@ private fun PivotPage(
 ) {
     val latin = kvadrantLatin()
     val cyrillic = kvadrantCyrillic()
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(latin)) {
+    KvadrantTheme(colors = colors, typography = portableTypography(latin)) {
         val state = rememberKvadrantPivotState(Titles.size)
         LaunchedEffect(page, offset) {
             state.scrollToPage(state.currentPage - state.currentPage.mod(Titles.size) + page, offset)

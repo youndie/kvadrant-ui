@@ -49,9 +49,15 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   a real device. It is not in `check` on purpose, because a gate that needs hardware is a gate that
   gets skipped, and a skipped gate reads as a green one. Run it before trusting anything about the
   renderer most of this will ship on.
-- **Every glyph in a golden comes from a bundled file.** That is what makes these images portable
-  across operating systems, and it rules out fixtures whose point is a *missing* font — the host
-  supplies one and the golden records the recording machine.
+- **Every glyph in a golden comes from a bundled file, and that alone did not make them portable.**
+  The first CI run on Linux failed on twenty-odd images and every one was text: the *file* is the
+  same and the **rasteriser** is not, so identical outlines land on different pixels under FreeType
+  than under macOS. Fixtures build their ramp with `portableTypography(...)`, which pins
+  `FontHinting` and `FontSmoothing` through viddik's `ViddikPlatformTextStyle`. **Use it in every new
+  fixture**; a golden built on `KvadrantTypography.default` records the machine that recorded it.
+  The pinning is test-only — a library that overrode hinting for its consumers would be deciding
+  something the operating system is entitled to decide, to make its own tests convenient. Bundled
+  glyphs still rule out fixtures whose point is a *missing* font.
 - **Style is in `.editorconfig`**, not in the build script.
 - **The public ABI is pinned.** `check` runs `checkKotlinAbi` against
   `kvadrant-core/api/desktop/kvadrant-core.api`. A deliberate API change means running

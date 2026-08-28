@@ -26,14 +26,14 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 @Composable
 private fun Dark(content: @Composable () -> Unit) {
     KvadrantTheme(
         colors = KvadrantColors.dark(),
-        typography = KvadrantTypography.default(kvadrantLatin()),
+        typography = portableTypography(kvadrantLatin()),
     ) {
         Box(Modifier.fillMaxSize().background(KvadrantTheme.colors.background)) { content() }
     }

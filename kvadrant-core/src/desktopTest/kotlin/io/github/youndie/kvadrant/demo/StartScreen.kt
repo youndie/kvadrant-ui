@@ -27,7 +27,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -43,7 +43,7 @@ private fun StartPage(
 ) {
     val latin = kvadrantLatin()
     val cyrillic = kvadrantCyrillic()
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(latin)) {
+    KvadrantTheme(colors = colors, typography = portableTypography(latin)) {
         Column(
             Modifier
                 .fillMaxSize()

@@ -19,7 +19,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -38,7 +38,7 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun Grid(shared: Boolean) {
-    KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
         Column(
             Modifier.fillMaxSize().background(KvadrantTheme.colors.background).padding(9.dp),
             verticalArrangement = Arrangement.spacedBy(9.dp),

@@ -30,8 +30,8 @@ import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantMetrics
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
 import io.github.youndie.kvadrant.theme.scaled
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -71,7 +71,7 @@ internal fun SampleWindow() {
 
     KvadrantTheme(
         colors = KvadrantColors.dark(),
-        typography = KvadrantTypography.default(kvadrantLatin()),
+        typography = portableTypography(kvadrantLatin()),
         metrics = KvadrantMetrics().scaled(1.6f),
     ) {
         Column(Modifier.fillMaxSize().background(KvadrantTheme.colors.background)) {

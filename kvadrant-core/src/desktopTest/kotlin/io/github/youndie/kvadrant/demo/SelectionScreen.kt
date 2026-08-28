@@ -19,13 +19,13 @@ import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 @Composable
 private fun Selection(colors: KvadrantColors) {
     val cyrillic = kvadrantCyrillic()
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         Column(
             Modifier.fillMaxSize().background(KvadrantTheme.colors.background).padding(9.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),

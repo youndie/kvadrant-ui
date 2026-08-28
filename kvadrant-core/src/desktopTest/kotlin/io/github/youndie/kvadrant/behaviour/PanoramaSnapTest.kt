@@ -28,7 +28,7 @@ import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -77,7 +77,7 @@ class PanoramaSnapTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     var ready by remember { mutableStateOf(false) }
                     LaunchedEffect(Unit) { ready = true }
@@ -118,7 +118,7 @@ class PanoramaSnapTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     scroll = remember { ScrollState(0) }
                     Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
@@ -187,7 +187,7 @@ class PanoramaSnapTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     scroll = remember { ScrollState(0) }
                     Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
@@ -240,7 +240,7 @@ class PanoramaSnapTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     scroll = remember { ScrollState(0) }
                     Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {
@@ -300,7 +300,7 @@ class PanoramaSnapTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     scroll = remember { ScrollState(0) }
                     Box(Modifier.size(400.dp, 600.dp).testTag("pano")) {

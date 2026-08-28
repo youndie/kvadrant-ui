@@ -22,7 +22,6 @@ import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -43,7 +42,7 @@ private fun Island() {
                 Text("material host", style = MaterialTheme.typography.headlineSmall)
                 Button(onClick = {}) { Text("material button") }
 
-                KvadrantIsland(KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantIsland(portableTypography(kvadrantLatin())) {
                     // The island paints its own background, which is the whole of the seam: Metro's
                     // dark theme is absolute black by decision, so it does not blend into a host
                     // that merely tends dark. A fixture whose island paints nothing would show a

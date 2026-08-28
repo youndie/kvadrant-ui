@@ -18,7 +18,7 @@ import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -33,7 +33,7 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun States(colors: KvadrantColors) {
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         val pressing = remember { MutableInteractionSource() }
         Column(
             Modifier.fillMaxSize().background(KvadrantTheme.colors.background).padding(12.dp),

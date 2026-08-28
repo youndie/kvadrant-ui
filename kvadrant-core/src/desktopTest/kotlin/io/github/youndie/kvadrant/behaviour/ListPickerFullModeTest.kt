@@ -16,7 +16,7 @@ import io.github.youndie.kvadrant.components.KvadrantListPickerMode
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -34,7 +34,7 @@ class ListPickerFullModeTest {
         var reported: KvadrantListPickerMode? = null
         runComposeUiTest {
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     Box(Modifier.size(300.dp)) {
                         KvadrantListPicker(
                             modifier = Modifier.testTag("picker"),

@@ -12,7 +12,7 @@ import io.github.youndie.kvadrant.components.KvadrantListPickerPage
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -34,7 +34,7 @@ class ListPickerPageTest {
         var chosen = -1
         runComposeUiTest {
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     Box(Modifier.size(400.dp, 700.dp)) {
                         KvadrantListPickerPage(
                             items = zones,

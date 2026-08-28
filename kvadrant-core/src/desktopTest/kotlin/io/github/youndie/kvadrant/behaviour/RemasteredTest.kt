@@ -21,7 +21,7 @@ import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -47,7 +47,7 @@ class RemasteredTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                     remastered = remastered,
                 ) {
                     press = remember { MutableInteractionSource() }
@@ -93,7 +93,7 @@ class RemasteredTest {
             setContent {
                 KvadrantTheme(
                     colors = KvadrantColors.dark(),
-                    typography = KvadrantTypography.default(kvadrantLatin()),
+                    typography = portableTypography(kvadrantLatin()),
                 ) {
                     seen = KvadrantTheme.remastered
                 }

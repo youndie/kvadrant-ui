@@ -16,13 +16,13 @@ import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /** Large enough to judge. A control this size in a gallery is a control nobody has looked at. */
 @Composable
 private fun Detail(colors: KvadrantColors) {
-    KvadrantTheme(colors = colors, typography = KvadrantTypography.default(kvadrantLatin())) {
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         Column(
             Modifier.fillMaxSize().background(KvadrantTheme.colors.background).padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),

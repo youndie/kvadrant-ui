@@ -22,7 +22,7 @@ import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -53,7 +53,7 @@ class SharedCameraTest {
             lateinit var left: MutableInteractionSource
             lateinit var right: MutableInteractionSource
             setContent {
-                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                KvadrantTheme(KvadrantColors.dark(), portableTypography(kvadrantLatin())) {
                     left = remember { MutableInteractionSource() }
                     right = remember { MutableInteractionSource() }
                     Box(Modifier.size(420.dp, 200.dp).background(Color.Black).testTag("frame")) {

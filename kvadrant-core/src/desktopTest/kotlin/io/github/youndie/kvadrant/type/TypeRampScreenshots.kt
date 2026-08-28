@@ -15,7 +15,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import io.github.youndie.kvadrant.theme.KvadrantTypography
+import io.github.youndie.kvadrant.type.portableTypography
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
 
 /**
@@ -33,7 +33,7 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
 private fun Ramp(colors: KvadrantColors) {
     val latin = kvadrantLatin()
     val cyrillic = kvadrantCyrillic()
-    val type = KvadrantTypography.default(latin)
+    val type = portableTypography(latin)
     val slots =
         listOf(
             "subtle" to type.subtle,
