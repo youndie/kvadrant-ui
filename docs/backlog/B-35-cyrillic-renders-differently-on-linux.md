@@ -1,7 +1,7 @@
 ---
 id: B-35
 title: "The Cyrillic companion renders differently on Linux, and it is not a flake"
-status: open
+status: done
 priority: P0
 size: M
 stage: stage-2-release
@@ -61,6 +61,75 @@ place to dig. It is a narrower claim than the one this item opened with.
 faces make the companion stable, the three `font stack/selawik *` fixtures remain, and they need a
 decision rather than a fix: either they stop asserting a picture and start asserting a number, or
 the set accepts that a fixture about a missing font has no portable golden.
+
+## Closed, and the fix is not the one this item proposed
+
+**Measured.** A probe rendered one Cyrillic word through five families on both platforms and printed
+the ink count and the bounding box of what was drawn. Every box is identical to the pixel:
+
+| case | macOS ink | Linux ink | box |
+|---|---|---|---|
+| `latin-selawik` | 2150 | 2149 | identical |
+| `cyrillic-source-sans-370` | 3019 | 3003 | identical |
+| `cyrillic-source-sans-default` | 2238 | 2254 | identical |
+| `cyrillic-fira` | 2762 | 2748 | identical |
+| `cyrillic-inter` | 3253 | 3251 | identical |
+| `cyrillic-fallback` | 3020 | 2555 | **differs** |
+
+That settles three things at once. **Shaping is portable** — the glyphs land in the same places, so
+the "drawn twice at two widths" reading of a diff image was wrong; a word whose every edge is
+highlighted looks doubled. **The variable axis is not the cause** — the default instance, with no
+axis setting at all, differs by the same amount as the instanced one. And the only case whose box
+moves is the one with no bundled Cyrillic, where the *host* chooses the font.
+
+**No rasterisation setting closes it.** Aliased rendering differs by fourteen pixels where
+antialiased differs by sixteen; full hinting is worse and moves the box. What is left is that the
+two rasterisers assign different *values* to the pixels at a glyph's edge.
+
+**No tolerance closes it either, and this is the part worth keeping.** viddik has a per-channel
+threshold, which is the right shape for an edge difference, so it was swept over the real goldens:
+
+| channel tolerance | goldens still differing | worst |
+|---|---|---|
+| 0 | 42 | 5.41 % |
+| 2 (viddik's default) | 34 | 5.36 % |
+| 4 | 21 | 5.31 % |
+| 8 | 16 | 5.22 % |
+| 32 | 10 | 4.90 % |
+
+Buying the remainder needs the *percentage* limit at about 1.4 %. Measured against a real
+regression — the button's text from SemiBold to Normal — that moves 0.27 % of the pixels, and a 1 dp
+change in the tile gap moves 4.9 %. **A tolerance that admits FreeType admits the defect**, which is
+the whole argument against loosening it.
+
+**The first sweep said 4 was clean and that was not a result.** It grepped for mismatch lines behind
+an `|| true`, so "the comparison passed", "the task was up to date" and "the build failed for
+another reason" all printed the same nothing. A four-level threshold reconciling two typefaces
+should have been impossible on its face, and checking that is what caught it. The step now reports
+Gradle's own status beside the count and reruns the task.
+
+**So the suite runs on the operating system its numbers came from.** A golden is a picture of a
+rasteriser, and the Linux runner is not the one that took these.
+
+The first attempt split only the goldens onto a `macos-latest` job and left the rest on Linux. The
+goldens passed there immediately — which is the confirmation — but the Linux job went on failing,
+and on three tests that are not goldens at all: `TypeScaleTest`, `InkParityTest` and
+`WeightStepTest`. They count ink pixels, and `InkParityTest` picks the Cyrillic companion's weight by
+comparing coverage across candidates *ten apart*, which half a percent of ink is enough to flip. The
+edge difference reaches the suite twice over and splitting by artefact type does not separate the
+two. **The desktop suite is a rendering suite in whole**, so `check` runs on `macos-latest` and
+Linux keeps only the documentation job.
+
+What is given up is Linux as a second environment, which for a library with no native targets was
+buying a JVM that is already portable.
+
+**Three fixtures could never have been portable and are now a test.** `selawik only`, `selawik then
+inter` and `selawik then fira` had one MD5 between them, which *is* the finding: a `FontFamily` list
+is not a glyph-fallback chain, so all three drew the host's substitution.
+`FontFallbackTest` asserts the same claim as a comparison within one run — three families identical,
+a fourth different — and adds the one that was missing: `kvadrantCyrillic()` must render something
+other than a family with no Cyrillic, or the companion silently failed to load and the host is
+drawing the text.
 
 ## Acceptance
 

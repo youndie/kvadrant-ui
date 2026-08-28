@@ -114,10 +114,16 @@ pip install pyyaml
 make check
 ```
 
-`make check` guards the documentation tree, `./gradlew check` guards the code, and both now also run
-on CI — the remote exists and the workflows have run. **They do not agree yet**: the screenshot
-suite is red on the Linux runner over the Cyrillic companion (B-35), deterministically and not as a
-flake. Treat a green local gate accordingly.
+`make check` guards the documentation tree, `./gradlew check` guards the code, and both run on CI.
+
+**`./gradlew check` runs on macOS there, and that is B-35's answer rather than a preference.** The
+desktop suite is a rendering suite: it photographs components and it counts ink pixels. macOS and
+FreeType assign different values to the pixels at a glyph's edge — every glyph's bounding box is
+identical on both, so it is the edges and nothing else — and that reaches the suite twice: it moves
+the goldens, and it moves the calibration tests, which choose the Cyrillic companion's weight by
+comparing coverage across candidates ten apart. Neither half can be calibrated for two rasterisers,
+so the suite runs on the one its numbers came from. **A golden recorded on a mac is a claim about a
+mac**, and re-recording one anywhere else silently rewrites the reference.
 
 The two gates make deliberately different claims about `docs/components.md`. `make check` builds
 nothing, so it verifies the catalogue against the sources and says the preview column was carried
