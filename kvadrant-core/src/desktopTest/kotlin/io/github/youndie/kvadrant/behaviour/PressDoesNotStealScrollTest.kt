@@ -26,6 +26,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.up
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.TileSize
@@ -182,5 +183,54 @@ class PressDoesNotStealScrollTest {
                 )
             }
         assertEquals(0, scrolled, "the greedy surface did not stop the list, so this test cannot see stealing")
+    }
+
+    /**
+     * A drag that scrolled must not also count as a tap when the finger comes up.
+     *
+     * Reported from the phone: grab a tile, drag sideways to page the pivot, let go — and the tile's
+     * page opens. The release is the whole of it. A gesture that has been taken by somebody else is
+     * over, and lifting the finger afterwards is not a click on anything.
+     */
+    @Test
+    fun a_drag_that_scrolled_is_not_a_click() {
+        var clicks = 0
+        runComposeUiTest {
+            setContent {
+                KvadrantTheme(KvadrantColors.dark(), KvadrantTypography.default(kvadrantLatin())) {
+                    val scroll = rememberScrollState()
+                    Box(Modifier.size(300.dp, 400.dp)) {
+                        Column(Modifier.fillMaxWidth().verticalScroll(scroll)) {
+                            Box(
+                                Modifier
+                                    .size(158.dp)
+                                    .testTag("surface")
+                                    .kvadrantTilt { clicks++ }
+                                    .background(Color.White),
+                            )
+                            Box(Modifier.fillMaxWidth().height(1200.dp).background(Color.DarkGray))
+                        }
+                    }
+                }
+            }
+            // Down on the surface, dragged far enough for the scroll to claim it, then lifted.
+            onNodeWithTag("surface").performTouchInput {
+                down(
+                    androidx.compose.ui.geometry
+                        .Offset(79f, 140f),
+                )
+                moveTo(
+                    androidx.compose.ui.geometry
+                        .Offset(79f, 100f),
+                )
+                moveTo(
+                    androidx.compose.ui.geometry
+                        .Offset(79f, 40f),
+                )
+                up()
+            }
+            waitForIdle()
+        }
+        assertEquals(0, clicks, "lifting the finger after a scroll opened the tile")
     }
 }

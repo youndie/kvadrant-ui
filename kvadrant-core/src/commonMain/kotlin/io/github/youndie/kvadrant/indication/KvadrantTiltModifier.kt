@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.onClick
@@ -89,13 +90,6 @@ public fun Modifier.kvadrantTilt(
                                 scope.launch { source.emit(PressInteraction.Cancel(press)) }
                                 break
                             }
-                            // Somebody else took it — a scroll, a pager. The phone's tilt let go at
-                            // the same moment, and a tile still leaning under a list that has
-                            // started moving is the thing this line exists to prevent.
-                            if (change.isConsumed) {
-                                scope.launch { source.emit(PressInteraction.Cancel(press)) }
-                                break
-                            }
                             if (!change.pressed) {
                                 val inside =
                                     change.position.x in 0f..size.width.toFloat() &&
@@ -113,6 +107,19 @@ public fun Modifier.kvadrantTilt(
                             if (change.position != press.pressPosition) {
                                 press = PressInteraction.Press(change.position)
                                 scope.launch { source.emit(press) }
+                            }
+                            // **The `Final` pass, and reading it on `Main` was the defect.** A
+                            // scroller above this one consumes *after* its children have seen the
+                            // event, so a child asking `isConsumed` on `Main` is asking before the
+                            // answer exists and always hears no. Reported from a phone: drag a tile
+                            // sideways to page the pivot, let go, and the tile's page opens —
+                            // because the gesture had been taken and nothing here had noticed, so
+                            // the lift still counted as a tap.
+                            val settled = awaitPointerEvent(PointerEventPass.Final)
+                            val after = settled.changes.firstOrNull { it.id == down.id }
+                            if (after != null && after.isConsumed) {
+                                scope.launch { source.emit(PressInteraction.Cancel(press)) }
+                                break
                             }
                         }
                     }
