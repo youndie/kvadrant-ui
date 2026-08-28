@@ -52,7 +52,8 @@ jobs:
       - run: |
           ./gradlew --no-daemon \
             :kvadrant-previews:wasmJsBrowserDistribution \
-            :kvadrant-previews:previewIndex
+            :kvadrant-previews:previewIndex \
+            dokkaGenerate
 
       - run: python3 scripts/build_site.py
 
@@ -62,8 +63,10 @@ jobs:
       - name: the site is not empty
         run: |
           pages=$(find build/site -maxdepth 1 -name '*.html' | wc -l)
-          echo "$pages pages"
+          api=$(find build/site/api -name '*.html' | wc -l)
+          echo "$pages component pages, $api API pages"
           test "$pages" -gt 10
+          test "$api" -gt 10
 
       - uses: actions/upload-pages-artifact@v3
         with:

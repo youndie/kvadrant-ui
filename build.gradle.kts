@@ -12,6 +12,17 @@ plugins {
     alias(libs.plugins.androidKmpLibrary) apply false
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.ktlint)
+    // Applied to the root as well as to the modules: in Dokka 2 the root's `dokkaGenerate` is the
+    // aggregator, and the modules it aggregates are named as `dokka` dependencies below.
+    alias(libs.plugins.dokka)
+}
+
+// The API reference for the site (B-34). Only the two published modules are in it — `sample` is a
+// demo and `kvadrant-previews` is the documentation's own scaffolding, and a reference listing
+// either would be documenting things nobody can depend on.
+dependencies {
+    dokka(project(":kvadrant-core"))
+    dokka(project(":kvadrant-material-adapter"))
 }
 
 // One gate: `./gradlew check` runs the tests and ktlint. A lint that has to be remembered as a

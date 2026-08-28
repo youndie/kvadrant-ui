@@ -4,7 +4,9 @@ A component library for **Compose Multiplatform** in the Metro design language �
 Windows 8 — with an optional adapter that lets it sit beside `androidx.compose.material3`.
 
 **[Press the components →](https://youndie.github.io/kvadrant-ui/)** Every one of them runs on that
-page, compiled to WebAssembly from these sources, in both palettes at once.
+page, compiled to WebAssembly from these sources, in both palettes at once, beside
+[the API reference](https://youndie.github.io/kvadrant-ui/api/index.html) generated from the same
+KDoc that says where each number came from.
 
 Forty-eight public composables: the tilt every surface inherits, the Pivot and the Panorama, the
 Start-screen tiles including the live ones, ten base controls, the pickers, the application bar, the
@@ -104,7 +106,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check          # tests, ktlint, the screenshot suite, the ABI dump, the generators
 make check               # the documentation tree and the catalogue
 ./gradlew :sample:run    # the demo on the desktop
-make site                # the documentation site into build/site
+make site                # the documentation site + API reference into build/site
 ```
 
 One gate each, and nothing outside them. `./gradlew ktlintFormat` runs on the mac — a formatter's

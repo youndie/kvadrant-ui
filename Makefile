@@ -46,5 +46,5 @@ screenshots:
 # gate that keeps it honest is `:kvadrant-previews:check`, which fails when a preview stops
 # compiling or stops drawing.
 site:
-	./gradlew :kvadrant-previews:wasmJsBrowserDistribution :kvadrant-previews:previewIndex
+	./gradlew :kvadrant-previews:wasmJsBrowserDistribution :kvadrant-previews:previewIndex dokkaGenerate
 	$(PY) scripts/build_site.py

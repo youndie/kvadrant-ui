@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.viddik)
     alias(libs.plugins.androidKmpLibrary)
+    alias(libs.plugins.dokka)
 }
 
 kotlin {

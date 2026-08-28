@@ -25,7 +25,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check                         # tests + ktlint + viddikVerify. One gate, nothing outside it.
 ./gradlew ktlintFormat                  # on the mac; a formatter's edits do not survive elsewhere
 ./gradlew :kvadrant-core:viddikRecord   # re-record goldens after an intended visual change
-make site                               # the documentation site into build/site (a minute; wasm)
+make site                               # the site + Dokka reference into build/site (a minute; wasm)
 ```
 
 - **Toolchain**: Gradle 9.7.1, Java 25 toolchain, Kotlin 2.4.10, ktlint plugin 14.2.0 running ktlint
@@ -68,6 +68,11 @@ make site                               # the documentation site into build/site
   names a component that no longer exists. It does **not** fail when a new component has no preview
   — five legitimately have none — so that is on whoever adds one. Run
   `./gradlew :kvadrant-previews:previewIndex && python3 scripts/component_catalog.py` after.
+- **KDoc is published twice over, so it is the thing to get right.** Every component's KDoc is the
+  prose on its page of the site *and* the body of its Dokka reference entry — neither is written by
+  hand anywhere else. A sentence naming the Microsoft template a number came from is the most
+  valuable thing that can be added to this codebase, and it reaches a reader without anybody
+  copying it.
 - **The site's pages are flat, all at the root of `build/site`, and that is load-bearing.** Compose's
   resource loader fetches `composeResources/...` relative to the *document*, so a page one directory
   down gets a 404 for the fonts and silently falls back to a system face — a site about a typeface,

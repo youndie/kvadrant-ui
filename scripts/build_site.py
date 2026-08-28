@@ -23,6 +23,12 @@ THE PAGES ARE FLAT, all at the site root, and that is not a style. Compose's res
 are not there, gets a 404, and silently falls back to a system face -- a site about a typeface,
 rendered in the wrong one, with nothing on screen saying so.
 
+THE API REFERENCE is Dokka's, copied in under `api/` and linked per component. The link is emitted
+only when the file it points at is actually on disk: Dokka's URLs are derived from the declaration's
+name by a rule ("every capital becomes a dash and a lower-case letter"), and a rule applied blindly
+produces a link that looks right and 404s. The count of components whose page could not be found is
+printed, so a change in that rule is a number rather than a silence.
+
 WHAT IS GENERATED AND WHAT IS NOT. The prose on a component's page is its own KDoc, extracted here
 rather than written twice. That KDoc is where the transcription lives -- which Microsoft template a
 number came from, and which numbers came from nowhere -- and it is the half of this documentation
@@ -40,6 +46,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CORE = ROOT / "kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant"
 DIST = ROOT / "kvadrant-previews/build/dist/wasmJs/productionExecutable"
+DOKKA = ROOT / "build/dokka/html"
 INDEX = ROOT / "kvadrant-previews/build/preview-index.json"
 REPO = "https://github.com/youndie/kvadrant-ui"
 
@@ -200,6 +207,31 @@ def slug(component):
     return component.lower()
 
 
+def dokka_link(component, source_path, out):
+    """
+    Dokka's page for a declaration, or None when there is not one on disk.
+
+    The rule is Dokka's: every capital becomes a dash followed by its lower-case form, so
+    `KvadrantButton` is `-kvadrant-button.html`. It is checked against the filesystem rather than
+    trusted, because a wrong link here is indistinguishable from a right one until somebody clicks
+    it.
+    """
+    parts = Path(source_path).parts
+    module = parts[0]
+    package = ".".join(parts[parts.index("kotlin") + 1:-1])
+    name = re.sub(r"[A-Z]", lambda m: "-" + m.group(0).lower(), component)
+    # A function is a file; an object, a class or a data class is a directory with an index in it.
+    # Both forms are tried, because "no page for KvadrantAccents" was the first version's answer and
+    # it was wrong — the page existed, under the other shape.
+    for relative in (
+        f"api/{module}/{package}/{name}.html",
+        f"api/{module}/{package}/{name}/index.html",
+    ):
+        if (out / relative).is_file():
+            return relative
+    return None
+
+
 def page(title, subtitle, body, depth_note=""):
     return f"""<!doctype html>
 <html lang="en">
@@ -212,6 +244,7 @@ def page(title, subtitle, body, depth_note=""):
 <body>
 <header class="chrome">
   <a class="app-title" href="index.html">KVADRANT UI</a>
+  <a class="api-link" href="api/index.html">api reference</a>
   <h1 class="page-title">{html.escape(title)}</h1>
   {f'<p class="subtitle">{subtitle}</p>' if subtitle else ''}
 </header>
@@ -250,7 +283,7 @@ def preview_block(preview):
   </section>"""
 
 
-def component_page(component, previews, block):
+def component_page(component, previews, block, api):
     prose = render_kdoc(block["kdoc"]) if block else ""
     if not prose:
         prose = (
@@ -266,7 +299,9 @@ def component_page(component, previews, block):
         '<section class="prose">',
         prose,
         "</section>",
-        f'<p class="source">Read it: <a href="{source}">{html.escape(block["path"] if block else "")}</a></p>',
+        f'<p class="source">Read it: <a href="{source}">{html.escape(block["path"] if block else "")}</a>'
+        + (f' · <a href="{api}">the full signature and every parameter</a>' if api else "")
+        + "</p>",
     ]
     groups = sorted({preview["group"] for preview in previews})
     return page(component, " · ".join(groups), "\n".join(body))
@@ -326,7 +361,8 @@ def index_page(previews, blocks):
     WebAssembly from the same sources the library publishes, in both palettes at once. The light
     theme is not an inversion of the dark one, and putting them side by side is the quickest way to
     see that.</p>
-    <p class="elsewhere"><a href="%s">source</a> ·
+    <p class="elsewhere"><a href="api/index.html">the API reference</a> ·
+    <a href="%s">source</a> ·
     <a href="%s/blob/main/docs/components.md">the catalogue, including what has no preview</a> ·
     <a href="%s/blob/main/docs/research/research-architecture.md">why the architecture is this</a></p>
   </section>""" % (REPO, REPO, REPO)
@@ -398,6 +434,12 @@ code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; co
   line-height: 1.05;
 }
 .subtitle { margin: 6px 0 0; color: var(--subtle); }
+.api-link {
+  float: right;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 
 .prose { max-width: 68ch; }
 .prose p { margin: 0 0 14px; }
@@ -471,6 +513,11 @@ def main():
             f"{DIST.relative_to(ROOT)} is absent. "
             "Run ./gradlew :kvadrant-previews:wasmJsBrowserDistribution"
         )
+    # Required rather than optional. A site that quietly builds without the reference is a site
+    # whose every "the full signature" link is missing, and nothing on the page says one should
+    # have been there.
+    if not DOKKA.is_dir():
+        fail(f"{DOKKA.relative_to(ROOT)} is absent. Run ./gradlew dokkaGenerate")
 
     previews = json.loads(INDEX.read_text())
     if not previews:
@@ -494,6 +541,8 @@ def main():
         else:
             shutil.copy2(item, out / item.name)
 
+    shutil.copytree(DOKKA, out / "api")
+
     (out / "style.css").write_text(STYLE)
     (out / "index.html").write_text(index_page(previews, blocks))
 
@@ -505,9 +554,13 @@ def main():
     if missing:
         fail(f"previews name components with no declaration in the core: {missing}")
 
+    unlinked = []
     for component, entries in by_component.items():
+        api = dokka_link(component, blocks[component]["path"], out)
+        if api is None:
+            unlinked.append(component)
         (out / f"{slug(component)}.html").write_text(
-            component_page(component, entries, blocks[component])
+            component_page(component, entries, blocks[component], api)
         )
 
     # GitHub Pages runs Jekyll over what it is given unless told not to, and Jekyll drops every
@@ -516,6 +569,11 @@ def main():
     (out / ".nojekyll").write_text("")
 
     print(f"{out}: {len(by_component)} component pages, {len(previews)} previews")
+    if unlinked:
+        # Not a failure: `kvadrantTilt` is an extension on `Modifier` and Dokka files it under the
+        # receiver, and a preview about a palette is not a declaration at all. It is printed because
+        # a rule that silently stops matching would otherwise take every link with it.
+        print(f"  no API page found for {len(unlinked)}: {', '.join(sorted(unlinked))}")
 
 
 if __name__ == "__main__":

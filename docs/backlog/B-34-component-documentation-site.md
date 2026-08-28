@@ -77,27 +77,32 @@ example looks exactly like a right one.
   directions: a composable missing from it fails, and so does a preview naming a component that no
   longer exists.
 
-**Three things are not done**, and none of them is hidden behind a green build:
+**The API reference is generated and linked.** Dokka 2.2.0 on the two published modules, copied
+into the site under `api/` and linked from every component page. The link is emitted only when the
+file it points at exists: Dokka derives a URL from a declaration's name by a rule, and a rule applied
+blindly produces a link that looks right and 404s. Forty-seven of forty-seven resolve. The
+transcription reaches it — `KvadrantTextBox`'s reference page carries the whole `PhoneTextBox`
+argument, including the sentence about what a transparent field would have got wrong.
 
-1. **Pages has to be switched on in the repository's settings**, source *GitHub Actions*. Until
-   somebody does that the deploy job fails on a permission, which is the correct failure but not an
-   obvious one.
-2. **The API documentation is not generated.** Dokka is not applied, so the AC about generated
-   reference output is unmet. What the pages carry instead is the KDoc of the composable itself,
-   which is the half that matters here — but the parameter tables of everything around it are still
-   only in the sources.
-3. **The previews have no goldens.** Their guard is a render: every preview is composed, the clock
-   advanced past its entrance, and the pixels differing from the page background counted, with an
-   empty preview measured alongside as the negative control. Pictures wait on
-   [B-35](B-35-cyrillic-renders-differently-on-linux.md) — the suite is already red on the Linux
-   runner, and forty more images make the red larger rather than the signal stronger.
+**Pages is switched on**, source *GitHub Actions*, which was the only setting that could work: the
+site is built rather than committed, so a branch source would have meant putting thirteen megabytes
+of generated wasm into this repository's history. The legacy Jekyll builder had been failing quietly
+on every push until the source was changed.
+
+**One thing is not done**, and it is not hidden behind a green build: **the previews have no
+goldens.** Their guard is a render instead — every preview is composed, the clock
+advanced past its entrance, and the pixels differing from the page background counted, with an empty
+preview measured alongside as the negative control so the zero floor is a measurement rather than an
+assumption. Pictures wait on [B-35](B-35-cyrillic-renders-differently-on-linux.md): thirty-five
+goldens already fail on the Linux runner, deterministically, and forty more images make that red
+larger rather than the signal stronger.
 
 ## What it depends on
 
-- **[B-04](B-04-repository-skeleton.md), and this is a hard block.** GitHub Pages publishes from a
-  repository, and there is no remote — twenty-nine commits, all local, when B-04 was written and
-  eighty now. Nothing about this item can be finished before that is answered, and the same account
-  constraint applies: hosted minutes are not paid for, so whoever answers B-04 answers this too.
+- ~~**[B-04](B-04-repository-skeleton.md), and this is a hard block.**~~ **Answered.** The remote
+  exists, the repository is public so hosted minutes are free, and Pages is enabled with *GitHub
+  Actions* as its source. What that paragraph feared — a documentation site with nowhere to be
+  published — is no longer the situation.
 - ~~**A wasm target**, which is D14's second waiting target.~~ **Done.** `wasmJs { browser() }` on
   the core, the adapter and the sample; the demo builds to a browser bundle and renders — tiles,
   pivot, app bar, Cyrillic from `composeResources`, and a tile that leans towards a click. The entry
