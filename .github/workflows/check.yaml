@@ -71,10 +71,11 @@ jobs:
   # laptop. A guard that runs in one place reports on whichever branch its owner happens to be
   # standing on.
   #
-  # **Never executed.** This repository has no remote, so nothing here has ever run — see B-04. The
-  # job is written to be right rather than proven right, and the first push is where it gets tested.
-  # Two things to expect there: Java 25 has to be available from `setup-java`, and the screenshot
-  # suite renders in a real Skiko window, which needs the runner to have one.
+  # **It runs now, and it is red.** The remote exists and this job has executed many times. Java 25
+  # from `setup-java` and the framebuffer below both work; what does not is the screenshot suite,
+  # which reports thirty-five mismatches on this runner — the same thirty-five with the same pixel
+  # counts on every run, so it is a difference and not a flake. B-35 has the measurement. Until that
+  # closes, a red mark on this job means "still B-35" far more often than it means "your branch".
   gradle:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -96,12 +97,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      # **`xvfb-run`, and this line is the one to distrust.** The screenshot suite renders in a real
-      # Skiko window, and a GitHub runner has no display server; a virtual framebuffer is the
-      # standard answer and it has never been run here. It is also the failure mode that does not
-      # announce itself — a headless capture can succeed and produce a frame with nothing in it, so
-      # the first green run of this job proves less than it looks like it does. Compare a golden by
-      # eye the first time this passes.
+      # **`xvfb-run`.** The screenshot suite renders in a real Skiko window and a GitHub runner has
+      # no display server, so it renders into a virtual framebuffer. The worry when this was written
+      # was that a headless capture succeeds while producing an empty frame — it does not: the
+      # uploaded diffs below show text, tiles and controls drawn correctly, with the differences
+      # confined to particular glyphs. The framebuffer is not the problem; B-35 is.
       #
       # The same one target a contributor runs. `check` carries the tests on both renderers, ktlint,
       # `viddikVerify`, `checkKotlinAbi`, `noMaterialInTheCore` and the two generator checks; naming

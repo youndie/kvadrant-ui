@@ -6,8 +6,15 @@
 # disagreeing with the artefact people depend on.
 name: pages
 
+# **`main` and pull requests, not every push**, which is the opposite of `check.yaml` next door and
+# is deliberate. A branch with a pull request open receives *both* events for the same commit, so an
+# unfiltered `push:` builds this fourteen-megabyte bundle twice per commit — and the two runs then
+# collided in the concurrency group below and one came back `cancelled`, which reads like a failure
+# and says nothing about whether the site builds. One run per commit, and the branch is still
+# covered because it is the pull request that runs.
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -17,13 +24,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-
-# One deployment at a time, and a running one is not cancelled: a half-finished deploy leaves the
-# site serving a mixture of two builds, and the bundle and the pages that mount it are the two
-# halves most likely to disagree.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -72,10 +72,18 @@ jobs:
         with:
           path: build/site
 
+  # The concurrency group is on this job rather than on the workflow. One deployment at a time is
+  # the real constraint — a half-finished one leaves the site serving a mixture of two builds, and
+  # the bundle and the pages that mount it are the two halves most likely to disagree — while two
+  # *builds* have no reason to exclude each other, and putting them in one group is what produced a
+  # cancelled run above.
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
