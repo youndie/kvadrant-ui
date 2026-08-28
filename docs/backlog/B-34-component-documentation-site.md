@@ -1,7 +1,7 @@
 ---
 id: B-34
 title: "A documentation site with the components running in it"
-status: open
+status: wip
 priority: P1
 size: L
 stage: stage-2-release
@@ -57,12 +57,53 @@ example looks exactly like a right one.
   that drifts from the tested one; the same composable should feed both, which means those fixtures
   have to move out of the test source set into something publishable.
 
+## Where it stands
+
+**Built on CI, and deploying from `main`.** `make site` produces the whole thing into `build/site`;
+`.github/workflows/pages.yaml` builds it on every pull request and on `main`, and deploys it from
+`main` alone — publishing a branch's idea of the library is how a site starts disagreeing with the
+artefact people depend on. `:kvadrant-previews:check` fails when a preview stops compiling or stops
+drawing.
+
+- **The registry exists** — [`kvadrant-previews`](../../kvadrant-previews/), forty-seven bare
+  previews, one component each, in a module of its own so the site's code is not in the library's
+  artefact. `previewIndex` runs the compiled registry and writes the ids out for the generator, so
+  the bridge between Kotlin and the Python generator reads what the compiler built rather than what
+  a regular expression finds in the sources.
+- **One bundle, many mounts, verified in a browser.** Four independent Compose roots on one page,
+  each with its own palette, each rendering; an unknown id prints a sentence saying so rather than
+  leaving an empty rectangle. Fourteen megabytes once, not per component.
+- **The prose on a page is the component's own KDoc**, extracted at build time. Nothing is written
+  twice, so nothing can drift.
+- **The catalogue** — [`docs/components.md`](../components.md) — is generated and checked in both
+  directions: a composable missing from it fails, and so does a preview naming a component that no
+  longer exists.
+
+**The API reference is generated and linked.** Dokka 2.2.0 on the two published modules, copied
+into the site under `api/` and linked from every component page. The link is emitted only when the
+file it points at exists: Dokka derives a URL from a declaration's name by a rule, and a rule applied
+blindly produces a link that looks right and 404s. Forty-seven of forty-seven resolve. The
+transcription reaches it — `KvadrantTextBox`'s reference page carries the whole `PhoneTextBox`
+argument, including the sentence about what a transparent field would have got wrong.
+
+**Pages is switched on**, source *GitHub Actions*, which was the only setting that could work: the
+site is built rather than committed, so a branch source would have meant putting thirteen megabytes
+of generated wasm into this repository's history. The legacy Jekyll builder had been failing quietly
+on every push until the source was changed.
+
+**One thing is not done**, and it is not hidden behind a green build: **the previews have no
+goldens.** Their guard is a render instead — every preview is composed, the clock advanced past its
+entrance, and the pixels differing from the page background counted, with an empty preview measured
+alongside as the negative control so the zero floor is a measurement rather than an assumption. Pictures wait on [B-35](B-35-cyrillic-renders-differently-on-linux.md): thirty-five
+goldens already fail on the Linux runner, deterministically, and forty more images make that red
+larger rather than the signal stronger.
+
 ## What it depends on
 
-- **[B-04](B-04-repository-skeleton.md), and this is a hard block.** GitHub Pages publishes from a
-  repository, and there is no remote — twenty-nine commits, all local, when B-04 was written and
-  eighty now. Nothing about this item can be finished before that is answered, and the same account
-  constraint applies: hosted minutes are not paid for, so whoever answers B-04 answers this too.
+- ~~**[B-04](B-04-repository-skeleton.md), and this is a hard block.**~~ **Answered.** The remote
+  exists, the repository is public so hosted minutes are free, and Pages is enabled with *GitHub
+  Actions* as its source. What that paragraph feared — a documentation site with nowhere to be
+  published — is no longer the situation.
 - ~~**A wasm target**, which is D14's second waiting target.~~ **Done.** `wasmJs { browser() }` on
   the core, the adapter and the sample; the demo builds to a browser bundle and renders — tiles,
   pivot, app bar, Cyrillic from `composeResources`, and a tile that leans towards a click. The entry

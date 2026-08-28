@@ -43,5 +43,8 @@ rootProject.name = "kvadrant-ui"
 
 include(":kvadrant-core")
 include(":kvadrant-material-adapter")
+// B-34. The previews the documentation site mounts, in a module of their own so that the site and
+// the library are not the same artefact.
+include(":kvadrant-previews")
 include(":sample")
 include(":sample-android")

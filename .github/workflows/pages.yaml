@@ -1,0 +1,92 @@
+# The documentation site (B-34): a page per component, with the component running in it.
+#
+# TWO JOBS, AND THE SPLIT IS THE POINT. `build` runs on every push and every pull request, because a
+# page that no longer compiles has to be a red build rather than a discovery. `deploy` runs on the
+# default branch alone, because publishing a branch's idea of the library is how a site starts
+# disagreeing with the artefact people depend on.
+name: pages
+
+# **`main` and pull requests, not every push**, which is the opposite of `check.yaml` next door and
+# is deliberate. A branch with a pull request open receives *both* events for the same commit, so an
+# unfiltered `push:` builds this fourteen-megabyte bundle twice per commit — and the two runs then
+# collided in the concurrency group below and one came back `cancelled`, which reads like a failure
+# and says nothing about whether the site builds. One run per commit, and the branch is still
+# covered because it is the pull request that runs.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Pages needs these; the job below cannot deploy without them and the failure names an OIDC token
+# rather than a permission, which is not a helpful thing to read.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The registry, twice over: `previewIndex` runs it so the generator can read the ids, and the
+      # wasm distribution contains the composables those ids mount. They come from the same compiled
+      # module, which is what stops a page asking for a preview the bundle does not carry.
+      #
+      # No `xvfb-run` here. Nothing in these two tasks renders — the wasm build compiles and the
+      # index dump reads four fields per entry — and wrapping a build in a framebuffer it does not
+      # need is how a display server becomes a dependency nobody remembers declaring.
+      - run: |
+          ./gradlew --no-daemon \
+            :kvadrant-previews:wasmJsBrowserDistribution \
+            :kvadrant-previews:previewIndex \
+            dokkaGenerate
+
+      - run: python3 scripts/build_site.py
+
+      # The generator refuses to produce a page for a preview whose component has gone, and refuses
+      # a group it has no order for — but it cannot notice that it produced *nothing*. An empty
+      # upload deploys a blank site over a working one and reports success.
+      - name: the site is not empty
+        run: |
+          pages=$(find build/site -maxdepth 1 -name '*.html' | wc -l)
+          api=$(find build/site/api -name '*.html' | wc -l)
+          echo "$pages component pages, $api API pages"
+          test "$pages" -gt 10
+          test "$api" -gt 10
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+  # The concurrency group is on this job rather than on the workflow. One deployment at a time is
+  # the real constraint — a half-finished one leaves the site serving a mixture of two builds, and
+  # the bundle and the pages that mount it are the two halves most likely to disagree — while two
+  # *builds* have no reason to exclude each other, and putting them in one group is what produced a
+  # cancelled run above.
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -11,6 +11,10 @@ ksp = "2.3.10"
 viddik = "0.2.0.14"
 # The Gradle plugin and the ktlint it runs are separate versions on purpose: the plugin is a
 # launcher, the CLI is what decides how the code looks.
+# The API reference the documentation site publishes beside the component pages (B-34). 2.x is a
+# different plugin from 1.x — one `dokkaGenerate` task on the root aggregates the modules, where 1.x
+# had a per-module task and a separate aggregator.
+dokka = "2.2.0"
 ktlint = "1.8.0"
 ktlintPlugin = "14.2.0"
 agp = "9.3.2"
@@ -64,6 +68,7 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-mu
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 viddik = { id = "ru.workinprogress.viddik", version.ref = "viddik" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 # A KMP library takes AGP's multiplatform plugin, not `com.android.library`: the latter wants to own
 # the module's source sets, and in a KMP module Kotlin already does.
 androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

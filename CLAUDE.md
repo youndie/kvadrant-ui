@@ -12,7 +12,10 @@ opens the demo on the desktop, `:sample-android:installDebug` puts the same scre
    obvious thing", and here the obvious thing is usually the one that was rejected for a reason.
 2. **[backlog.md](backlog.md)** — the order of work and why it is that order. Find the item; the
    item states the decision, the rejected alternative and the acceptance criteria.
-3. The layer document for the area you are touching — once those exist. Today they do not, and that
+3. **[docs/components.md](docs/components.md)** — the catalogue, when the task touches a component:
+   every public composable, the file it is in and the preview that shows it. Generated; do not edit
+   the table.
+4. The layer document for the area you are touching — once those exist. Today they do not, and that
    is deliberate: see the note in [docs/README.md](docs/README.md).
 
 ## Writing code here
@@ -22,6 +25,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check                         # tests + ktlint + viddikVerify. One gate, nothing outside it.
 ./gradlew ktlintFormat                  # on the mac; a formatter's edits do not survive elsewhere
 ./gradlew :kvadrant-core:viddikRecord   # re-record goldens after an intended visual change
+make site                               # the site + Dokka reference into build/site (a minute; wasm)
 ```
 
 - **Toolchain**: Gradle 9.7.1, Java 25 toolchain, Kotlin 2.4.10, ktlint plugin 14.2.0 running ktlint
@@ -58,6 +62,21 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   The pinning is test-only — a library that overrode hinting for its consumers would be deciding
   something the operating system is entitled to decide, to make its own tests convenient. Bundled
   glyphs still rule out fixtures whose point is a *missing* font.
+- **A new component needs a preview, and the check says so in one direction only.**
+  `kvadrant-previews` holds one bare instance of each component; `docs/components.md` is generated
+  from the core's sources and that registry, and `check` fails when it is stale or when a preview
+  names a component that no longer exists. It does **not** fail when a new component has no preview
+  — five legitimately have none — so that is on whoever adds one. Run
+  `./gradlew :kvadrant-previews:previewIndex && python3 scripts/component_catalog.py` after.
+- **KDoc is published twice over, so it is the thing to get right.** Every component's KDoc is the
+  prose on its page of the site *and* the body of its Dokka reference entry — neither is written by
+  hand anywhere else. A sentence naming the Microsoft template a number came from is the most
+  valuable thing that can be added to this codebase, and it reaches a reader without anybody
+  copying it.
+- **The site's pages are flat, all at the root of `build/site`, and that is load-bearing.** Compose's
+  resource loader fetches `composeResources/...` relative to the *document*, so a page one directory
+  down gets a 404 for the fonts and silently falls back to a system face — a site about a typeface,
+  set in the wrong one, with nothing on screen saying so.
 - **Style is in `.editorconfig`**, not in the build script.
 - **The public ABI is pinned.** `check` runs `checkKotlinAbi` against
   `kvadrant-core/api/desktop/kvadrant-core.api`. A deliberate API change means running
@@ -95,10 +114,14 @@ pip install pyyaml
 make check
 ```
 
-`make check` guards the documentation tree, `./gradlew check` guards the code, and **both run only
-here.** This repository has no remote and no CI run has ever happened, so a green gate means green on
-one machine. The workflow now carries a `gradle` job as well as the documentation one; it is written
-and unproven. Treat "the gate is green" accordingly — B-04. `make report` is non-blocking and stays non-green on purpose:
+`make check` guards the documentation tree, `./gradlew check` guards the code, and both now also run
+on CI — the remote exists and the workflows have run. **They do not agree yet**: the screenshot
+suite is red on the Linux runner over the Cyrillic companion (B-35), deterministically and not as a
+flake. Treat a green local gate accordingly.
+
+The two gates make deliberately different claims about `docs/components.md`. `make check` builds
+nothing, so it verifies the catalogue against the sources and says the preview column was carried
+over unverified; `:kvadrant-previews:check` builds the registry first and verifies both. `make report` is non-blocking and stays non-green on purpose:
 the research anchors point at artefacts outside this repository, so `code_anchors.py` reports them
 as absent, and there are no BDD scenarios while there is no behaviour to describe.
 

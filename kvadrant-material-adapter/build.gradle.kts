@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.viddik)
+    alias(libs.plugins.dokka)
 }
 
 kotlin {
