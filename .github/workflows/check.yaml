@@ -66,6 +66,17 @@ jobs:
 
       - run: make check
 
+      # Default branch only. `status: draft` is legal in a pull request, where it means "this branch
+      # will make it true", and a defect the moment it merges.
+      #
+      # **It lives in this job because this is the job that installs PyYAML.** It sat in the gradle
+      # job until that job moved to macOS, where it failed on the first push to main with "PyYAML is
+      # required" — a step gated to `main` runs on no branch, so nothing could have caught it
+      # earlier, and on Linux the runner's own python happened to have the module. A check that only
+      # ever executes on the default branch is a check whose first execution is also its first test.
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: python3 scripts/docs_check.py --on-main
+
   # The code gate. It was missing entirely: this workflow ran `make check` and nothing else, so the
   # tests, ktlint, the screenshot suite, the ABI dump and `noMaterialInTheCore` all lived on one
   # laptop. A guard that runs in one place reports on whichever branch its owner happens to be
@@ -133,10 +144,6 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-      # Default branch only. `status: draft` is legal in a pull request, where it means "this
-      # branch will make it true", and a defect the moment it merges.
-      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: python3 scripts/docs_check.py --on-main
 
   # Separate from the gate, and on a schedule rather than on a pull request, because an anchor rots
   # when somebody refactors a **different** repository. A pull request here is the least likely
