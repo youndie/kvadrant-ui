@@ -23,6 +23,7 @@ import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import ru.workinprogress.viddik.core.viddikTypography
 
 /**
  * A Material screen with a Kvadrant island in the middle of it — B-19's acceptance criterion.
@@ -33,7 +34,11 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun Island() {
-    MaterialTheme(colorScheme = HOST) {
+    // `viddikTypography` on the host's ramp, and not only on ours. `portableTypography` pins the
+    // Metro ramp; the Material components on this page carry Material's own, unpinned, and three
+    // goldens went on failing on Linux after everything else had stopped — all three of them the
+    // ones with a `Button` or a `Text` in them.
+    MaterialTheme(colorScheme = HOST, typography = viddikTypography(MaterialTheme.typography)) {
         Surface(Modifier.fillMaxSize()) {
             Column(
                 Modifier.fillMaxWidth().padding(16.dp),

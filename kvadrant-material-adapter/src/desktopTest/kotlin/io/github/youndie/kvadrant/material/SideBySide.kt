@@ -21,6 +21,7 @@ import io.github.youndie.kvadrant.components.KvadrantSlider
 import io.github.youndie.kvadrant.components.KvadrantTextBox
 import io.github.youndie.kvadrant.components.KvadrantToggleSwitch
 import io.github.youndie.kvadrant.foundation.KvadrantText
+import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import ru.workinprogress.viddik.annotations.ViddikScreenshot
@@ -36,7 +37,11 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun Pairs(colors: KvadrantColors) {
-    KvadrantTheme(colors = colors) {
+    // **With a typography, and without one this fixture drew in the host's system sans-serif.**
+    // `KvadrantTheme`'s default is `FontFamily.SansSerif`, which is whatever the machine supplies —
+    // so these two goldens recorded the recording machine, which is the exact failure `CLAUDE.md`
+    // rules out for fixtures with a missing font. It went unnoticed until Linux drew them.
+    KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         KvadrantMaterialAdapter {
             Column(
                 Modifier.fillMaxSize().background(colors.background).padding(12.dp),
