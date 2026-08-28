@@ -128,12 +128,27 @@ jobs:
       - name: channel tolerance sweep (B-35)
         run: |
           for t in 0 2 4 8 16 32; do
-            echo "SWEEP channelTolerance=$t"
-            xvfb-run --auto-servernum ./gradlew --no-daemon -PviddikChannelTolerance=$t \
-              :kvadrant-core:viddikVerify 2>&1 \
-              | grep -oE "Screenshot mismatch for [^:]+: [0-9]+/[0-9]+ px differ \([0-9.]+%" \
+            # `--rerun-tasks`, because the first version of this step reported zero mismatches at
+            # every value above 2 and that was not a result — a four-level threshold cannot
+            # reconcile two different typefaces, and the three host-fallback goldens are exactly
+            # that. Either the task was up to date or it failed for an unrelated reason, and `||
+            # true` with a grep for mismatches could not tell either apart from a pass.
+            if out=$(xvfb-run --auto-servernum ./gradlew --no-daemon --rerun-tasks \
+                       -PviddikChannelTolerance=$t :kvadrant-core:viddikVerify 2>&1); then
+              status=passed
+            else
+              status=failed
+            fi
+            n=$(printf '%s\n' "$out" | grep -c "Screenshot mismatch" || true)
+            worst=$(printf '%s\n' "$out" | grep -oE "\([0-9.]+%" | tr -d '(%' | sort -rn | head -1)
+            echo "SWEEP t=$t gradle=$status mismatches=$n worst=${worst:-0}"
+            printf '%s\n' "$out" | grep -oE "Screenshot mismatch for [^:]+: [0-9]+/[0-9]+ px differ \([0-9.]+%" \
               | sed "s/^/SWEEP $t /" || true
-            echo "SWEEP $t done"
+            # A build that fails while reporting no mismatch is the case that reads as success.
+            if [ "$status" = failed ] && [ "$n" -eq 0 ]; then
+              echo "SWEEP t=$t failed without reporting a mismatch:"
+              printf '%s\n' "$out" | tail -25
+            fi
           done
 
       - run: xvfb-run --auto-servernum ./gradlew check --no-daemon
