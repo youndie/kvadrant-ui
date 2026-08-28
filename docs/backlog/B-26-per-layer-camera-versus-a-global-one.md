@@ -25,10 +25,35 @@ question nobody had asked, and it was convincing enough that neither the arithme
 fixture was asked for.
 
 **What the work actually is:** the projection centre and the rotation pivot have to be different
-points, which one `graphicsLayer` cannot express. Two nested layers can — an inner one turning the
-element about its own centre with the camera distance, an outer one placing the result relative to
-the screen's axis. Whether that is worth having is still open, and the next attempt should start by
-pressing **one** surface in two places on the screen rather than nine at once.
+points, which one `graphicsLayer` cannot express. ~~Two nested layers can~~ — **they cannot, and
+that is measured now rather than reasoned about.**
+
+`NestedCameraTest` builds exactly the proposal: an inner layer turning a square about its own centre
+with the camera distance, an outer one whose `transformOrigin` is the *screen's* centre expressed in
+that element's coordinates. A 120 dp square at 30° draws a trapezoid ramping from 128 px to 114 px
+down its columns — and draws **the same** trapezoid at the middle of the screen and at 15 % across
+it. The outer layer contributes nothing.
+
+The reason is structural: a `graphicsLayer` renders its content and applies a matrix to the
+*result*. Whatever depth the inner rotation had is gone by the time the outer layer sees it, and a
+perspective divide applied to a flat z = 0 quad is the identity however far off-axis its origin sits.
+So the plan in the paragraph above would have produced a change that looks like nothing, and the
+obvious next move — turning the camera distance down until something happens — would have been
+fitting a constant to a mechanism that is not running.
+
+**Where a next attempt would have to start instead.** Not with `graphicsLayer` at all. The
+projection would have to be computed here — the element's screen position, the eye at the display's
+centre, one 4×4 matrix per pressed surface — and applied through a canvas concatenation rather than
+through the layer's own camera. That is a materially larger change than this item was sized for, and
+whether a global camera is worth it is *still* the open question: `SharedCameraTest` records what the
+current behaviour is, and nobody has yet shown a picture of the alternative that a press could
+actually produce.
+
+The measurement's own control took two corrections before it worked — a row profile, which a
+`rotationY` leaves flat, and a camera distance of 900 units, which is 64 800 px of depth and
+therefore orthographic. Both times the assertion reported that the test could not tell the two cases
+apart, rather than reporting that they matched. Without it this file would have said "nested layers
+change nothing" for the wrong reason.
 
 ---
 
