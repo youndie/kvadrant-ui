@@ -1507,6 +1507,27 @@ addition to it takes: what changes, what it replaces, and where the canon was re
 Decision: `kvadrant-core` declares `jvm("desktop")` and nothing else for now. Android, iOS and wasm
 are added when there is a component worth running on them.
 
+**Amendment 2 — wasm is added, and B-34 is the something that runs on it.** A page per component
+with the component *running* in it needs a browser, and a Compose demo reaches one through wasm. The
+target is `wasmJs { browser() }` on the core, the adapter and the sample; the sample gains an entry
+point and an `index.html` and nothing else, because the screen is the same `KvadrantSampleApp` the
+desktop and Android demos show — a wasm demo assembled separately would be a third opinion about
+what these components look like.
+
+| Fact | Where verified |
+|---|---|
+| The bundle builds and renders: Start screen, pivot, app bar, Cyrillic from `composeResources`, and a tile that leans towards a click | served from `sample/build/dist/wasmJs/productionExecutable` and driven in a browser |
+| `CanvasBasedWindow` does not exist in CMP 1.12; `ComposeViewport` is the entry point | unpacked `ui-wasm-js-1.12.0.klib` — nineteen mentions of one, none of the other |
+| A *library* target is refused without `binaries.executable()` | the Compose plugin's own message: the Skiko runtime is not bundled for tests otherwise |
+| Adding the target created a second ABI dump, `kvadrant-core.klib.api`, 626 lines | `updateKotlinAbi`; the klib surface is pinned now as well as the JVM one |
+
+**Consequence — nothing executes on wasm, and `check` does not say so on its own.** `wasmJsBrowserTest`
+is *skipped* rather than failed, because no browser runner is configured, and a skipped task reads
+exactly like a passing one in a green build. So the statement is the same one Android carries: a
+green `check` compiles this target and pins its ABI, and tells you nothing about how it renders.
+Wiring Karma would make the gate depend on a browser being installed, which is the "gate that gets
+skipped" problem [B-29](../backlog/B-29-android-screenshot-coverage.md) already argued through.
+
 **Amendment — Android is promoted ahead of iOS and wasm** ([B-24](../backlog/B-24-add-the-android-target-next.md)).
 The rule stands; the ordering under it does not follow from "how important is the platform" but from
 **which renderer can disagree**. Desktop, iOS and wasm are all skiko: adding either of the latter

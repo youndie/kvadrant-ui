@@ -10,6 +10,17 @@ kotlin {
     jvmToolchain(25)
     jvm("desktop")
 
+    // The adapter follows the core onto wasm: an island of Metro inside a Material application
+    // (B-19) is a thing a browser page has as much right to show as a phone does.
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        // A library with no executable binary sounds right and is refused: the Compose plugin needs
+        // one so that the Skiko runtime is bundled for the tests that run on this target, and says
+        // so by name. Nothing consumes the binary; it exists so the test bundle is complete.
+        binaries.executable()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kvadrant-core"))

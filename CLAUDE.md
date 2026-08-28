@@ -29,8 +29,12 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 - **Compose Multiplatform stays on the current release.** skiko is never declared here — it comes
   transitively with `compose.ui` at the version CMP pins, and forcing it means running a renderer
   the Compose runtime above it was not built against.
-- **Desktop and Android.** Android was added ahead of the plan because it is the only target that is
-  not skiko (B-24); iOS and wasm still wait for something to run on them (D14). Gradle 9.7.1 forces
+- **Desktop, Android and wasm.** Android was added ahead of the plan because it is the only target
+  that is not skiko (B-24); wasm because B-34 wants the components running in a browser page. iOS
+  still waits for something to run on it (D14). **Neither Android nor wasm executes anything in
+  `check`** — on wasm `wasmJsBrowserTest` is *skipped*, which in a green build reads exactly like a
+  pass. `./gradlew :sample:wasmJsBrowserDevelopmentRun` serves the demo; the on-device Android guard
+  is `connectedAndroidDeviceTest`. Gradle 9.7.1 forces
   AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
   must be declared in the **root** build file or the Compose plugin cannot see its classes —
   research §1.13 before touching the build.

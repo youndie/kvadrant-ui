@@ -46,8 +46,16 @@ depend on this has nothing to press.
   repository, and there is no remote — twenty-nine commits, all local, when B-04 was written and
   eighty now. Nothing about this item can be finished before that is answered, and the same account
   constraint applies: hosted minutes are not paid for, so whoever answers B-04 answers this too.
-- **A wasm target**, which is D14's second waiting target. Whether it arrives for this item or for its
-  own reasons is open; this is a reason for it and not a decision about it.
+- ~~**A wasm target**, which is D14's second waiting target.~~ **Done.** `wasmJs { browser() }` on
+  the core, the adapter and the sample; the demo builds to a browser bundle and renders — tiles,
+  pivot, app bar, Cyrillic from `composeResources`, and a tile that leans towards a click. The entry
+  point is eighteen lines and calls the same `KvadrantSampleApp` the other two demos do.
+
+  Two things it did **not** buy, both worth knowing before this item is planned around them.
+  `wasmJsBrowserTest` is *skipped* rather than run, because no browser runner is configured — so
+  nothing executes on this target and a green `check` says only that it compiles. And viddik cannot
+  photograph it for the same reason it cannot photograph Android, so the site's pages will be the
+  first place anybody ever looks at wasm output.
 
 ## Acceptance
 

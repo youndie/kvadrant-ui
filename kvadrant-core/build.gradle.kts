@@ -18,6 +18,22 @@ kotlin {
     // missing. Everything else still waits for something to run on it (D14).
     jvm("desktop")
 
+    // The third renderer, and the reason it is here rather than waiting with iOS: B-34 wants a page
+    // per component with the component running in it, and wasm is how a Compose demo reaches a
+    // browser. D14 said targets arrive when something runs on them; this is that something.
+    //
+    // Nothing guards it. viddik's capture engine is JVM-only, so wasm has no goldens for the same
+    // reason Android has none (B-29), and the honest statement is that a green `check` says nothing
+    // about how this renders in a browser either.
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        // A library with no executable binary sounds right and is refused: the Compose plugin needs
+        // one so that the Skiko runtime is bundled for the tests that run on this target, and says
+        // so by name. Nothing consumes the binary; it exists so the test bundle is complete.
+        binaries.executable()
+    }
+
     androidLibrary {
         namespace = "io.github.youndie.kvadrant"
         compileSdk =
