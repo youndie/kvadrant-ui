@@ -97,9 +97,18 @@ Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)
   ([research §1.7](../research/research-architecture.md)).
 - Not covered: the type ramp itself, which is part of [B-05](B-05-theme-model-and-tokens.md).
 
-- AC: Cyrillic and Latin text render with the intended families on Android, desktop, iOS and wasmJs.
-- AC: `kvadrant-resources` ships `META-INF/licenses/OFL.txt` and declares the font licence in its POM
-  separately from the Apache-2.0 code licence.
-- AC: a screenshot test renders the whole ramp in both scripts, so a missing glyph shows up as a
-  diff rather than as a bug report.
+- AC met on desktop and wasm, unmet on Android and iOS, and the reasons differ. Desktop is the
+  golden suite. wasm is the documentation site, where every component page renders Cyrillic through
+  the bundled companion — that is a demonstration rather than an assertion, and it is the first
+  thing anybody has looked at on that target. Android has no automated answer for the usual reason
+  (B-29). iOS has no target yet (D14).
+- AC met, at a different path than this asked for. The POM declares SIL OFL 1.1 beside Apache-2.0
+  with a comment saying which covers what, and the artefact carries both texts — verified by
+  unpacking `kvadrant-core-desktop-0.1.0-SNAPSHOT.jar`, which holds `Selawik-OFL.txt` and
+  `SourceSans3-OFL.txt` next to the six font files. They sit under `composeResources/…/files/`
+  rather than `META-INF/licenses/`, because compose-resources decides that path and there is no
+  separate `kvadrant-resources` module — the fonts ship inside the core.
+- AC met: `type/ramp dark` and `type/ramp light` render every named style in both scripts, so a
+  missing glyph is a diff. They are also the two goldens that led B-35 to the difference between two
+  rasterisers, which is the same sensitivity working.
 - Anchors (to be created): `kvadrant-resources/src/commonMain/composeResources/font/`

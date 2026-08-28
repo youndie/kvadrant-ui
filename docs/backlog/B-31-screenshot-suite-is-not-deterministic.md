@@ -26,6 +26,13 @@ P2 with its trigger intact.
 *The trigger is unchanged and it is worth restating after a false alarm:* if `make screenshots` ever
 names an image, or if two runs **that both executed** disagree, this comes back at P0.
 
+**The guard was narrower than this item said it was.** "`make screenshots` records the suite" was
+true of one suite: `screenshot_determinism.py` named `kvadrant-core` and nothing else, so the
+adapter's goldens — and later the previews' forty-seven — sat outside the only check that asks
+whether a golden is reproducible at all. It finds the suites now instead of listing them. The
+current reading is **117 goldens over three recordings with nothing moved**, which is a wider
+statement than any made here before, and still not an explanation of the original six.
+
 ---
 
 *Everything below was written when the flake could not be reproduced.*

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.viddik)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.androidKmpLibrary)
 }
 
 kotlin {
@@ -20,6 +21,29 @@ kotlin {
         // one so that the Skiko runtime is bundled for the tests that run on this target, and says
         // so by name. Nothing consumes the binary; it exists so the test bundle is complete.
         binaries.executable()
+    }
+
+    // **The adapter had no Android target, and that is where Material actually runs.** B-04 asks
+    // for a Material `OutlinedTextField` rendering under the adapter "on Android and on desktop",
+    // and it had been read as a missing test; the module was not built for Android at all, so a
+    // consumer on the one platform this interop exists to serve could not depend on it. Adding the
+    // target is the half that belongs in `check`. The other half — that it *renders* there — is
+    // Android's usual answer and not this gate's: viddik is JVM-only, so a green `check` says
+    // nothing about Android (B-29).
+    androidLibrary {
+        namespace = "io.github.youndie.kvadrant.material"
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+
+        // Without this the Android target silently skips `commonTest` — the plugin warns, and a
+        // warning is not what should stand between a common suite and one of the renderers.
+        withHostTest {}
     }
 
     sourceSets {
