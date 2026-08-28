@@ -32,6 +32,36 @@ Cyrillic is Source Sans 3 **instanced on its `wght` axis at run time**, and pinn
 - Rejected in advance: per-platform golden directories. Two sets of images means two sets to keep
   true, and the second one is only ever looked at by CI — which is how a suite stops being read.
 
+## Measured, and it is wider than this item said
+
+Two CI runs on different commits produce **the same thirty-five mismatches with the same pixel
+counts**, so Linux is deterministic and B-31 stays withdrawn. That is the good half.
+
+The bad half is that this item was written after opening **two** of those thirty-five diffs, and it
+generalised from them. Two corrections follow.
+
+**It is not one cause, it is at least two.** The three largest failures are `font stack/selawik
+only`, `font stack/selawik then inter` and `font stack/selawik then fira`, at 5.36 % each — and
+identically, which is itself the clue. Those fixtures exist to show what happens when the Cyrillic
+companion is **absent**: the text falls back to whatever the host has, macOS and the runner have
+different answers, and the words come out at different widths. Nothing this item proposes can fix
+them, because they are measuring the host on purpose. `CLAUDE.md` already carries the rule they
+break — *bundled glyphs still rule out fixtures whose point is a missing font* — and it was written
+before these fixtures existed.
+
+**The residue is not "the same glyph, differently antialiased".** That was the reading of two
+outlined diffs, and `gallery/controls dark` refutes it: the word `готово` appears in the diff drawn **twice at
+two widths**, not as an edge. A different advance is a metric difference, and a metric difference is
+not something `FontHinting` and `FontSmoothing` were pinned to fix. Latin does stay clean across
+every diff opened so far — `settings`, `inbox`, `controls`, `build server`, `start` carry no red —
+so the split between the bundled static faces and the instanced companion still looks like the right
+place to dig. It is a narrower claim than the one this item opened with.
+
+**So the first measurement stands but its answer will not cover everything.** Even if pre-instanced
+faces make the companion stable, the three `font stack/selawik *` fixtures remain, and they need a
+decision rather than a fix: either they stop asserting a picture and start asserting a number, or
+the set accepts that a fixture about a missing font has no portable golden.
+
 ## Acceptance
 
 - AC: the cause is named with a measurement, not with a plausible mechanism.
