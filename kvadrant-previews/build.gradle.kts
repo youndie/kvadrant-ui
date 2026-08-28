@@ -1,7 +1,10 @@
+import org.gradle.api.tasks.PathSensitivity
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.viddik)
 }
 
 kotlin {
@@ -77,3 +80,21 @@ val checkComponentCatalog by tasks.registering(Exec::class) {
 }
 
 tasks.named("check") { dependsOn(checkComponentCatalog) }
+
+// B-34's last criterion: the example on a page and the fixture in the golden suite are the same
+// composable. They are — `PreviewFixtures.kt` renders `KvadrantPreviews` and nothing else — and
+// `PreviewFixtureCoverageTest` refuses a registry entry that has no fixture, which is the half a
+// hand-written wrapper list cannot guarantee on its own.
+viddik {
+    verifyOnCheck.set(true)
+}
+
+// `PreviewFixtureCoverageTest` reads the golden directory, so the task has to declare it. Without
+// this Gradle leaves the test UP-TO-DATE when a golden is added or deleted and reports the previous
+// run's verdict about a set that has changed - the same trap `kvadrant-core` documents.
+tasks.named<Test>("desktopTest") {
+    inputs
+        .dir(layout.projectDirectory.dir("src/desktopTest/snapshots"))
+        .withPropertyName("viddikSnapshots")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+}
