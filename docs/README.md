@@ -7,9 +7,11 @@ is layered; links run top to bottom.
 ```
 [ Research (why the architecture is what it is) ]
                      │
-[ Feature (behaviour + BDD) ]  ── not yet: there is no code to describe
+[ Backlog (what to do next, and why in that order) ]
                      │
-[ Service / module (ownership, build, quirks) ]  ── not yet, same reason
+[ Reference — components.md (what exists, one composable at a time) ]
+                     │
+[ Feature (behaviour + BDD) ]  ── not yet, and see below for why
 ```
 
 | Layer | Directory | Answers | Source of truth |
@@ -18,14 +20,24 @@ is layered; links run top to bottom.
 | Backlog | `backlog/` | what to do next, in what order, and why that order | this repository |
 | Reference | [`components.md`](components.md) | what the library exposes, and which preview shows it | generated from the sources and the preview registry |
 
-**Why there are still no feature documents.** `main` describes what exists, and what exists is
-research, a plan, forty-eight components and a catalogue of them. A feature document describes
-behaviour a user gets, and a component library's behaviour is its components — which is what
-[`components.md`](components.md) and the [documentation site](https://youndie.github.io/kvadrant-ui/)
-cover, one composable at a time, with the transcription notes that say where each number came from.
-BDD scenarios wait for a behaviour that spans components rather than sits inside one. There will be
-no `api/` layer (this is a library, not a service) and no `screens/` layer (the sample gallery is a
-demo, not a product surface).
+**Why there are still no feature documents, now that there is code.** The earlier answer here was
+"there is no behaviour to describe", and that stopped being true somewhere around the fortieth
+component. The answer now is a different one: a feature document describes behaviour a user gets,
+and a component library's behaviour *is* its components. That is covered one composable at a time by
+[`components.md`](components.md) and by the [documentation site](https://youndie.github.io/kvadrant-ui/),
+each carrying the transcription notes that say where its numbers came from — which is a truer
+document than a feature file restating them a second time. BDD scenarios wait for behaviour that
+spans components rather than sitting inside one; nothing here does yet.
+
+**And why no module layer either.** There are five modules and their ownership is not in doubt:
+`kvadrant-core` is the library, `kvadrant-material-adapter` is the optional interop,
+`kvadrant-previews` is what the documentation site mounts, and `sample`/`sample-android` are the
+demo. What a `services/` document would carry — build quirks, the things that are easy to get wrong
+— is in [`../CLAUDE.md`](../CLAUDE.md), because that is the file anybody starting work here opens
+first. A second copy in `services/` would be a second copy.
+
+There will be no `api/` layer (this is a library, not a service) and no `screens/` layer (the sample
+gallery is a demo, not a product surface).
 
 **Backlog** — [backlog.md](../backlog.md): the index and the decisions; the items themselves are one
 file each in [`backlog/`](backlog/), cited as `[B-12](backlog/B-12-pivot.md)`.
@@ -40,9 +52,10 @@ file each in [`backlog/`](backlog/), cited as `[B-12](backlog/B-12-pivot.md)`.
 - **`Kvadrant` in every identifier; `Metro` only in prose**, where it names the design language.
   See D4 in the research document for why.
 - **The primary consumer is a coding agent.** Every document carries anchors — paths to what it is
-  about. While there is no code, research anchors point at the artefacts each fact was verified
-  against, which is why `code_anchors.py` reports them as absent: they are outside this repository
-  by design.
+  about. The research anchors are the exception and stay one: they point at the artefacts each fact
+  was verified against — a template dictionary from the Windows Phone SDK, a class inside a decompiled
+  assembly, a published maven-metadata — and those live outside this repository. `code_anchors.py`
+  reports eleven of them as absent for that reason, and the report is non-blocking on purpose.
 - **A number that is not Microsoft's says so.** Where the specification has a gap, this project's
   value ships as a parameter of the public API with a KDoc sentence naming it as ours.
 
@@ -53,10 +66,24 @@ Sections marked `<!-- optional -->` can be deleted.
 
 ## Checks
 
+Two gates, and neither is a superset of the other.
+
 ```bash
 pip install pyyaml
-make check
+make check                                       # the documentation tree and the catalogue
+export JAVA_HOME=$(/usr/libexec/java_home -v 25)
+./gradlew check                                  # tests, ktlint, the goldens, the ABI dump
 ```
+
+Both run on CI, on every push and every pull request. **They do not agree yet:** the screenshot
+suite is red on the Linux runner over the Cyrillic companion — deterministically, not as a flake,
+and [B-35](backlog/B-35-cyrillic-renders-differently-on-linux.md) is open on it. A green run on a
+mac is a claim about a mac.
+
+The two gates also make deliberately different claims about [`components.md`](components.md).
+`make check` builds nothing, so it verifies the catalogue against the sources and prints that the
+preview column was carried over unverified; `./gradlew :kvadrant-previews:check` builds the registry
+first and verifies both. The smaller claim is not allowed to print like the larger one.
 
 ## Coverage map
 
