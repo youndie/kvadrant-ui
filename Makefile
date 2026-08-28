@@ -22,6 +22,7 @@ gate:
 	$(PY) scripts/docs_check.py
 	$(PY) scripts/coverage_map.py --check
 	$(PY) scripts/component_catalog.py --check
+	$(PY) scripts/doc_images.py
 
 # Non-blocking, on purpose. bdd_report counts scenarios, and there are none while there is no
 # behaviour to describe. code_anchors will report the research anchors as absent for as long as the
@@ -46,5 +47,6 @@ screenshots:
 # gate that keeps it honest is `:kvadrant-previews:check`, which fails when a preview stops
 # compiling or stops drawing.
 site:
-	./gradlew :kvadrant-previews:wasmJsBrowserDistribution :kvadrant-previews:previewIndex dokkaGenerate
+	./gradlew :kvadrant-previews:wasmJsBrowserDistribution :kvadrant-previews:previewIndex \
+		:sample:wasmJsBrowserDistribution dokkaGenerate
 	$(PY) scripts/build_site.py

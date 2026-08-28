@@ -3,8 +3,22 @@
 A component library for **Compose Multiplatform** in the Metro design language — Windows Phone 8 and
 Windows 8 — with an optional adapter that lets it sit beside `androidx.compose.material3`.
 
+<p align="center">
+  <img src="kvadrant-core/src/desktopTest/snapshots/app_sample_window.png" height="330" alt="the sample application: a pivot, a Start screen of live tiles, and an application bar">
+  <img src="kvadrant-core/src/desktopTest/snapshots/gallery_controls_dark.png" height="330" alt="text boxes, a button, two toggle switches, list rows and tiles">
+  <img src="kvadrant-core/src/desktopTest/snapshots/palette_accents_dark.png" height="330" alt="the twenty Windows Phone accents with their contrast ratios, beside the accessible variants">
+  <img src="kvadrant-core/src/desktopTest/snapshots/icons_sheet.png" height="330" alt="forty drawn icons">
+</p>
+
+<sup>Those four pictures are **the golden images `./gradlew check` compares against**, not marketing
+renders. They live in the screenshot suite, so a component that changes appearance either changes
+this README or fails the build — a README cannot show a version of this library that no longer
+exists.</sup>
+
 **[Press the components →](https://youndie.github.io/kvadrant-ui/)** Every one of them runs on that
-page, compiled to WebAssembly from these sources, in both palettes at once, beside
+page, compiled to WebAssembly from these sources, in both palettes at once — beside
+[the sample application](https://youndie.github.io/kvadrant-ui/demo.html), which is the same screen
+`:sample:run` opens on the desktop, and
 [the API reference](https://youndie.github.io/kvadrant-ui/api/index.html) generated from the same
 KDoc that says where each number came from.
 
@@ -106,7 +120,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check          # tests, ktlint, the screenshot suite, the ABI dump, the generators
 make check               # the documentation tree and the catalogue
 ./gradlew :sample:run    # the demo on the desktop
-make site                # the documentation site + API reference into build/site
+make site                # the site, the demo and the API reference into build/site
 ```
 
 One gate each, and nothing outside them. `./gradlew ktlintFormat` runs on the mac — a formatter's

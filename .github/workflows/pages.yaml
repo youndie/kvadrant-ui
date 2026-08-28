@@ -53,6 +53,7 @@ jobs:
           ./gradlew --no-daemon \
             :kvadrant-previews:wasmJsBrowserDistribution \
             :kvadrant-previews:previewIndex \
+            :sample:wasmJsBrowserDistribution \
             dokkaGenerate
 
       - run: python3 scripts/build_site.py
@@ -67,6 +68,11 @@ jobs:
           echo "$pages component pages, $api API pages"
           test "$pages" -gt 10
           test "$api" -gt 10
+          # The demo is a second wasm bundle in its own directory, and the way it goes missing is
+          # that its Gradle task was dropped from the line above — which leaves an iframe pointing
+          # at a 404 and a page that otherwise looks finished.
+          test -f build/site/demo/index.html
+          test -n "$(find build/site/demo -name '*.wasm' -print -quit)"
 
       - uses: actions/upload-pages-artifact@v3
         with:

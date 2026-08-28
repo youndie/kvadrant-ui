@@ -23,6 +23,14 @@ THE PAGES ARE FLAT, all at the site root, and that is not a style. Compose's res
 are not there, gets a 404, and silently falls back to a system face -- a site about a typeface,
 rendered in the wrong one, with nothing on screen saying so.
 
+THE DEMO is the sample application, the same one `:sample:run` opens on the desktop and
+`:sample-android:installDebug` puts on a phone, copied in whole under `demo/` and framed by
+`demo.html`. It answers a different question from the component pages: those show what one control
+looks like, and this shows whether a screen made of them holds together. It lives in its own
+directory rather than flat with the rest precisely because it is self-contained — its bundle and its
+`composeResources` travel together, so the loader resolves them relative to `demo/index.html` and
+the flat-pages rule below does not apply to it.
+
 THE API REFERENCE is Dokka's, copied in under `api/` and linked per component. The link is emitted
 only when the file it points at is actually on disk: Dokka's URLs are derived from the declaration's
 name by a rule ("every capital becomes a dash and a lower-case letter"), and a rule applied blindly
@@ -47,6 +55,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CORE = ROOT / "kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant"
 DIST = ROOT / "kvadrant-previews/build/dist/wasmJs/productionExecutable"
 DOKKA = ROOT / "build/dokka/html"
+DEMO = ROOT / "sample/build/dist/wasmJs/productionExecutable"
 INDEX = ROOT / "kvadrant-previews/build/preview-index.json"
 REPO = "https://github.com/youndie/kvadrant-ui"
 
@@ -245,6 +254,7 @@ def page(title, subtitle, body, depth_note=""):
 <header class="chrome">
   <a class="app-title" href="index.html">KVADRANT UI</a>
   <a class="api-link" href="api/index.html">api reference</a>
+  <a class="api-link" href="demo.html">demo</a>
   <h1 class="page-title">{html.escape(title)}</h1>
   {f'<p class="subtitle">{subtitle}</p>' if subtitle else ''}
 </header>
@@ -307,6 +317,34 @@ def component_page(component, previews, block, api):
     return page(component, " · ".join(groups), "\n".join(body))
 
 
+def demo_page():
+    """
+    The sample application, framed.
+
+    An iframe rather than a link straight into `demo/`, because that page is a full-screen canvas
+    with nothing on it but the application — a visitor who lands there has no way back and no
+    indication of what they are looking at. The frame carries the page chrome; the application
+    inside it is untouched.
+    """
+    body = """
+  <section class="prose">
+    <p>The sample application, running. It is the same screen
+    <code>./gradlew :sample:run</code> opens on the desktop and
+    <code>:sample-android:installDebug</code> puts on a phone — one source, three renderers, so a
+    browser cannot show you a version of this library the other two do not have.</p>
+    <p>Swipe the pivot sideways. Press a tile and drag your finger across it: the lean follows, and
+    it does not steal the scroll from the list underneath. Open the picker; tap the ellipsis on the
+    application bar.</p>
+  </section>
+  <div class="demo-frame">
+    <iframe src="demo/index.html" title="the Kvadrant UI sample application"></iframe>
+  </div>
+  <p class="source">Built from
+  <a href="%s/tree/main/sample/src/commonMain">sample/src/commonMain</a>. Sized to a Lumia: the
+  metrics scale to whatever width they are given, and this is the width they were designed at.</p>""" % REPO
+    return page("the demo", "one application, three renderers", body)
+
+
 def index_page(previews, blocks):
     by_group = {}
     for preview in previews:
@@ -361,7 +399,8 @@ def index_page(previews, blocks):
     WebAssembly from the same sources the library publishes, in both palettes at once. The light
     theme is not an inversion of the dark one, and putting them side by side is the quickest way to
     see that.</p>
-    <p class="elsewhere"><a href="api/index.html">the API reference</a> ·
+    <p class="elsewhere"><a href="demo.html">the sample application, running</a> ·
+    <a href="api/index.html">the API reference</a> ·
     <a href="%s">source</a> ·
     <a href="%s/blob/main/docs/components.md">the catalogue, including what has no preview</a> ·
     <a href="%s/blob/main/docs/research/research-architecture.md">why the architecture is this</a></p>
@@ -436,9 +475,21 @@ code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; co
 .subtitle { margin: 6px 0 0; color: var(--subtle); }
 .api-link {
   float: right;
+  margin-left: 18px;
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* The demo is a phone-shaped application and is framed as one. A border rather than a bezel
+   drawing: this is a component library's documentation, not a device mock-up. */
+.demo-frame { margin: 28px 0; }
+.demo-frame iframe {
+  width: 400px;
+  height: 720px;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  background: #000;
 }
 
 .prose { max-width: 68ch; }
@@ -518,6 +569,11 @@ def main():
     # have been there.
     if not DOKKA.is_dir():
         fail(f"{DOKKA.relative_to(ROOT)} is absent. Run ./gradlew dokkaGenerate")
+    if not DEMO.is_dir():
+        fail(
+            f"{DEMO.relative_to(ROOT)} is absent. "
+            "Run ./gradlew :sample:wasmJsBrowserDistribution"
+        )
 
     previews = json.loads(INDEX.read_text())
     if not previews:
@@ -542,9 +598,13 @@ def main():
             shutil.copy2(item, out / item.name)
 
     shutil.copytree(DOKKA, out / "api")
+    # Copied whole, its own `index.html` included: that page is the application, not a stand-in for
+    # one, and it is what the iframe in `demo.html` loads.
+    shutil.copytree(DEMO, out / "demo", ignore=shutil.ignore_patterns("*.js.map"))
 
     (out / "style.css").write_text(STYLE)
     (out / "index.html").write_text(index_page(previews, blocks))
+    (out / "demo.html").write_text(demo_page())
 
     by_component = {}
     for preview in previews:
