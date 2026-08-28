@@ -59,7 +59,21 @@ to the index.
   screen" and "allows for a user to pan around the center contents without snapping to a new
   `PanoramaItem` control view". A hard flick still travels past it, which is the same source's
   distinction between a pan and a throw, and the two tests use the two gestures.
-- A scenario naming which section is selected after a flick of a given size.
+- ~~A scenario naming which section is selected after a flick of a given size.~~ Done —
+  `PanoramaFlingTest`. A 100 px drag released without a throw falls back to the section it started
+  on and released at 500 px/s carries on to the next, which is the naming half.
+
+  The half with teeth is the second test, and **the first version of it was worthless**. The rule
+  here is that a release settles on one of the two stops the finger is between, replacing one that
+  took the nearest stop to the predicted end of the decay and skipped sections — and nothing had
+  held that in place. A guard written for it passed with the old rule restored, because the panorama
+  *wraps*: a prediction overshooting by a whole copy lands on another copy of the same section, and
+  the header at the margin is the same either way. Most cells of the drag-by-velocity table agree.
+
+  So both rules were swept and the cells where they differ were measured: at a 250 px drag, a
+  1500 px/s throw settles on `two` bracketed and on `three` under the old rule — the skipped section
+  — and a 3000 px/s throw settles on `two` bracketed and on `one`, having wrapped past everything.
+  Those are the assertions, and putting the old rule back fails them.
 - The title's KDoc deviation is removed because the behaviour it stands in for exists.
 
 ## Deviation: orientation is derived, not declared
