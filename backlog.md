@@ -44,10 +44,10 @@ item must never move its file.
 |---|---|---|---|---|
 | [B-04](docs/backlog/B-04-repository-skeleton.md) `[~]` | Skeleton: modules, targets, version catalog, CI, snapshot publishing | P0 | M | - |
 | [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
+| [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P0 | M | - |
 | [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
 | [B-34](docs/backlog/B-34-component-documentation-site.md) `[ ]` | A documentation site with the components running in it | P1 | L | B-04 |
-| [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 
 ## Closed (28)
 

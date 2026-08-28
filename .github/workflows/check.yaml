@@ -111,6 +111,20 @@ jobs:
       # a green `check` says nothing at all about Android.
       - run: xvfb-run --auto-servernum ./gradlew check --no-daemon
 
+      # The diffs, when there are any. viddik writes a `*_DIFF.png` beside every mismatch and says
+      # so in the failure message; without this step that sentence points at a path on a machine
+      # that no longer exists, and the only thing a reader gets is a percentage. B-31 is a defect
+      # that can only be looked at.
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-diffs
+          path: |
+            **/build/reports/screenshots/**
+            **/build/reports/tests/**
+          retention-days: 7
+          if-no-files-found: ignore
+
       # Default branch only. `status: draft` is legal in a pull request, where it means "this
       # branch will make it true", and a defect the moment it merges.
       - if: github.ref == 'refs/heads/main' && github.event_name == 'push'

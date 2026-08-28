@@ -2,13 +2,34 @@
 id: B-31
 title: "Six goldens change between two recordings of unchanged source"
 status: open
-priority: P2
+priority: P0
 size: M
 stage: stage-2-release
 blocked_by: []
 ---
 
 # B-31 — Six goldens change between two recordings of unchanged source
+
+**Back at P0. CI reproduced it, which is what the trigger below was written for.**
+
+Two runs of the same commit range on the **same runner image and version** — `ubuntu24/20260823.283`,
+`20260819.586` — disagreed about thirty core goldens. The first failed two images, the second failed
+thirty, and nothing in `kvadrant-core` had changed between them. The failure message is the item's
+own arithmetic to the pixel:
+
+> `Screenshot mismatch for screen/start dark: 149/280000 px differ (0.05%, tolerance 0.05% or 16 px)`
+
+**149 of 280 000 against a tolerance of 0.05 % is the threshold itself**, which is what the original
+finding said and what ten green local recordings could not show. The flake is real, it is not a
+macOS artefact, and a wider tolerance is still the wrong answer for the reason written below.
+
+CI now uploads `*_DIFF.png` on failure, because viddik names a diff file and that name pointed at a
+machine that no longer existed. The next step is to open one and see **what** those 149 pixels are —
+the original measurement said "shades around the cyan accent", which is a lead and not a cause.
+
+---
+
+*Everything below was written when the flake could not be reproduced.*
 
 **Guarded, not fixed, and dropped to P2 on that basis.** `make screenshots` (`ROUNDS=n`) records the
 suite n times and names every image that moved — the check the acceptance criteria asked for. Ten
