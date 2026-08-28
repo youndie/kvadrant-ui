@@ -1,7 +1,7 @@
 ---
 id: B-34
 title: "A documentation site with the components running in it"
-status: wip
+status: done
 priority: P1
 size: L
 stage: stage-2-release
@@ -106,8 +106,22 @@ site is built rather than committed, so a branch source would have meant putting
 of generated wasm into this repository's history. The legacy Jekyll builder had been failing quietly
 on every push until the source was changed.
 
-**One thing is not done**, and it is not hidden behind a green build: **the previews have no
-goldens.** Their guard is a render instead — every preview is composed, the clock advanced past its
+**The previews have goldens now.** B-35 closing removed the reason to hold them back: the suite runs
+on one rasteriser, so forty-seven more images cost a set that was going to be red anyway nothing.
+`PreviewFixtures.kt` mounts the registry and nothing else, and `PreviewFixtureCoverageTest` refuses a
+registry entry with no fixture, a fixture naming an id the registry does not have, and a fixture
+whose height differs from its preview's — the last one because a golden a crop shorter than the page
+guards a picture nobody is looking at.
+
+Two things fell out of doing it. viddik's filename rule keeps a hyphen, and the copy of that rule in
+`kvadrant-core`'s suite replaced it — latent for as long as no golden there had one in its name, and
+immediately fatal here where every id is kebab-case. And `screenshot_determinism.py` named
+`kvadrant-core` and nothing else, so two of the three golden sets in this repository were outside the
+only check that asks whether a golden is reproducible at all. It now finds the suites instead of
+listing them: 117 goldens, three recordings, nothing moved.
+
+~~**One thing is not done**, and it is not hidden behind a green build: **the previews have no
+goldens.**~~ Their guard is a render instead — every preview is composed, the clock advanced past its
 entrance, and the pixels differing from the page background counted, with an empty preview measured
 alongside as the negative control so the zero floor is a measurement rather than an assumption. Pictures wait on [B-35](B-35-cyrillic-renders-differently-on-linux.md): thirty-five
 goldens already fail on the Linux runner, deterministically, and forty more images make that red
@@ -135,8 +149,9 @@ larger rather than the signal stronger.
 - AC: a page per public component, each with **that component alone** running in it — bare, on its
   own, with nothing else on the canvas — reachable from one index.
 - AC: one wasm bundle serves every preview on a page, mounted per canvas by name.
-- AC: the example on a page and the fixture in the golden suite are the same composable, so a
-  component that changes cannot leave a page showing the old one.
+- AC met: the example on a page and the fixture in the golden suite are the same composable —
+  `PreviewFixtures.kt` mounts the registry, and `PreviewFixtureCoverageTest` checks the set in every
+  direction.
 - AC: the site is built by `check` or by a job beside it, so a page that no longer compiles is a red
   build rather than a discovery.
 - AC: the API documentation is generated rather than written, and the transcription notes reach it —

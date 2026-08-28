@@ -24,11 +24,19 @@ class ScreenshotSuiteTest {
             // the second thing passing green over nothing.
             ?: error("snapshots directory not found from ${File("").absolutePath}")
 
-    /** viddik's own rule: group and name joined, every run of non-word characters an underscore. */
+    /**
+     * viddik's own rule: group and name joined, then every run of characters that is neither
+     * alphanumeric nor a hyphen replaced by an underscore.
+     *
+     * **The hyphen was missing from this and it never showed**, because no golden in this suite has
+     * one in its name. `kvadrant-previews` copied the rule, its ids are all kebab-case, and every
+     * one of its forty-seven fixtures came back reported as having no golden. A rule that is only
+     * ever exercised on the inputs it happens to be right for is not a checked rule.
+     */
     private fun goldenName(
         group: String,
         name: String,
-    ): String = "${group}_$name".replace(Regex("[^A-Za-z0-9]+"), "_") + ".png"
+    ): String = "${group}_$name".replace(Regex("[^A-Za-z0-9-]+"), "_") + ".png"
 
     @Test
     fun the_suite_is_not_empty() {

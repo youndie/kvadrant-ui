@@ -23,14 +23,23 @@ import subprocess
 import sys
 import tempfile
 
-SNAPSHOTS = "kvadrant-core/src/desktopTest/snapshots"
-TASK = ":kvadrant-core:viddikRecord"
+# Every module that has a golden set, found rather than listed. The first version named
+# `kvadrant-core` and nothing else, so when `kvadrant-previews` grew forty-seven goldens they were
+# outside the only check that asks whether a golden is reproducible at all — and nothing would have
+# said so.
+def suites() -> list[tuple[str, str]]:
+    found = []
+    for module in sorted(os.listdir(".")):
+        snapshots = os.path.join(module, "src/desktopTest/snapshots")
+        if os.path.isdir(snapshots):
+            found.append((snapshots, f":{module}:viddikRecord"))
+    return found
 
 
-def record() -> None:
+def record(tasks: list[str]) -> None:
     env = dict(os.environ)
     result = subprocess.run(
-        ["./gradlew", "--console=plain", "-q", TASK],
+        ["./gradlew", "--console=plain", "-q", *tasks],
         capture_output=True,
         text=True,
         env=env,
@@ -40,9 +49,18 @@ def record() -> None:
         sys.exit("recording failed")
 
 
-def snapshot_into(directory: str) -> None:
+def snapshot_into(directory: str, sources: list[str]) -> None:
     shutil.rmtree(directory, ignore_errors=True)
-    shutil.copytree(SNAPSHOTS, directory)
+    os.makedirs(directory)
+    for source in sources:
+        for name in os.listdir(source):
+            if name.endswith(".png"):
+                # Prefixed by module, because two suites may name a golden the same thing and the
+                # comparison below is by file name.
+                shutil.copy2(
+                    os.path.join(source, name),
+                    os.path.join(directory, f"{source.split('/')[0]}__{name}"),
+                )
 
 
 def main() -> int:
@@ -51,23 +69,29 @@ def main() -> int:
     args = parser.parse_args()
     rounds = max(2, args.rounds)
 
-    if not os.path.isdir(SNAPSHOTS):
-        sys.exit(f"{SNAPSHOTS} is not there; run from the repository root")
+    found = suites()
+    if not found:
+        sys.exit("no golden sets found; run from the repository root")
+    sources = [s for s, _ in found]
+    tasks = [t for _, t in found]
+    print(f"comparing {len(found)} suite(s): {', '.join(sources)}")
 
     with tempfile.TemporaryDirectory() as work:
         reference = os.path.join(work, "reference")
-        record()
-        snapshot_into(reference)
+        record(tasks)
+        snapshot_into(reference, sources)
         names = sorted(n for n in os.listdir(reference) if n.endswith(".png"))
         if not names:
             sys.exit("no goldens were recorded; the suite may be empty")
 
         moved: dict[str, int] = {}
         for round_number in range(2, rounds + 1):
-            record()
+            record(tasks)
+            current = os.path.join(work, f"round{round_number}")
+            snapshot_into(current, sources)
             for name in names:
                 a = os.path.join(reference, name)
-                b = os.path.join(SNAPSHOTS, name)
+                b = os.path.join(current, name)
                 if not os.path.exists(b) or not filecmp.cmp(a, b, shallow=False):
                     moved[name] = moved.get(name, 0) + 1
             print(f"round {round_number} of {rounds}: {len(moved)} image(s) have moved so far")
