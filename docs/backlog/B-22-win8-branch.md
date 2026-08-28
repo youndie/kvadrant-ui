@@ -1,13 +1,24 @@
 ---
 id: B-22
 title: "Is the Windows 8 profile part of this library or a separate one?"
-status: question
+status: done
 priority: P3
 size: XL
 stage: stage-4-win8
 ---
 
 # B-22 — Is the Windows 8 profile part of this library or a separate one?
+
+**Answered: separate.** Which is what [D16](../research/research-architecture.md) had already argued
+for on its own evidence — Windows 8 → 8.1 WinRT XAML → UWP is the *desktop* iteration of Metro and
+this library is the *phone* one, so a Win8 profile is not a variant of what is being built here but
+the other lineage. [B-26](B-26-per-layer-camera-versus-a-global-one.md)'s reading of the 8.1 button
+brushes pointed the same way: the light-theme WinRT button is filled at rest where the phone's is
+transparent, which is that lineage softening a rule rather than restating it.
+
+Nothing is scheduled for it. **A desktop profile is a conversation to have later**, on its own terms,
+rather than a milestone in this backlog — and this item exists now only so that the next person to
+ask gets an answer instead of the question.
 
 The Win8 type ramp, the 20 px baseline grid, the 120/100 px silhouette, `Hub`, `AppBar`/`CommandBar`,
 `SemanticZoom` and the settings flyout — a second design profile that shares a name with the first

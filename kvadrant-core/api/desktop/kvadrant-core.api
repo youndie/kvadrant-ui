@@ -1,35 +1,35 @@
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantAppBarKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantAppBarKt;
 	public fun <init> ()V
-	public final fun getLambda$-497675858$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$1735444220$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-497675858$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1735444220$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantMessageBoxKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantMessageBoxKt;
 	public fun <init> ()V
-	public final fun getLambda$-2062817780$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-2062817780$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPageKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPageKt;
 	public fun <init> ()V
-	public final fun getLambda$739185275$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$739185275$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPanoramaKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantPanoramaKt;
 	public fun <init> ()V
-	public final fun getLambda$959669487$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$959669487$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantTileKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantTileKt;
 	public fun <init> ()V
-	public final fun getLambda$-1098392044$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$-1630951281$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$1955317340$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$570316050$kvadrant_ui_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1098392044$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1630951281$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1955317340$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$570316050$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ControlsKt {

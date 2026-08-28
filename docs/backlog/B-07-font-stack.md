@@ -54,6 +54,13 @@ neither.
 **A screenshot of the whole ramp in both scripts exists** — `TypeRampScreenshots.kt`, dark and light —
 so that criterion is met.
 
+**The POM declares the font licence separately, which was the other half of that criterion.** Now
+that [B-21](B-21-maven-coordinates.md) is answered there is a POM: `kvadrant-core` lists Apache-2.0
+for the code and SIL OFL 1.1 for the bundled faces, each with a `comments` saying what it covers, and
+the OFL entry names the two files that ship the full text. A consumer's licence tooling reads the POM
+rather than the jar, and one licence on an artefact that ships two is the kind of omission nobody
+notices until it is somebody's legal problem.
+
 **Still open, all of it blocked rather than pending:** there is no `kvadrant-resources` module, and
 whether the fonts should move out of `kvadrant-core` is a packaging question that only matters once
 something is published — [B-21](B-21-maven-coordinates.md). The POM cannot declare the font licence
