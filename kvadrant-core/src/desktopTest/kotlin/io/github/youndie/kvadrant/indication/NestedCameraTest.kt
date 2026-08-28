@@ -103,16 +103,6 @@ class NestedCameraTest {
     fun an_outer_layer_cannot_move_the_projection_centre() {
         val centred = profileAt(0.5f).filter { it > 0 }
         val offCentre = profileAt(0.15f).filter { it > 0 }
-        println(
-            "NESTED centred n=${centred.size} min=${centred.minOrNull()} max=${centred.maxOrNull()} head=${centred.take(
-                6,
-            )} tail=${centred.takeLast(6)}",
-        )
-        println(
-            "NESTED offCentre n=${offCentre.size} min=${offCentre.minOrNull()} max=${offCentre.maxOrNull()} head=${offCentre.take(
-                6,
-            )} tail=${offCentre.takeLast(6)}",
-        )
 
         assertTrue(centred.isNotEmpty(), "the square is not drawn at the centre")
         assertTrue(offCentre.isNotEmpty(), "the square is not drawn off-centre")
