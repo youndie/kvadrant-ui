@@ -20,6 +20,23 @@ switching off when it lands, or a picker page tipping in from -50°; those are f
 library exists to get right, and none of them survives a screenshot. A consumer deciding whether to
 depend on this has nothing to press.
 
+## The shape of a page
+
+**Each preview is its own micro-instance of one bare component, not a corner of the demo.** A page
+about the toggle switch shows a toggle switch on a black square, nothing else, running — and a page
+about the tilt shows one surface to press. Twenty of those on a page is twenty things a reader can
+try in the order they care about, which is how a component library is read.
+
+Mechanically that is **one wasm binary and many mounts**, not one binary per component: the entry
+point reads which preview a canvas asks for — a `data-` attribute or a query parameter — and mounts
+that composable into it. One bundle is downloaded once and every preview on the page is an instance
+of it. Twenty separate binaries of eight megabytes each is a page nobody waits for.
+
+**The preview and the golden fixture must be the same composable**, which makes this a registry:
+`name -> @Composable`, read by the screenshot suite and by the preview host. A page whose example is
+a separate snippet is a page that drifts from the tested one, and the drift is invisible — a wrong
+example looks exactly like a right one.
+
 - **wasm, because the demo already exists.** `sample` is a Compose Multiplatform application and the
   same source can build a wasm target — the work is a target and a bundle, not a second demo. What
   it costs is honest to state: wasm is one of the two targets [D14](../research/research-architecture.md)
@@ -59,7 +76,9 @@ depend on this has nothing to press.
 
 ## Acceptance
 
-- AC: a page per public component, each with the component running in it, reachable from one index.
+- AC: a page per public component, each with **that component alone** running in it — bare, on its
+  own, with nothing else on the canvas — reachable from one index.
+- AC: one wasm bundle serves every preview on a page, mounted per canvas by name.
 - AC: the example on a page and the fixture in the golden suite are the same composable, so a
   component that changes cannot leave a page showing the old one.
 - AC: the site is built by `check` or by a job beside it, so a page that no longer compiles is a red
