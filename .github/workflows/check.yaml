@@ -109,6 +109,17 @@ jobs:
       #
       # `connectedAndroidDeviceTest` is deliberately absent: it needs a phone, and B-29 records that
       # a green `check` says nothing at all about Android.
+      # B-35, and it runs **before** `check` because `check` fails. The probe prints one line per
+      # font stack — ink pixels and the bounding box of the drawn word — and the numbers mean
+      # nothing on their own: they are read against the same lines from a macOS run. A bounding box
+      # that moves is shaping; one that holds while the ink count changes is the rasteriser. Those
+      # two need opposite fixes and look identical in a diff, which is how B-35 came to be written
+      # about the wrong one.
+      - name: glyph portability probe (B-35)
+        run: |
+          xvfb-run --auto-servernum ./gradlew --no-daemon -i \
+            :kvadrant-core:desktopTest --tests '*GlyphPortabilityProbeTest*' 2>&1 | grep PROBE
+
       - run: xvfb-run --auto-servernum ./gradlew check --no-daemon
 
       # The diffs, when there are any. viddik writes a `*_DIFF.png` beside every mismatch and says
