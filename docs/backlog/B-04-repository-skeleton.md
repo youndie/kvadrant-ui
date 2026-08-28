@@ -118,8 +118,13 @@ validation, and the remaining targets.
 
 - AC met: `./gradlew build` compiles every declared target — four modules, desktop and Android —
   in 2m46s.
-- AC: a Material `OutlinedTextField` renders under the adapter on the chosen graph — on Android and
-  on desktop — before the graph is written into the catalog.
+- AC met on desktop, and **the Android half was not a missing test**: `GraphRendersTest` renders an
+  `OutlinedTextField` under the adapter and counts pixels, which is the check research §1.2 asks for
+  — the failure it guards against compiled and resolved cleanly and died on the first text field.
+  The adapter had no Android target *at all*, so the platform this interop exists to serve could not
+  consume it. The target is there now (`androidLibrary`, an AAR and an `androidPublication`). That it
+  *renders* on Android is Android's usual answer and not this gate's: viddik is JVM-only, so a green
+  `check` says nothing about it (B-29).
 - AC met: `composeMaterial3` in the catalog names the Jetpack version it resolves to, the graph it
   was chosen over, and why — and says to expect it to need re-checking, because it is an alpha whose
   ripple corner is the part being reshaped.
@@ -127,5 +132,8 @@ validation, and the remaining targets.
   comment, and no coordinate appears as a string anywhere else.
 - AC: the answer to the option (a)/(b) question is written into
   [research §D3](../research/research-architecture.md), with what actually failed if one failed.
-- AC: `abiValidation` (or binary-compatibility-validator) runs in CI on every pull request.
+- AC met: `abiValidation` runs in `check`, which CI runs on every pull request — verified by adding
+  a public function and watching `checkKotlinAbi` fail, naming the new symbol in both the desktop
+  dump and the klib one. A task that is *in* a graph and a task that would *catch* something are
+  different claims and only the second one is worth an AC.
 - Anchors (to be created): `build-logic/`, `gradle/libs.versions.toml`, `.github/workflows/`
