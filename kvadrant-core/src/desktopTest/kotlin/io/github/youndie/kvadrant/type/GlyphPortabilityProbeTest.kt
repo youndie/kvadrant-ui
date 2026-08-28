@@ -12,6 +12,12 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.FontHinting
+import androidx.compose.ui.text.FontRasterizationSettings
+import androidx.compose.ui.text.FontSmoothing
+import androidx.compose.ui.text.PlatformParagraphStyle
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
@@ -59,13 +65,51 @@ import kotlin.test.Test
  *    expected-to-differ case, and it is here to prove the probe can see a difference when there
  *    certainly is one.
  */
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalTextApi::class)
 class GlyphPortabilityProbeTest {
     @Test
     fun probe() {
         println("PROBE os=${System.getProperty("os.name")} arch=${System.getProperty("os.arch")}")
-        cases().forEach { (label, content) -> measure(label, content) }
+        cases().forEach { (label, content) -> measure(label, content, null) }
+        // The candidate settings, on the two faces that actually fail. The first measurement said
+        // the boxes are identical on both platforms and only the ink count moves, which makes this
+        // a question about how an edge pixel is filled and nothing else — so the sweep is over the
+        // rasterisation settings and over nothing else.
+        settings().forEach { (name, rasterization) ->
+            cases().filter { it.first in SWEPT }.forEach { (label, content) ->
+                measure("$label@$name", content, rasterization)
+            }
+        }
     }
+
+    private fun settings(): List<Pair<String, FontRasterizationSettings>> =
+        listOf(
+            "aa-nohint" to
+                FontRasterizationSettings(
+                    smoothing = FontSmoothing.AntiAlias,
+                    hinting = FontHinting.None,
+                    subpixelPositioning = false,
+                    autoHintingForced = false,
+                ),
+            // Aliased. Coverage becomes a yes-or-no per pixel rather than a level of grey, which is
+            // the only way two rasterisers can be made to agree exactly on an edge — and the reason
+            // to measure it rather than assume it is that they still have to agree on which side of
+            // the threshold each pixel falls.
+            "aliased" to
+                FontRasterizationSettings(
+                    smoothing = FontSmoothing.None,
+                    hinting = FontHinting.None,
+                    subpixelPositioning = false,
+                    autoHintingForced = false,
+                ),
+            "aliased-fullhint" to
+                FontRasterizationSettings(
+                    smoothing = FontSmoothing.None,
+                    hinting = FontHinting.Full,
+                    subpixelPositioning = false,
+                    autoHintingForced = false,
+                ),
+        )
 
     private fun cases(): List<Pair<String, @Composable () -> FontFamily>> =
         listOf(
@@ -90,6 +134,7 @@ class GlyphPortabilityProbeTest {
     private fun measure(
         label: String,
         family: @Composable () -> FontFamily,
+        rasterization: FontRasterizationSettings?,
     ) {
         val text = if (label.startsWith("latin")) "settings" else "настройки"
         runComposeUiTest {
@@ -103,7 +148,19 @@ class GlyphPortabilityProbeTest {
                                 fontSize = SIZE.sp,
                                 fontWeight = WEIGHT,
                                 fontFamily = family(),
-                            ).portable(),
+                            ).let { style ->
+                                if (rasterization == null) {
+                                    style.portable()
+                                } else {
+                                    style.copy(
+                                        platformStyle =
+                                            PlatformTextStyle(
+                                                null,
+                                                PlatformParagraphStyle(rasterization),
+                                            ),
+                                    )
+                                }
+                            },
                     )
                 }
             }
@@ -150,6 +207,9 @@ class GlyphPortabilityProbeTest {
 
     private companion object {
         const val TAG = "probe"
+
+        /** The two faces whose goldens fail on Linux. Sweeping the portable ones proves nothing. */
+        val SWEPT = setOf("cyrillic-source-sans-370", "cyrillic-fira")
 
         /** Enough frames for an asynchronous font load to land; two agreeing frames end it early. */
         const val SETTLE_ATTEMPTS = 8
