@@ -37,10 +37,13 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
  */
 @Composable
 private fun Pairs(colors: KvadrantColors) {
-    // **With a typography, and without one this fixture drew in the host's system sans-serif.**
-    // `KvadrantTheme`'s default is `FontFamily.SansSerif`, which is whatever the machine supplies —
-    // so these two goldens recorded the recording machine, which is the exact failure `CLAUDE.md`
-    // rules out for fixtures with a missing font. It went unnoticed until Linux drew them.
+    // **Latin only, and with a typography.** Two ways this frame was recording the machine that
+    // recorded it, and Linux found both. Without a `typography` argument `KvadrantTheme` falls back
+    // to `FontFamily.SansSerif`, which is whatever the host supplies. And the words used to be
+    // Russian — put through Selawik, which **has no Cyrillic**, so every one of them fell back to a
+    // host font as well. The subject of this picture is shape, not script; the components' own
+    // script splitting is `KvadrantText`'s job and a raw Material `Text` has none, which is itself
+    // worth seeing here.
     KvadrantTheme(colors = colors, typography = portableTypography(kvadrantLatin())) {
         KvadrantMaterialAdapter {
             Column(
@@ -48,14 +51,14 @@ private fun Pairs(colors: KvadrantColors) {
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 KvadrantText("kvadrant", style = KvadrantTheme.typography.subtle)
-                KvadrantButton(onClick = {}, text = "готово")
-                KvadrantTextBox(value = "имя", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+                KvadrantButton(onClick = {}, text = "done")
+                KvadrantTextBox(value = "name", onValueChange = {}, modifier = Modifier.fillMaxWidth())
                 KvadrantToggleSwitch(checked = true, onCheckedChange = {})
                 KvadrantSlider(value = 0.4f, onValueChange = {})
 
                 KvadrantText("material, under the adapter", style = KvadrantTheme.typography.subtle)
-                Button(onClick = {}) { Text("готово") }
-                OutlinedTextField(value = "имя", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+                Button(onClick = {}) { Text("done") }
+                OutlinedTextField(value = "name", onValueChange = {}, modifier = Modifier.fillMaxWidth())
                 Switch(checked = true, onCheckedChange = {})
                 Slider(value = 0.4f, onValueChange = {})
                 Card(Modifier.fillMaxWidth()) {
@@ -63,7 +66,7 @@ private fun Pairs(colors: KvadrantColors) {
                 }
 
                 KvadrantText("material, wrapped", style = KvadrantTheme.typography.subtle)
-                KvadrantMaterialButton(onClick = {}) { Text("готово") }
+                KvadrantMaterialButton(onClick = {}) { Text("done") }
                 KvadrantMaterialSwitch(checked = true, onCheckedChange = {})
                 KvadrantMaterialSlider(value = 0.4f, onValueChange = {})
             }
