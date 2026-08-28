@@ -464,6 +464,7 @@ public fun KvadrantPasswordBox(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
+    mask: Char = KVADRANT_PASSWORD_MASK,
     cyrillic: FontFamily? = null,
 ) {
     var revealed by remember { mutableStateOf(false) }
@@ -481,8 +482,8 @@ public fun KvadrantPasswordBox(
     val shown =
         when {
             value.isEmpty() -> ""
-            revealed -> MASK.toString().repeat(value.length - 1) + value.last()
-            else -> MASK.toString().repeat(value.length)
+            revealed -> mask.toString().repeat(value.length - 1) + value.last()
+            else -> mask.toString().repeat(value.length)
         }
 
     KvadrantTextBox(
@@ -504,5 +505,20 @@ public fun KvadrantPasswordBox(
     )
 }
 
-private const val MASK = '\u25CF'
+/**
+ * What a masked character is drawn as, and **it is not Silverlight's**.
+ *
+ * `PasswordChar` defaults to `U+25CF BLACK CIRCLE`, and Selawik's `cmap` does not carry it — read
+ * out of the font, not assumed. A text field draws through `BasicTextField`, which does no script
+ * splitting, so the circle fell through to whatever the operating system had: the dots were a
+ * different glyph on every platform, and the way it surfaced was a screenshot that would not match
+ * between two of them.
+ *
+ * `U+2022 BULLET` **is** in Selawik. It is smaller than the circle and it is this project's choice
+ * rather than Microsoft's, which is why it is a parameter of [KvadrantPasswordBox] — a caller with a
+ * font that has the circle can ask for it back.
+ */
+public const val KVADRANT_PASSWORD_MASK: Char = '\u2022'
+
+private const val MASK = KVADRANT_PASSWORD_MASK
 private const val MASK_MILLIS = 2000L

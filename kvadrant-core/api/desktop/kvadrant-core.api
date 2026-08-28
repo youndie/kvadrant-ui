@@ -33,9 +33,10 @@ public final class io/github/youndie/kvadrant/components/ComposableSingletons$Kv
 }
 
 public final class io/github/youndie/kvadrant/components/ControlsKt {
+	public static final field KVADRANT_PASSWORD_MASK C
 	public static final fun KvadrantButton (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/interaction/MutableInteractionSource;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantListItem (Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantPasswordBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantPasswordBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;CLandroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantProgressBar (FLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantTextBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZLandroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantToggleSwitch (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLandroidx/compose/runtime/Composer;II)V
