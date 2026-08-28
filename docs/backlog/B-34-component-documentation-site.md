@@ -59,9 +59,11 @@ example looks exactly like a right one.
 
 ## Where it stands
 
-**Built and green on this machine; never deployed.** `make site` produces the whole thing into
-`build/site`, `.github/workflows/pages.yaml` builds it on every push and deploys it from `main`, and
-`:kvadrant-previews:check` fails when a preview stops compiling or stops drawing.
+**Built on CI, and deploying from `main`.** `make site` produces the whole thing into `build/site`;
+`.github/workflows/pages.yaml` builds it on every pull request and on `main`, and deploys it from
+`main` alone — publishing a branch's idea of the library is how a site starts disagreeing with the
+artefact people depend on. `:kvadrant-previews:check` fails when a preview stops compiling or stops
+drawing.
 
 - **The registry exists** — [`kvadrant-previews`](../../kvadrant-previews/), forty-seven bare
   previews, one component each, in a module of its own so the site's code is not in the library's
@@ -90,10 +92,9 @@ of generated wasm into this repository's history. The legacy Jekyll builder had 
 on every push until the source was changed.
 
 **One thing is not done**, and it is not hidden behind a green build: **the previews have no
-goldens.** Their guard is a render instead — every preview is composed, the clock
-advanced past its entrance, and the pixels differing from the page background counted, with an empty
-preview measured alongside as the negative control so the zero floor is a measurement rather than an
-assumption. Pictures wait on [B-35](B-35-cyrillic-renders-differently-on-linux.md): thirty-five
+goldens.** Their guard is a render instead — every preview is composed, the clock advanced past its
+entrance, and the pixels differing from the page background counted, with an empty preview measured
+alongside as the negative control so the zero floor is a measurement rather than an assumption. Pictures wait on [B-35](B-35-cyrillic-renders-differently-on-linux.md): thirty-five
 goldens already fail on the Linux runner, deterministically, and forty more images make that red
 larger rather than the signal stronger.
 
