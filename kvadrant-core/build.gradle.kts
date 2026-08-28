@@ -152,6 +152,35 @@ val checkKvadrantTokens by tasks.registering(Exec::class) {
 
 tasks.named("check") { dependsOn(checkKvadrantTokens) }
 
+// B-18, the half of it that is a programmer's job. Nothing in the icon set can be copied — Segoe
+// MDL2 Assets and Segoe Fluent Icons are proprietary and no open Metro-styled equivalent exists —
+// so every glyph is drawn here, and transcribing path data by hand is how a wrong shape gets into a
+// set and survives review looking like a decision.
+val iconsScript = layout.projectDirectory.file("../scripts/generate_icons.py")
+val iconsSource = layout.projectDirectory.dir("../icons/svg")
+val iconsOutput =
+    layout.projectDirectory.file("src/commonMain/kotlin/io/github/youndie/kvadrant/icons/KvadrantIcons.kt")
+
+val generateKvadrantIcons by tasks.registering(Exec::class) {
+    description = "Regenerate KvadrantIcons.kt from the SVG drawings in icons/svg."
+    inputs.file(iconsScript)
+    inputs.dir(iconsSource).withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.file(iconsOutput)
+    workingDir = repositoryRoot.asFile
+    commandLine("python3", "scripts/generate_icons.py")
+}
+
+val checkKvadrantIcons by tasks.registering(Exec::class) {
+    description = "Fail if KvadrantIcons.kt no longer matches the drawings it is generated from."
+    inputs.file(iconsScript)
+    inputs.dir(iconsSource).withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file(iconsOutput)
+    workingDir = repositoryRoot.asFile
+    commandLine("python3", "scripts/generate_icons.py", "--check")
+}
+
+tasks.named("check") { dependsOn(checkKvadrantIcons) }
+
 // `ScreenshotSuiteTest` reads the golden directory, so the task has to say so. Without this Gradle
 // sees no input change when a golden is added, renamed or deleted, leaves `desktopTest` UP-TO-DATE,
 // and the guard reports the last run's verdict about a set that has since changed — which is how it

@@ -212,6 +212,24 @@ public final class io/github/youndie/kvadrant/foundation/KvadrantTextKt {
 	public static final fun KvadrantText (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class io/github/youndie/kvadrant/icons/KvadrantIcons {
+	public static final field $stable I
+	public static final field INSTANCE Lio/github/youndie/kvadrant/icons/KvadrantIcons;
+	public final fun getAdd ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getAll ()Ljava/util/List;
+	public final fun getBack ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getCancel ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getCheck ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getClose ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getDelete ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getEdit ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getRefresh ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getSave ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getSearch ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getSettings ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getShare ()Landroidx/compose/ui/graphics/vector/ImageVector;
+}
+
 public final class io/github/youndie/kvadrant/indication/KvadrantTiltModifierKt {
 	public static final fun kvadrantTilt (Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
 	public static synthetic fun kvadrantTilt$default (Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;

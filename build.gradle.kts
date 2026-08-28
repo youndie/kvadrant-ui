@@ -20,5 +20,20 @@ subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         version.set(rootProject.libs.versions.ktlint)
+        // Generated sources are excluded, and it is the generator that decides their shape.
+        //
+        // ktlint rewrites a method chain onto its own line breaks; a generator emitting that chain
+        // then produces a file the formatter immediately edits, and the `--check` that keeps the
+        // output honest fails on every clean tree. The alternative is a generator that encodes
+        // ktlint's wrapping rules, which is a maintenance trap aimed at a file no person reads.
+        //
+        // They are still committed and still reviewed as diffs — this exempts them from a
+        // formatter, not from a reader.
+        // A spec rather than an Ant pattern: this plugin hands the filter absolute paths, and a
+        // `**/...` glob silently matches nothing.
+        filter {
+            exclude { element -> "KvadrantTokens.kt" in element.file.path }
+            exclude { element -> "KvadrantIcons.kt" in element.file.path }
+        }
     }
 }
