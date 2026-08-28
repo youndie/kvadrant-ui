@@ -39,8 +39,12 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
   A test that reads the golden directory must declare it as a task input, or Gradle leaves the test
   UP-TO-DATE and reports the last run's verdict about a set that has changed.
 - **The suite is desktop only, and not for want of wiring**: viddik's capture engine publishes JVM
-  variants only. A green suite says the skiko renderer is unchanged and nothing about Android, where
-  the one defect that mattered so far (B-25) lived. That is B-29.
+  variants only. **A green `check` says nothing whatever about Android.** That is settled rather than
+  pending — B-29 decided it, and Android's guard is a number instead: `./gradlew
+  :kvadrant-core:connectedAndroidDeviceTest` solves the tilt's camera out of a rendered trapezoid on
+  a real device. It is not in `check` on purpose, because a gate that needs hardware is a gate that
+  gets skipped, and a skipped gate reads as a green one. Run it before trusting anything about the
+  renderer most of this will ship on.
 - **Every glyph in a golden comes from a bundled file.** That is what makes these images portable
   across operating systems, and it rules out fixtures whose point is a *missing* font — the host
   supplies one and the golden records the recording machine.

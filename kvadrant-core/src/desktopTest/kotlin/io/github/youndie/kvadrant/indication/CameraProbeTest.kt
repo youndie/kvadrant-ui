@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
@@ -44,9 +45,15 @@ class CameraProbeTest {
                     contentAlignment = Alignment.Center,
                 ) {
                     val source = remember { MutableInteractionSource() }
-                    LaunchedEffect(Unit) {
+                    // In pixels, because that is what `PressInteraction.Press` carries. This used
+                    // to write the dp number straight in and was right only because the desktop
+                    // renders at density 1 — the Android probe, at 2.625, pressed near the top-left
+                    // corner instead of the bottom edge and solved the camera to minus thirty-eight
+                    // thousand pixels. Same expression on both, now.
+                    val pixels = with(LocalDensity.current) { tile.dp.toPx() }
+                    LaunchedEffect(pixels) {
                         // The device was pressed 2 px above the bottom edge; match it.
-                        source.emit(PressInteraction.Press(Offset(tile / 2f, tile - 2f)))
+                        source.emit(PressInteraction.Press(Offset(pixels / 2f, pixels - 2f)))
                     }
                     Box(
                         Modifier

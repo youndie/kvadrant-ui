@@ -723,7 +723,33 @@ says the desktop renderer is unchanged and nothing more.
 of the Compose version, coupled to it in both directions, and forcing it means running a renderer
 the Compose runtime above it was not built against. The only version this project pins is CMP's.
 
-**Consequence 3 — determinism is a property to be measured, not assumed.**
+**Consequence 3 — Android has no goldens and will not get any here, which is B-29's decision.**
+viddik's capture engine publishes JVM variants only, so there is no path to Android pictures inside
+`check` without work in another repository. A second screenshot tool was rejected on **ownership**
+rather than on evidence: two golden formats, two ways to record and two answers to "is the suite
+green" cost every future change, while Android being uncovered costs only where Android differs.
+
+So Android's guard is a **number**. `AndroidCameraProbeTest` presses the centre of a tile's bottom
+edge — pure rotation about x — and solves the camera's depth out of the resulting trapezoid, on the
+renderer this library will mostly ship on. `./gradlew :kvadrant-core:connectedAndroidDeviceTest`, and
+it needs a device; it is deliberately **not** in `check`, because a gate that cannot run without
+hardware is a gate that gets skipped and a skipped gate reads as a green one.
+
+| Fact | Where verified |
+|---|---|
+| The probe runs and passes on a Pixel 6a at API 17 | `connectedAndroidDeviceTest`, this device |
+| compose-resources leaves `copyAndroidDeviceTestComposeResourcesToAndroidAssets` without an `outputDirectory`, failing configuration before anything reaches the device | the task's own validation message; worked around in `kvadrant-core/build.gradle.kts` |
+| `compose.uiTest` drags in espresso-core 3.5.0, which calls `InputManager.getInstance` — removed in Android 17 | `NoSuchMethodException` from `Espresso.onIdle`; pinned forward to 3.7.0 |
+| `runComposeUiTest` launches an activity that nothing declares without `ui-test-manifest` | "Unable to resolve activity for … androidx.activity.ComponentActivity" |
+
+**Consequence 4 — the probe found a defect in itself the moment it met a second density.**
+`PressInteraction.Press` carries a position in the pressed element's own **pixels**, and both probes
+wrote the dp number straight in. On the desktop, at density 1, that is correct by coincidence; at
+2.625 the same numbers land near the top-left corner instead of the bottom edge, the tile draws
+almost flat, and the camera solves to **minus thirty-eight thousand pixels**. A second renderer paid
+for itself on its first run, which is the argument B-24 made and this is the second time it has held.
+
+**Consequence 5 — determinism is a property to be measured, not assumed.**
 [B-31](../backlog/B-31-screenshot-suite-is-not-deterministic.md) recorded six of the sixty-eight
 goldens changing between two recordings of unchanged source, by about 147 pixels of 280 000 — 0.052 %
 against viddik's 0.05 % tolerance, so those fixtures passed and failed at random. A suite that fails

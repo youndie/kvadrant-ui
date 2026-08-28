@@ -40,6 +40,19 @@ kotlinxSerialization = "1.7.3"
 [libraries]
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+# On-device tests only. B-29: viddik's capture engine is JVM-only, so Android's guard has to be a
+# number measured on a real renderer rather than a golden, and that needs the instrumentation runner.
+androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
+# Compose's Android test infrastructure calls Espresso's idling, and 3.5.0 - the version
+# `compose.uiTest` still drags in - reaches for `InputManager.getInstance`, which Android 17 removed.
+# The test dies before it renders anything, with a NoSuchMethodException that names neither Compose
+# nor this library. Pinned forward here rather than excluded, because the idling is wanted.
+androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.7.0" }
+# `runComposeUiTest` launches an activity, and on Android nothing declares one unless this is on the
+# classpath: it is a manifest containing `androidx.activity.ComponentActivity` and nothing else.
+# Without it the test fails at "Unable to resolve activity", which names neither Compose nor a
+# missing dependency. Pinned to the AndroidX line CMP 1.12.0 ships against.
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "1.12.0" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 

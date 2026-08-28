@@ -33,6 +33,14 @@ kotlin {
         // warning, and a warning is not what should stand between a common test suite and one of
         // the two renderers it is meant to be describing.
         withHostTest {}
+
+        // On-device tests. B-29: viddik's capture engine publishes JVM variants only, so Android
+        // cannot have goldens inside `check` — and the alternative is not "nothing", it is a
+        // number. `AndroidCameraProbeTest` solves the tilt's camera out of a rendered trapezoid on
+        // the real renderer, which is a smaller claim than a picture and a claim that can be made.
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     // Every public symbol here is currently unpinned: a renamed parameter, a `val` turned into a
@@ -55,6 +63,14 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+        getByName("androidDeviceTest").dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.androidx.test.runner)
+            implementation(libs.androidx.test.espresso)
+            implementation(libs.androidx.compose.ui.test.manifest)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
         // Rendering a real window in a test needs the host's skiko native library, and only
         // `currentOs` brings it in. It must not leak into a published source set: a POM that pins a
@@ -158,4 +174,22 @@ compose.resources {
 // somebody remembers to run, which means it runs on one machine and not on the branch.
 viddik {
     verifyOnCheck.set(true)
+}
+
+// compose-resources registers a copy task for every Android variant and leaves this one without an
+// output directory, so `connectedAndroidDeviceTest` fails during configuration rather than on the
+// device: "property 'outputDirectory' doesn't have a configured value". The device test source set
+// has no resources of its own — it renders shapes, not text — so any directory will do; what it
+// must not be is unset.
+// The task type is internal to the plugin, so the property is set through Gradle's own property
+// lookup rather than through a cast that will not compile.
+tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach {
+    val output = layout.buildDirectory.dir("generated/compose/androidDeviceTestAssets")
+
+    @Suppress("UNCHECKED_CAST")
+    val property =
+        javaClass.methods
+            .first { it.name == "getOutputDirectory" }
+            .invoke(this) as org.gradle.api.file.DirectoryProperty
+    property.set(output)
 }
