@@ -62,6 +62,6 @@ private fun Sheet() {
     }
 }
 
-@ViddikScreenshot(name = "sheet", group = "icons", width = 320, height = 340)
+@ViddikScreenshot(name = "sheet", group = "icons", width = 320, height = 880)
 @Composable
 internal fun IconSheet(): Unit = Sheet()

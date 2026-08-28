@@ -45,6 +45,25 @@ public object KvadrantIcons {
             }
             .build()
 
+    public val Attach: ImageVector =
+        ImageVector.Builder("Attach", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(18.0f, 8.0f)
+                lineTo(9.0f, 17.0f)
+                curveTo(7.0f, 19.0f, 4.0f, 19.0f, 4.0f, 16.0f)
+                curveTo(4.0f, 14.0f, 5.0f, 13.0f, 7.0f, 11.0f)
+                lineTo(16.0f, 2.5f)
+                curveTo(18.0f, 0.5f, 22.0f, 2.0f, 22.0f, 5.0f)
+                curveTo(22.0f, 7.0f, 21.0f, 8.0f, 19.0f, 10.0f)
+                lineTo(10.0f, 19.0f)
+            }
+            .build()
+
     public val Back: ImageVector =
         ImageVector.Builder("Back", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
             .path(
@@ -65,6 +84,82 @@ public object KvadrantIcons {
                 moveTo(11.0f, 6.0f)
                 lineTo(4.0f, 13.0f)
                 lineTo(11.0f, 20.0f)
+            }
+            .build()
+
+    public val Calendar: ImageVector =
+        ImageVector.Builder("Calendar", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 5.0f)
+                lineTo(23.0f, 5.0f)
+                lineTo(23.0f, 22.0f)
+                lineTo(3.0f, 22.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 10.0f)
+                lineTo(23.0f, 10.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(8.0f, 2.0f)
+                lineTo(8.0f, 7.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(18.0f, 2.0f)
+                lineTo(18.0f, 7.0f)
+            }
+            .build()
+
+    public val Camera: ImageVector =
+        ImageVector.Builder("Camera", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 8.0f)
+                lineTo(8.0f, 8.0f)
+                lineTo(10.0f, 5.0f)
+                lineTo(16.0f, 5.0f)
+                lineTo(18.0f, 8.0f)
+                lineTo(23.0f, 8.0f)
+                lineTo(23.0f, 21.0f)
+                lineTo(3.0f, 21.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 9.5f)
+                curveTo(15.48535f, 9.5f, 17.5f, 11.51465f, 17.5f, 14.0f)
+                curveTo(17.5f, 16.48535f, 15.48535f, 18.5f, 13.0f, 18.5f)
+                curveTo(10.51465f, 18.5f, 8.5f, 16.48535f, 8.5f, 14.0f)
+                curveTo(8.5f, 11.51465f, 10.51465f, 9.5f, 13.0f, 9.5f)
+                close()
             }
             .build()
 
@@ -104,6 +199,33 @@ public object KvadrantIcons {
             }
             .build()
 
+    public val Clock: ImageVector =
+        ImageVector.Builder("Clock", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 3.0f)
+                curveTo(18.523f, 3.0f, 23.0f, 7.477f, 23.0f, 13.0f)
+                curveTo(23.0f, 18.523f, 18.523f, 23.0f, 13.0f, 23.0f)
+                curveTo(7.477f, 23.0f, 3.0f, 18.523f, 3.0f, 13.0f)
+                curveTo(3.0f, 7.477f, 7.477f, 3.0f, 13.0f, 3.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 6.0f)
+                lineTo(13.0f, 13.0f)
+                lineTo(18.0f, 16.0f)
+            }
+            .build()
+
     public val Close: ImageVector =
         ImageVector.Builder("Close", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
             .path(
@@ -136,6 +258,33 @@ public object KvadrantIcons {
             ) {
                 moveTo(17.0f, 9.0f)
                 lineTo(9.0f, 17.0f)
+            }
+            .build()
+
+    public val Copy: ImageVector =
+        ImageVector.Builder("Copy", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 3.0f)
+                lineTo(16.0f, 3.0f)
+                lineTo(16.0f, 17.0f)
+                lineTo(4.0f, 17.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(8.0f, 21.0f)
+                lineTo(22.0f, 21.0f)
+                lineTo(22.0f, 7.0f)
+                lineTo(18.0f, 7.0f)
             }
             .build()
 
@@ -192,6 +341,38 @@ public object KvadrantIcons {
             }
             .build()
 
+    public val Download: ImageVector =
+        ImageVector.Builder("Download", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 3.0f)
+                lineTo(13.0f, 16.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(7.0f, 11.0f)
+                lineTo(13.0f, 17.0f)
+                lineTo(19.0f, 11.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 22.0f)
+                lineTo(22.0f, 22.0f)
+            }
+            .build()
+
     public val Edit: ImageVector =
         ImageVector.Builder("Edit", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
             .path(
@@ -215,6 +396,438 @@ public object KvadrantIcons {
             ) {
                 moveTo(15.0f, 6.0f)
                 lineTo(20.0f, 11.0f)
+            }
+            .build()
+
+    public val Favourite: ImageVector =
+        ImageVector.Builder("Favourite", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 3.0f)
+                lineTo(16.0f, 10.0f)
+                lineTo(23.0f, 10.5f)
+                lineTo(17.5f, 15.0f)
+                lineTo(19.5f, 22.0f)
+                lineTo(13.0f, 18.0f)
+                lineTo(6.5f, 22.0f)
+                lineTo(8.5f, 15.0f)
+                lineTo(3.0f, 10.5f)
+                lineTo(10.0f, 10.0f)
+                close()
+            }
+            .build()
+
+    public val Folder: ImageVector =
+        ImageVector.Builder("Folder", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 6.0f)
+                lineTo(10.0f, 6.0f)
+                lineTo(12.0f, 9.0f)
+                lineTo(23.0f, 9.0f)
+                lineTo(23.0f, 21.0f)
+                lineTo(3.0f, 21.0f)
+                close()
+            }
+            .build()
+
+    public val Info: ImageVector =
+        ImageVector.Builder("Info", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 3.0f)
+                curveTo(18.523f, 3.0f, 23.0f, 7.477f, 23.0f, 13.0f)
+                curveTo(23.0f, 18.523f, 18.523f, 23.0f, 13.0f, 23.0f)
+                curveTo(7.477f, 23.0f, 3.0f, 18.523f, 3.0f, 13.0f)
+                curveTo(3.0f, 7.477f, 7.477f, 3.0f, 13.0f, 3.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 12.0f)
+                lineTo(13.0f, 19.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 7.1f)
+                curveTo(13.49707f, 7.1f, 13.9f, 7.50293f, 13.9f, 8.0f)
+                curveTo(13.9f, 8.49707f, 13.49707f, 8.9f, 13.0f, 8.9f)
+                curveTo(12.50293f, 8.9f, 12.1f, 8.49707f, 12.1f, 8.0f)
+                curveTo(12.1f, 7.50293f, 12.50293f, 7.1f, 13.0f, 7.1f)
+                close()
+            }
+            .build()
+
+    public val Location: ImageVector =
+        ImageVector.Builder("Location", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 2.0f)
+                curveTo(17.5f, 2.0f, 21.0f, 5.5f, 21.0f, 10.0f)
+                curveTo(21.0f, 15.0f, 13.0f, 24.0f, 13.0f, 24.0f)
+                curveTo(13.0f, 24.0f, 5.0f, 15.0f, 5.0f, 10.0f)
+                curveTo(5.0f, 5.5f, 8.5f, 2.0f, 13.0f, 2.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 7.0f)
+                curveTo(14.6569f, 7.0f, 16.0f, 8.3431f, 16.0f, 10.0f)
+                curveTo(16.0f, 11.6569f, 14.6569f, 13.0f, 13.0f, 13.0f)
+                curveTo(11.3431f, 13.0f, 10.0f, 11.6569f, 10.0f, 10.0f)
+                curveTo(10.0f, 8.3431f, 11.3431f, 7.0f, 13.0f, 7.0f)
+                close()
+            }
+            .build()
+
+    public val Lock: ImageVector =
+        ImageVector.Builder("Lock", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(5.0f, 11.0f)
+                lineTo(21.0f, 11.0f)
+                lineTo(21.0f, 22.0f)
+                lineTo(5.0f, 22.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(8.0f, 11.0f)
+                lineTo(8.0f, 7.0f)
+                curveTo(8.0f, 4.0f, 10.0f, 2.0f, 13.0f, 2.0f)
+                curveTo(16.0f, 2.0f, 18.0f, 4.0f, 18.0f, 7.0f)
+                lineTo(18.0f, 11.0f)
+            }
+            .build()
+
+    public val Mail: ImageVector =
+        ImageVector.Builder("Mail", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 7.0f)
+                lineTo(23.0f, 7.0f)
+                lineTo(23.0f, 19.0f)
+                lineTo(3.0f, 19.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 7.0f)
+                lineTo(13.0f, 15.0f)
+                lineTo(23.0f, 7.0f)
+            }
+            .build()
+
+    public val Menu: ImageVector =
+        ImageVector.Builder("Menu", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 7.0f)
+                lineTo(22.0f, 7.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 13.0f)
+                lineTo(22.0f, 13.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 19.0f)
+                lineTo(22.0f, 19.0f)
+            }
+            .build()
+
+    public val Minus: ImageVector =
+        ImageVector.Builder("Minus", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 13.0f)
+                lineTo(22.0f, 13.0f)
+            }
+            .build()
+
+    public val More: ImageVector =
+        ImageVector.Builder("More", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(6.0f, 11.4f)
+                curveTo(6.88368f, 11.4f, 7.6f, 12.11632f, 7.6f, 13.0f)
+                curveTo(7.6f, 13.88368f, 6.88368f, 14.6f, 6.0f, 14.6f)
+                curveTo(5.11632f, 14.6f, 4.4f, 13.88368f, 4.4f, 13.0f)
+                curveTo(4.4f, 12.11632f, 5.11632f, 11.4f, 6.0f, 11.4f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 11.4f)
+                curveTo(13.88368f, 11.4f, 14.6f, 12.11632f, 14.6f, 13.0f)
+                curveTo(14.6f, 13.88368f, 13.88368f, 14.6f, 13.0f, 14.6f)
+                curveTo(12.11632f, 14.6f, 11.4f, 13.88368f, 11.4f, 13.0f)
+                curveTo(11.4f, 12.11632f, 12.11632f, 11.4f, 13.0f, 11.4f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(20.0f, 11.4f)
+                curveTo(20.88368f, 11.4f, 21.6f, 12.11632f, 21.6f, 13.0f)
+                curveTo(21.6f, 13.88368f, 20.88368f, 14.6f, 20.0f, 14.6f)
+                curveTo(19.11632f, 14.6f, 18.4f, 13.88368f, 18.4f, 13.0f)
+                curveTo(18.4f, 12.11632f, 19.11632f, 11.4f, 20.0f, 11.4f)
+                close()
+            }
+            .build()
+
+    public val Next: ImageVector =
+        ImageVector.Builder("Next", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(6.0f, 4.0f)
+                lineTo(17.0f, 13.0f)
+                lineTo(6.0f, 22.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(20.0f, 4.0f)
+                lineTo(20.0f, 22.0f)
+            }
+            .build()
+
+    public val Pause: ImageVector =
+        ImageVector.Builder("Pause", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(9.0f, 4.0f)
+                lineTo(9.0f, 22.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(17.0f, 4.0f)
+                lineTo(17.0f, 22.0f)
+            }
+            .build()
+
+    public val People: ImageVector =
+        ImageVector.Builder("People", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(10.0f, 5.0f)
+                curveTo(12.2092f, 5.0f, 14.0f, 6.7908f, 14.0f, 9.0f)
+                curveTo(14.0f, 11.2092f, 12.2092f, 13.0f, 10.0f, 13.0f)
+                curveTo(7.7908f, 13.0f, 6.0f, 11.2092f, 6.0f, 9.0f)
+                curveTo(6.0f, 6.7908f, 7.7908f, 5.0f, 10.0f, 5.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(2.0f, 22.0f)
+                curveTo(2.0f, 17.0f, 5.5f, 14.0f, 10.0f, 14.0f)
+                curveTo(14.5f, 14.0f, 18.0f, 17.0f, 18.0f, 22.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(19.0f, 5.8f)
+                curveTo(20.76736f, 5.8f, 22.2f, 7.23264f, 22.2f, 9.0f)
+                curveTo(22.2f, 10.76736f, 20.76736f, 12.2f, 19.0f, 12.2f)
+                curveTo(17.23264f, 12.2f, 15.8f, 10.76736f, 15.8f, 9.0f)
+                curveTo(15.8f, 7.23264f, 17.23264f, 5.8f, 19.0f, 5.8f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(17.0f, 14.4f)
+                curveTo(21.0f, 14.6f, 24.0f, 17.6f, 24.0f, 22.0f)
+            }
+            .build()
+
+    public val Phone: ImageVector =
+        ImageVector.Builder("Phone", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(6.0f, 3.0f)
+                lineTo(10.0f, 3.0f)
+                lineTo(12.0f, 8.0f)
+                lineTo(9.0f, 10.0f)
+                curveTo(10.5f, 14.0f, 12.0f, 15.5f, 16.0f, 17.0f)
+                lineTo(18.0f, 14.0f)
+                lineTo(23.0f, 16.0f)
+                lineTo(23.0f, 20.0f)
+                curveTo(23.0f, 22.0f, 21.0f, 23.0f, 19.0f, 22.0f)
+                curveTo(11.0f, 20.0f, 6.0f, 15.0f, 4.0f, 7.0f)
+                curveTo(3.0f, 5.0f, 4.0f, 3.0f, 6.0f, 3.0f)
+                close()
+            }
+            .build()
+
+    public val Play: ImageVector =
+        ImageVector.Builder("Play", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(8.0f, 4.0f)
+                lineTo(21.0f, 13.0f)
+                lineTo(8.0f, 22.0f)
+                close()
+            }
+            .build()
+
+    public val Previous: ImageVector =
+        ImageVector.Builder("Previous", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(20.0f, 4.0f)
+                lineTo(9.0f, 13.0f)
+                lineTo(20.0f, 22.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(6.0f, 4.0f)
+                lineTo(6.0f, 22.0f)
+            }
+            .build()
+
+    public val Redo: ImageVector =
+        ImageVector.Builder("Redo", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(22.0f, 10.0f)
+                lineTo(10.0f, 10.0f)
+                curveTo(5.0f, 10.0f, 3.0f, 13.0f, 3.0f, 16.0f)
+                curveTo(3.0f, 19.0f, 5.0f, 22.0f, 9.0f, 22.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(17.0f, 5.0f)
+                lineTo(22.0f, 10.0f)
+                lineTo(17.0f, 15.0f)
             }
             .build()
 
@@ -401,20 +1014,238 @@ public object KvadrantIcons {
             }
             .build()
 
+    public val Stop: ImageVector =
+        ImageVector.Builder("Stop", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(6.0f, 6.0f)
+                lineTo(20.0f, 6.0f)
+                lineTo(20.0f, 20.0f)
+                lineTo(6.0f, 20.0f)
+                close()
+            }
+            .build()
+
+    public val Sync: ImageVector =
+        ImageVector.Builder("Sync", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(21.0f, 9.0f)
+                curveTo(19.5f, 5.5f, 16.0f, 3.0f, 13.0f, 3.0f)
+                curveTo(8.0f, 3.0f, 4.0f, 7.0f, 4.0f, 12.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(5.0f, 16.0f)
+                curveTo(6.5f, 19.5f, 10.0f, 22.0f, 13.0f, 22.0f)
+                curveTo(18.0f, 22.0f, 22.0f, 18.0f, 22.0f, 13.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(1.0f, 8.0f)
+                lineTo(4.0f, 12.0f)
+                lineTo(8.0f, 9.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(25.0f, 17.0f)
+                lineTo(22.0f, 13.0f)
+                lineTo(18.0f, 16.0f)
+            }
+            .build()
+
+    public val Undo: ImageVector =
+        ImageVector.Builder("Undo", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 10.0f)
+                lineTo(16.0f, 10.0f)
+                curveTo(21.0f, 10.0f, 23.0f, 13.0f, 23.0f, 16.0f)
+                curveTo(23.0f, 19.0f, 21.0f, 22.0f, 17.0f, 22.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(9.0f, 5.0f)
+                lineTo(4.0f, 10.0f)
+                lineTo(9.0f, 15.0f)
+            }
+            .build()
+
+    public val Upload: ImageVector =
+        ImageVector.Builder("Upload", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 17.0f)
+                lineTo(13.0f, 4.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(7.0f, 9.0f)
+                lineTo(13.0f, 3.0f)
+                lineTo(19.0f, 9.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(4.0f, 22.0f)
+                lineTo(22.0f, 22.0f)
+            }
+            .build()
+
+    public val Volume: ImageVector =
+        ImageVector.Builder("Volume", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(3.0f, 10.0f)
+                lineTo(7.0f, 10.0f)
+                lineTo(12.0f, 5.0f)
+                lineTo(12.0f, 21.0f)
+                lineTo(7.0f, 16.0f)
+                lineTo(3.0f, 16.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(16.0f, 9.0f)
+                curveTo(18.0f, 11.0f, 18.0f, 15.0f, 16.0f, 17.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(19.0f, 6.0f)
+                curveTo(23.0f, 10.0f, 23.0f, 16.0f, 19.0f, 20.0f)
+            }
+            .build()
+
+    public val Warning: ImageVector =
+        ImageVector.Builder("Warning", 26.0.dp, 26.0.dp, 26.0f, 26.0f)
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 3.0f)
+                lineTo(24.0f, 22.0f)
+                lineTo(2.0f, 22.0f)
+                close()
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 10.0f)
+                lineTo(13.0f, 16.0f)
+            }
+            .path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+            ) {
+                moveTo(13.0f, 18.1f)
+                curveTo(13.49707f, 18.1f, 13.9f, 18.50293f, 13.9f, 19.0f)
+                curveTo(13.9f, 19.49707f, 13.49707f, 19.9f, 13.0f, 19.9f)
+                curveTo(12.50293f, 19.9f, 12.1f, 19.49707f, 12.1f, 19.0f)
+                curveTo(12.1f, 18.50293f, 12.50293f, 18.1f, 13.0f, 18.1f)
+                close()
+            }
+            .build()
+
     /** Every glyph, for a gallery or a test that has to know the set is complete. */
     public val All: List<Pair<String, ImageVector>> =
         listOf(
             "add" to Add,
+            "attach" to Attach,
             "back" to Back,
+            "calendar" to Calendar,
+            "camera" to Camera,
             "cancel" to Cancel,
             "check" to Check,
+            "clock" to Clock,
             "close" to Close,
+            "copy" to Copy,
             "delete" to Delete,
+            "download" to Download,
             "edit" to Edit,
+            "favourite" to Favourite,
+            "folder" to Folder,
+            "info" to Info,
+            "location" to Location,
+            "lock" to Lock,
+            "mail" to Mail,
+            "menu" to Menu,
+            "minus" to Minus,
+            "more" to More,
+            "next" to Next,
+            "pause" to Pause,
+            "people" to People,
+            "phone" to Phone,
+            "play" to Play,
+            "previous" to Previous,
+            "redo" to Redo,
             "refresh" to Refresh,
             "save" to Save,
             "search" to Search,
             "settings" to Settings,
             "share" to Share,
+            "stop" to Stop,
+            "sync" to Sync,
+            "undo" to Undo,
+            "upload" to Upload,
+            "volume" to Volume,
+            "warning" to Warning,
         )
 }

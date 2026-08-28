@@ -63,8 +63,9 @@ subprojects {
                 url = uri("https://reposilite.kotlin.website/snapshots")
                 credentials {
                     // Never in the tree. A property for a workstation, an environment variable for
-                    // anything automated, and a publish that finds neither fails at the upload
-                    // rather than uploading anonymously.
+                    // anything automated, and a publish that finds neither fails **at
+                    // configuration**, naming `credentials.username`, before it has built or sent
+                    // anything. Measured by running the publish without them.
                     username =
                         providers.gradleProperty("REPOSILITE_USER").orNull
                             ?: System.getenv("REPOSILITE_USER")

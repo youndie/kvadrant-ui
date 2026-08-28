@@ -14,8 +14,9 @@ and not yet — the Central Portal is a later conversation, and when it happens 
 repository rather than losing the one it has. The host is the same one `settings.gradle.kts` already
 resolves viddik from, so publishing added no infrastructure and no secret to the tree: credentials
 come from `REPOSILITE_USER` / `REPOSILITE_SECRET`, a Gradle property on a workstation or an
-environment variable anywhere automated, and a publish that finds neither fails at the upload rather
-than uploading anonymously.
+environment variable anywhere automated, and a publish that finds neither fails **at configuration**, naming
+`credentials.username`, before it has built or sent anything — measured by running it without
+them, which is the only part of the pipeline that could not be verified here.
 
 Two modules publish — `kvadrant-core` and `kvadrant-material-adapter` — and the two samples do not,
 checked rather than assumed: publishing a sample is how a consumer ends up with a demo on their

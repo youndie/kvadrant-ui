@@ -14,7 +14,9 @@ import kotlin.test.assertTrue
 class KvadrantIconsTest {
     @Test
     fun every_glyph_has_a_name_and_a_path() {
-        assertTrue(KvadrantIcons.All.size >= 12, "the set has ${KvadrantIcons.All.size} glyphs")
+        // Forty is the set as drawn. `>=` because adding one is ordinary and removing one is the
+        // thing worth stopping — the generator's own `--check` covers the rest.
+        assertTrue(KvadrantIcons.All.size >= 40, "the set has ${KvadrantIcons.All.size} glyphs")
         KvadrantIcons.All.forEach { (name, vector) ->
             assertTrue(name.isNotBlank(), "a glyph has no name")
             assertTrue(vector.root.iterator().hasNext(), "$name has no paths in it")
