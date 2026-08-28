@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kvadrant-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4173", "--directory", "build/site"],
+      "port": 4173
+    },
+    {
+      "name": "kvadrant-previews-dist",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4174", "--directory", "kvadrant-previews/build/dist/wasmJs/productionExecutable"],
+      "port": 4174
+    }
+  ]
+}

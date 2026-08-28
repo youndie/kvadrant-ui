@@ -41,3 +41,39 @@ kotlin {
         }
     }
 }
+
+// The bridge between the registry and the documentation site's generator (B-34).
+//
+// It runs the compiled registry rather than reading the sources, because the two answer different
+// questions: a text scan reports what the file says, and this reports what the module actually
+// built. The output is under `build/` and is never committed — a checked-in copy is a second source
+// of truth that goes stale silently.
+val previewIndex by tasks.registering(JavaExec::class) {
+    description = "Write the preview registry to build/preview-index.json for scripts/build_site.py."
+    val compilation =
+        kotlin.targets
+            .getByName("desktop")
+            .compilations
+            .getByName("main")
+    dependsOn(compilation.compileTaskProvider)
+    classpath = files(compilation.output.allOutputs, compilation.runtimeDependencyFiles)
+    mainClass.set("io.github.youndie.kvadrant.previews.PreviewIndexKt")
+    val output = layout.buildDirectory.file("preview-index.json")
+    outputs.file(output)
+    argumentProviders.add { listOf(output.get().asFile.absolutePath) }
+}
+
+// The catalogue's preview column is only verified where the registry has been read, and that is
+// here — `make check` runs the same script without a build behind it and says so. Two claims, and
+// the smaller one is not allowed to look like the larger.
+val checkComponentCatalog by tasks.registering(Exec::class) {
+    description = "Fail if docs/components.md no longer matches the sources and the preview registry."
+    dependsOn(previewIndex)
+    inputs.file(rootProject.layout.projectDirectory.file("docs/components.md"))
+    inputs.file(rootProject.layout.projectDirectory.file("scripts/component_catalog.py"))
+    inputs.dir(rootProject.layout.projectDirectory.dir("kvadrant-core/src/commonMain"))
+    workingDir = rootProject.layout.projectDirectory.asFile
+    commandLine("python3", "scripts/component_catalog.py", "--check")
+}
+
+tasks.named("check") { dependsOn(checkComponentCatalog) }

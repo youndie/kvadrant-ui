@@ -6,13 +6,14 @@
 
 PY ?= python3
 
-.PHONY: check gate report fix screenshots help
+.PHONY: check gate report fix screenshots site help
 
 help:
 	@echo "make check   - the gate: blocking checks, exactly what CI runs"
 	@echo "make report  - non-blocking reports: BDD coverage, code anchors"
 	@echo "make fix     - regenerate the backlog index, fill in missing coverage-map lines"
 	@echo "make screenshots - record the suite twice and name any image that moved (B-31)"
+	@echo "make site    - build the documentation site into build/site (needs gradle)"
 
 check: gate report
 
@@ -20,6 +21,7 @@ gate:
 	$(PY) scripts/backlog_index.py --check
 	$(PY) scripts/docs_check.py
 	$(PY) scripts/coverage_map.py --check
+	$(PY) scripts/component_catalog.py --check
 
 # Non-blocking, on purpose. bdd_report counts scenarios, and there are none while there is no
 # behaviour to describe. code_anchors will report the research anchors as absent for as long as the
@@ -38,3 +40,11 @@ fix:
 # claim that no golden moved. ROUNDS=5 raises the number of recordings compared.
 screenshots:
 	$(PY) scripts/screenshot_determinism.py --rounds $(or $(ROUNDS),2)
+
+# The documentation site (B-34): one wasm bundle, a page per component, and the previews mounted
+# into it by name. Outside `check` because it builds a wasm distribution, which takes a minute — the
+# gate that keeps it honest is `:kvadrant-previews:check`, which fails when a preview stops
+# compiling or stops drawing.
+site:
+	./gradlew :kvadrant-previews:wasmJsBrowserDistribution :kvadrant-previews:previewIndex
+	$(PY) scripts/build_site.py
