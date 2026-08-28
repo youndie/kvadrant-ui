@@ -97,11 +97,17 @@ Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)
   ([research §1.7](../research/research-architecture.md)).
 - Not covered: the type ramp itself, which is part of [B-05](B-05-theme-model-and-tokens.md).
 
-- AC met on desktop and wasm, unmet on Android and iOS, and the reasons differ. Desktop is the
+- AC met on desktop and wasm, unmet on Android and iOS, and the three reasons differ. Desktop is the
   golden suite. wasm is the documentation site, where every component page renders Cyrillic through
   the bundled companion — that is a demonstration rather than an assertion, and it is the first
-  thing anybody has looked at on that target. Android has no automated answer for the usual reason
-  (B-29). iOS has no target yet (D14).
+  thing anybody has looked at on that target. Android has a check written for it —
+  `AndroidFontStackTest`, which asks whether the bundled companion loaded or the platform
+  substituted something — and it **cannot be run**: the whole device suite fails before it measures
+  anything ([B-36](B-36-the-on-device-guard-does-not-execute.md)). iOS has no target yet (D14).
+
+  This item is otherwise finished: the fonts are bundled through compose-resources, the licences
+  ship in the artefact, and the ramp is guarded in both scripts. What is left is a verification that
+  belongs to B-36 and to whatever adds iOS, not to any more work here.
 - AC met, at a different path than this asked for. The POM declares SIL OFL 1.1 beside Apache-2.0
   with a comment saying which covers what, and the artefact carries both texts — verified by
   unpacking `kvadrant-core-desktop-0.1.0-SNAPSHOT.jar`, which holds `Selawik-OFL.txt` and

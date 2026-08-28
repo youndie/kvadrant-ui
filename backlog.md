@@ -42,13 +42,13 @@ item must never move its file.
 
 | Task | | Priority | Size | Blocked by |
 |---|---|---|---|---|
-| [B-04](docs/backlog/B-04-repository-skeleton.md) `[~]` | Skeleton: modules, targets, version catalog, CI, snapshot publishing | P0 | M | - |
 | [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
+| [B-36](docs/backlog/B-36-the-on-device-guard-does-not-execute.md) `[ ]` | Android's only guard does not execute, and has not for some time | P0 | M | - |
 | [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
 | [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 
-## Closed (30)
+## Closed (31)
 
 **Three answers that decide the architecture**
 
@@ -58,6 +58,7 @@ item must never move its file.
 
 **The theme and what stands on it**
 
+- [B-04](docs/backlog/B-04-repository-skeleton.md) `[x]` - Skeleton: modules, targets, version catalog, CI, snapshot publishing
 - [B-05](docs/backlog/B-05-theme-model-and-tokens.md) `[x]` - KvadrantTheme: colours, typography, metrics, motion
 - [B-06](docs/backlog/B-06-token-generator.md) `[x]` - Generate the token constants from metro-tokens.json instead of typing them
 - [B-08](docs/backlog/B-08-tilt-indication.md) `[x]` - TiltIndication in production quality

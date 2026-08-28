@@ -1168,6 +1168,21 @@ written to keep out, including the ripple API it depends on. A version range can
 "the stable Material line", because in this ecosystem the stable Material line and the stable
 Compose line are **different version numbers**.
 
+**Answered: option (b), `org.jetbrains.compose.material3:material3:1.12.0-alpha03`** on Jetpack M3
+1.5.0-alpha22. The decision procedure above says to pick by building both and seeing which compiles,
+and that turned out not to separate them: *both* graphs resolve, both compile, and both draw — an
+`OutlinedTextField` renders under the adapter on either, which `GraphRendersTest` checks by counting
+pixels rather than by the build going green. Compiling settles nothing here on its own, because the
+failure §1.2 is guarding against — `AbstractMethodError` on `OutlinedTextFieldDefaults` — happens on
+a graph that resolved cleanly and compiled cleanly and died on the first screen with a text field.
+
+So the choice fell to **which way of being wrong is cheaper**. Option (a) is a mixed graph and fails
+at runtime in somebody else's application; option (b) is an alpha API and fails at compile time in
+ours. Expect it to need re-checking rather than to hold: Jetpack M3 1.5 has been in alpha long
+enough to reach alpha26, and the ripple corner is the part being reshaped. `gradle/libs.versions.toml`
+carries the coordinate with that warning beside it, and it is the only place a Material version is
+written down.
+
 ### D4. `Kvadrant` in every identifier; `Metro` stays a word in prose *(deviation from the brief)*
 
 Brief: `MetroTheme`, `metro-core`, `io.metro.theme`.
