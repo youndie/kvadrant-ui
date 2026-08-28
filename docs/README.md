@@ -16,13 +16,16 @@ is layered; links run top to bottom.
 |---|---|---|---|
 | Research | `research/` | *why* it is built this way; what is verified, what is a hypothesis | the artefacts each fact names |
 | Backlog | `backlog/` | what to do next, in what order, and why that order | this repository |
+| Reference | [`components.md`](components.md) | what the library exposes, and which preview shows it | generated from the sources and the preview registry |
 
-**Why only two layers today.** `main` describes what exists, and what exists is research, a plan and
-a build skeleton with no components in it. Feature documents, module documents and BDD scenarios describe behaviour, and writing them
-before there is behaviour would mean documenting intent as fact — the one thing this format refuses
-to do. They arrive with the code, in the branch that adds it. There will be no `api/` layer (this is
-a library, not a service) and no `screens/` layer (the sample gallery is a demo, not a product
-surface).
+**Why there are still no feature documents.** `main` describes what exists, and what exists is
+research, a plan, forty-eight components and a catalogue of them. A feature document describes
+behaviour a user gets, and a component library's behaviour is its components — which is what
+[`components.md`](components.md) and the [documentation site](https://youndie.github.io/kvadrant-ui/)
+cover, one composable at a time, with the transcription notes that say where each number came from.
+BDD scenarios wait for a behaviour that spans components rather than sits inside one. There will be
+no `api/` layer (this is a library, not a service) and no `screens/` layer (the sample gallery is a
+demo, not a product surface).
 
 **Backlog** — [backlog.md](../backlog.md): the index and the decisions; the items themselves are one
 file each in [`backlog/`](backlog/), cited as `[B-12](backlog/B-12-pivot.md)`.
@@ -65,3 +68,13 @@ person — the machine only guards the membership.
 
 - [x] [research-architecture](research/research-architecture.md) — what was verified and against
   what, the twelve decisions and what each rejected, the six risks and their machinery
+
+### Reference (1)
+
+- [x] [components](components.md) — every public composable, its preview and the file it lives in.
+  The table in it is generated; `make check` fails when it no longer matches the sources.
+
+**Not in the map above, and it cannot be.** `coverage_map.py` walks the layer directories, and this
+document is not in one. It is listed here so a reader finds it; nothing guards the fact that it is
+listed. What *is* guarded is the document's contents —
+[`scripts/component_catalog.py`](../scripts/component_catalog.py), run by both gates.

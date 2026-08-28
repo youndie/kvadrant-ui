@@ -20,6 +20,9 @@ import io.github.youndie.kvadrant.theme.KvadrantTypography
  *
  * @property id the address. It is in the URL, in the HTML attribute the site mounts by, and in the
  *   filename of anything recorded from it, so it is lower-case ASCII and stays put once published.
+ * @property group the section of the site this belongs under. It is a field rather than the file
+ *   the preview happens to be declared in, because the site's index is the first thing a reader
+ *   sees and the order things are read in should not depend on how the sources were split up.
  * @property component the public composable this demonstrates, spelled exactly as it is declared —
  *   `scripts/component_catalog.py` matches these against the sources and reports either direction
  *   of mismatch.
@@ -30,6 +33,7 @@ import io.github.youndie.kvadrant.theme.KvadrantTypography
  */
 public class KvadrantPreview(
     public val id: String,
+    public val group: String,
     public val component: String,
     public val summary: String,
     public val heightDp: Int,

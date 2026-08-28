@@ -24,6 +24,7 @@ fun main(args: Array<String>) {
             """
             |    {
             |      "id": ${preview.id.quoted()},
+            |      "group": ${preview.group.quoted()},
             |      "component": ${preview.component.quoted()},
             |      "summary": ${preview.summary.quoted()},
             |      "heightDp": ${preview.heightDp}

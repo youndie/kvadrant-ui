@@ -47,7 +47,7 @@ item must never move its file.
 | [B-35](docs/backlog/B-35-cyrillic-renders-differently-on-linux.md) `[ ]` | The Cyrillic companion renders differently on Linux, and it is not a flake | P0 | M | - |
 | [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
-| [B-34](docs/backlog/B-34-component-documentation-site.md) `[ ]` | A documentation site with the components running in it | P1 | L | B-04 |
+| [B-34](docs/backlog/B-34-component-documentation-site.md) `[~]` | A documentation site with the components running in it | P1 | L | B-04 |
 | [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 
 ## Closed (28)

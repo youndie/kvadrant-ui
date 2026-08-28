@@ -1,7 +1,7 @@
 ---
 id: B-34
 title: "A documentation site with the components running in it"
-status: open
+status: wip
 priority: P1
 size: L
 stage: stage-2-release
@@ -56,6 +56,41 @@ example looks exactly like a right one.
   screen per component for the golden suite. A page whose example is a *separate* snippet is a page
   that drifts from the tested one; the same composable should feed both, which means those fixtures
   have to move out of the test source set into something publishable.
+
+## Where it stands
+
+**Built and green on this machine; never deployed.** `make site` produces the whole thing into
+`build/site`, `.github/workflows/pages.yaml` builds it on every push and deploys it from `main`, and
+`:kvadrant-previews:check` fails when a preview stops compiling or stops drawing.
+
+- **The registry exists** — [`kvadrant-previews`](../../kvadrant-previews/), forty-seven bare
+  previews, one component each, in a module of its own so the site's code is not in the library's
+  artefact. `previewIndex` runs the compiled registry and writes the ids out for the generator, so
+  the bridge between Kotlin and the Python generator reads what the compiler built rather than what
+  a regular expression finds in the sources.
+- **One bundle, many mounts, verified in a browser.** Four independent Compose roots on one page,
+  each with its own palette, each rendering; an unknown id prints a sentence saying so rather than
+  leaving an empty rectangle. Fourteen megabytes once, not per component.
+- **The prose on a page is the component's own KDoc**, extracted at build time. Nothing is written
+  twice, so nothing can drift.
+- **The catalogue** — [`docs/components.md`](../components.md) — is generated and checked in both
+  directions: a composable missing from it fails, and so does a preview naming a component that no
+  longer exists.
+
+**Three things are not done**, and none of them is hidden behind a green build:
+
+1. **Pages has to be switched on in the repository's settings**, source *GitHub Actions*. Until
+   somebody does that the deploy job fails on a permission, which is the correct failure but not an
+   obvious one.
+2. **The API documentation is not generated.** Dokka is not applied, so the AC about generated
+   reference output is unmet. What the pages carry instead is the KDoc of the composable itself,
+   which is the half that matters here — but the parameter tables of everything around it are still
+   only in the sources.
+3. **The previews have no goldens.** Their guard is a render: every preview is composed, the clock
+   advanced past its entrance, and the pixels differing from the page background counted, with an
+   empty preview measured alongside as the negative control. Pictures wait on
+   [B-35](B-35-cyrillic-renders-differently-on-linux.md) — the suite is already red on the Linux
+   runner, and forty more images make the red larger rather than the signal stronger.
 
 ## What it depends on
 

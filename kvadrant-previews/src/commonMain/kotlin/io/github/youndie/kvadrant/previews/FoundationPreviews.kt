@@ -30,36 +30,42 @@ internal fun foundationPreviews(): List<KvadrantPreview> =
     listOf(
         KvadrantPreview(
             id = "tilt",
+            group = "foundation",
             component = "kvadrantTilt",
             summary = "press and hold: the plane leans towards the finger and follows it",
             heightDp = 260,
         ) { TiltPreview() },
         KvadrantPreview(
             id = "type-ramp",
+            group = "foundation",
             component = "KvadrantTypography",
             summary = "the named styles of a Windows Phone page, at the weights it set them in",
             heightDp = 360,
         ) { TypeRampPreview() },
         KvadrantPreview(
             id = "text",
+            group = "foundation",
             component = "KvadrantText",
             summary = "one string set in the bundled Selawik faces",
             heightDp = 140,
         ) { TextPreview() },
         KvadrantPreview(
             id = "accents",
+            group = "foundation",
             component = "KvadrantAccents",
             summary = "the twenty accents Windows Phone 8 shipped, each with its readable ink",
             heightDp = 420,
         ) { AccentsPreview() },
         KvadrantPreview(
             id = "icons",
+            group = "foundation",
             component = "KvadrantIcons",
             summary = "the drawn icon set — no Segoe glyph is in this library",
             heightDp = 400,
         ) { IconsPreview() },
         KvadrantPreview(
             id = "surface",
+            group = "foundation",
             component = "KvadrantSurface",
             summary = "the chrome colour a panel sits on",
             heightDp = 180,

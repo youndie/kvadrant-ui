@@ -32,6 +32,7 @@ class PreviewRegistryTest {
         KvadrantPreviews.all.forEach { preview ->
             if (preview.component.isBlank()) fail("${preview.id} names no component")
             if (preview.summary.isBlank()) fail("${preview.id} has no summary")
+            if (preview.group.isBlank()) fail("${preview.id} is in no group, so no page lists it")
             if (preview.heightDp < 40) fail("${preview.id} asks for ${preview.heightDp} dp, which cannot show anything")
         }
     }

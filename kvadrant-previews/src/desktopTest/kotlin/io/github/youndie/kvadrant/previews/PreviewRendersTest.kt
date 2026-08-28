@@ -86,6 +86,7 @@ class PreviewRendersTest {
         val empty =
             KvadrantPreview(
                 id = "control-empty",
+                group = "control",
                 component = "none",
                 summary = "the negative control for every_preview_draws_something",
                 heightDp = 200,
