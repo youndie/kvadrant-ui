@@ -105,8 +105,10 @@ screen-position dependence — by rendering the same tile grid both ways.
 - AC: a still of a tile grid, pressed at the same point, under a per-layer camera and under a
   camera shared across the grid, side by side, so the difference can be looked at rather than
   argued about.
-- AC: whichever way it goes, the answer is written into research §1.6 as a measurement — including
-  "the difference is not visible", which is a legitimate outcome and closes this.
+- ~~AC: whichever way it goes, the answer is written into research §1.6 as a measurement — including
+  "the difference is not visible", which is a legitimate outcome and closes this.~~ Done, and the
+  answer is **19.5 dp at the screen edge** — visible, so this item does not close on it. See the
+  section above and `SharedCameraGeometryTest`.
 - AC: if a shared camera wins, it is a documented deviation with its own reason, because the
   original's camera distance is unknown and the shared one would be ours.
 - Depends on nothing, but overlaps [B-25](B-25-tilt-camera-is-in-inches.md): both touch the same

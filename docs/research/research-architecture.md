@@ -1156,6 +1156,23 @@ Known weakness, recorded rather than solved: the reverse adapter takes only the 
 Material and forces an absolute background, so a Kvadrant island inside a Material screen shows a
 visible seam at its edge. That is inherent, not a bug to fix later.
 
+**What a screen-wide camera would change, measured** ([B-26](../backlog/B-26-per-layer-camera-versus-a-global-one.md)).
+`graphicsLayer` projects about each element's own centre; one camera over the display would project
+about the screen's. The difference has a closed form — `displacement = ox · (s − 1)` for an element
+centre `ox` from the middle of the screen and `s = d / (d − z)` — in which **the element's own
+geometry cancels out**. The effect is proportional to position, not to size.
+
+For the medium tile at the edge of Metro's 480 × 800 canvas at the tilt's maximum angle, the far
+corner moves 19.5 dp and the near corner returns 17.4 dp: the tile is stretched 36.9 dp across its
+diagonal, a quarter of its width. Held by `SharedCameraGeometryTest`, whose control is a centred
+element, where the two cameras must agree exactly.
+
+Two consequences. The demo's repeated report that the depression *"depends on their size"* is not
+this — size cancels — and the arithmetic for the depression is unchanged, Consequence 4 above. And
+the option of closing B-26 with "the difference is not visible" is gone: it is visible, so the
+question is whether it is *right*, which needs an implementation that `graphicsLayer` cannot
+provide at any nesting.
+
 ### D3. The adapter's Material version is decided by resolving the graph, not by a range
 
 Brief: `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }`.
