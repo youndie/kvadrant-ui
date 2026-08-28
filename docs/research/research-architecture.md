@@ -539,32 +539,28 @@ end of that wiring comes apart, verified by breaking each. Nothing is rounded to
 own ramp is 18.667 / 22.667 / 25.333, and rounding a scaled ramp breaks relationships the unrounded
 one holds.
 
-**Consequence 5 — the camera belongs to the screen, and moving it there was B-26's answer.**
+**Consequence 5 — the camera stays per element, and B-26's first answer was wrong.**
 `Modifier.graphicsLayer` gives every element its own camera at its own centre; Metro had one over the
-whole display. Rendered side by side — `tilt_camera_per_layer` and `tilt_camera_shared` — a grid of
-nine tiles under per-element cameras is nine identically deformed copies of one shape, while the same
-grid under one camera bends as a **single sheet**: the tiles near the axis barely skewed, the outer
-ones leaning progressively. The second is what anyone who used the phone remembers, and the
-difference is not marginal — displacing the axis by one tile changes 3 505 pixels of a 24 279-pixel
-tile.
+whole display, and moving `transformOrigin` to the root's centre looked like the way to say so. It is
+not. That property is **both** the projection's centre and the rotation's pivot, so moving it moves
+the pivot too: an element away from the middle stops leaning and starts swinging.
 
-`TiltNode` implements `LayoutAwareModifierNode` and sets `transformOrigin` to the root's centre in
-its own fractional coordinates. **No new number**: the distance is still `KvadrantCamera.Distance`,
-the same one a per-element camera used. Only the axis moved, from a place nobody chose to the place
-the original had it — so this is not a deviation and is not behind `remastered`.
+| Fact | Where verified |
+|---|---|
+| A 60 dp bar, pressed at the same point in its own coordinates, spans **65 px** at the centre of the screen and **84 px** at the top | measured on the rendered frames |
+| The device symptom is a push notification pressed far too hard | reported, then reproduced by the measurement above |
 
-*Consequence — nothing caught it, and the reason generalises.* Not one existing test or golden moved
-when the camera changed, because **every fixture that presses something centres it in the frame**,
-where a shared axis and an element's own axis are the same point. A property that only shows off
-centre needs a fixture that is off centre; `SharedCameraTest` puts two tiles either side of the axis,
-presses both in their own top-left corner, and asserts they do *not* render alike. Three goldens
-moved once it existed to be caught by — the two button-state frames and the pressed start tile, all
-three of which press something away from the middle.
+*Consequence — the evidence that argued for the change did not survive it.* The comparison fixture
+rotated **nine tiles at once**, and the shared version bent them into a single sheet that looked
+unmistakably like Metro. A press does not rotate nine tiles. It rotates one. The sheet was the
+fixture's own construction, and the honest reading of `tilt_camera_per_layer` against
+`tilt_camera_shared` is that they show what nine simultaneous rotations look like under two origins —
+a question nobody asked.
 
-*And the first version of that test asserted the wrong thing.* It required the two tiles to be mirror
-images, which they are not: both are pressed in *their own* top-left corner, so both lean the same
-way and only the camera's axis differs. A symmetry that looks obvious in a sentence is worth checking
-against the picture.
+*What a real shared camera would need* is the projection centre and the rotation pivot to be separate
+points, which a single `graphicsLayer` cannot express. Two nested layers could, one turning the
+element about itself and one placing the result off the axis. That is the shape of the work and it is
+back in [B-26](../backlog/B-26-per-layer-camera-versus-a-global-one.md).
 
 ### 1.7 Selawik contains no Cyrillic — re-verified
 

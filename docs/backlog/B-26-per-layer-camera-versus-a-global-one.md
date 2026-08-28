@@ -1,7 +1,7 @@
 ---
 id: B-26
 title: "A per-layer camera is not the global one Metro tilted under"
-status: done
+status: open
 priority: P1
 size: M
 stage: stage-1-core
@@ -9,6 +9,30 @@ blocked_by: []
 ---
 
 # B-26 — A per-layer camera is not the global one Metro tilted under
+
+**Reopened. The first answer was wrong, and the device said so within a day.**
+
+Moving `transformOrigin` to the root's centre is not a shared camera. `graphicsLayer` uses that
+property for the projection's centre **and** the rotation's pivot, so it moved the pivot too: an
+element away from the middle swings instead of leaning. Measured on a 60 dp bar pressed at the same
+point in its own coordinates — **65 px tall at the centre of the screen, 84 px at the top** — and
+reported first as a push notification being pressed far too hard.
+
+**The evidence did not survive either, and that is the more useful half.** The comparison fixture
+rotated *nine tiles at once*, and the shared version bent them into one sheet that looked
+unmistakably like Metro. A press does not rotate nine tiles; it rotates one. The picture answered a
+question nobody had asked, and it was convincing enough that neither the arithmetic nor a second
+fixture was asked for.
+
+**What the work actually is:** the projection centre and the rotation pivot have to be different
+points, which one `graphicsLayer` cannot express. Two nested layers can — an inner one turning the
+element about its own centre with the camera distance, an outer one placing the result relative to
+the screen's axis. Whether that is worth having is still open, and the next attempt should start by
+pressing **one** surface in two places on the screen rather than nine at once.
+
+---
+
+*Everything below is the original argument, unamended, because it is what was believed at the time.*
 
 **Done, and the eye was right both times.** The two stills the item asked for are
 `tilt_camera_per_layer` and `tilt_camera_shared`: nine tiles, the same angles, one camera each versus

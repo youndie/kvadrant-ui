@@ -27,17 +27,22 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * Two identical tiles, pressed identically, in different places on the screen, do not look the same.
+ * Two identical surfaces, pressed identically, in different places on the screen, look the same.
  *
- * That sentence is the whole of B-26. `graphicsLayer` gives every element its own camera at its own
- * centre, so a grid of tiles renders as identically deformed copies of one shape; Metro had one
- * camera over the screen, under which a grid bends as a single sheet. The measurement that settled
- * it is a pair of stills — `tilt_camera_per_layer` and `tilt_camera_shared` — and this holds the
- * behaviour they argued for.
+ * **The opposite of what this file asserted yesterday, and the reversal is the finding.** B-26
+ * argued for one camera over the whole display and got it by moving `transformOrigin` to the root's
+ * centre. `graphicsLayer` uses that property for the projection centre *and* the rotation pivot, so
+ * an element away from the middle stopped leaning and started swinging: a 60 dp bar pressed at the
+ * same point in its own coordinates came out 65 px tall at the centre of the screen and **84 px** at
+ * the top. It reached a device as a push notification being pressed far too hard.
  *
- * **No existing test or golden caught the change**, and the reason is worth keeping: every fixture
- * that presses something centres it in the frame, where a shared axis and an element's own axis are
- * the same point. A property that only shows off-centre needs a fixture that is off-centre.
+ * The evidence that argued for it does not survive either. The comparison fixture rotated nine tiles
+ * at once, and the shared version bent them into one sheet — which looked like Metro and is not a
+ * thing a press does. A press rotates one tile. The sheet was the fixture's construction.
+ *
+ * So the camera is per element again, and this test holds it there rather than holding the change
+ * that was reverted. A genuine shared camera needs the projection centre and the rotation pivot to
+ * be separate points, which one layer cannot express; that is back in B-26 as the shape of the work.
  */
 @OptIn(ExperimentalTestApi::class)
 class SharedCameraTest {
@@ -72,7 +77,7 @@ class SharedCameraTest {
     }
 
     @Test
-    fun two_tiles_pressed_alike_in_different_places_render_differently() {
+    fun two_tiles_pressed_alike_in_different_places_render_alike() {
         val (px, width) = pressedRow()
         val height = px.size / width
 
@@ -81,8 +86,8 @@ class SharedCameraTest {
             y: Int,
         ) = (px[y * width + x] shr 16 and 0xFF) > 0xC0
 
-        // Each half holds one tile; each tile is described by its own column profile, measured
-        // from its own left edge so that the two are comparable without depending on where they sit.
+        // Each half holds one tile; each is described by its own column profile, measured from its
+        // own left edge so the two are comparable without depending on where they sit.
         fun profileOfTileIn(
             from: Int,
             to: Int,
@@ -97,20 +102,16 @@ class SharedCameraTest {
         val rightTile = profileOfTileIn(width / 2, width)
         assertTrue(leftTile.isNotEmpty() && rightTile.isNotEmpty(), "one of the tiles is not drawn")
 
-        // **Not a mirror.** The first version of this asserted the two profiles were reflections of
-        // each other, which is the wrong physics: both tiles are pressed in *their own* top-left
-        // corner, so both lean the same way. Only the camera's axis differs between them.
-        //
-        // Under a camera per element the two would be the same shape in two places, and their
-        // profiles identical. Under one camera over the screen they are not.
+        // The control: a shape, not a blank. Two empty profiles would agree perfectly.
+        assertTrue(leftTile.max() > 50, "the tiles are not drawn as shapes: ${leftTile.max()}")
+
         val shorter = minOf(leftTile.size, rightTile.size)
         val apart =
             (0 until shorter).sumOf { kotlin.math.abs(leftTile[it] - rightTile[it]) } +
                 kotlin.math.abs(leftTile.size - rightTile.size) * 100
         assertTrue(
-            apart > leftTile.sum() / 50,
-            "two tiles pressed alike in different places render identically, so the camera is " +
-                "still per element: $apart",
+            apart < leftTile.sum() / 50,
+            "two surfaces pressed alike render differently depending on where they are: $apart",
         )
     }
 }
