@@ -29,20 +29,27 @@ import kotlinx.coroutines.launch
  *
  * **Measured before it was built, because the item asked for that.** On a 158 px tile the leading
  * column of the drawn quad is 152 px for a centre press and **119** for a corner one — a fifth of
- * the edge — so a finger dragged across a tile leaves a quarter of the effect on the table. It is
- * not subtle and it is not worth leaving out.
+ * the edge — so a finger dragged across a tile leaves a quarter of the effect on the table.
  *
- * **This is canon, not an improvement, so it is not behind `remastered`.** Restoring behaviour the
- * original had and adding behaviour it lacked are different things, and D17 keeps them apart.
+ * **This is canon, not an improvement, so it is not behind `remastered`.**
  *
- * The whole implementation is the gesture: a new `PressInteraction.Press` is emitted on every move,
- * and [TiltIndication] already treats a second press as "the finger is now here" rather than as a
- * new gesture. No geometry is duplicated, which is the point — a second copy of the tilt maths would
- * be a second place for it to drift.
+ * **It cannot be built on `clickable`, and that was tried first.** Wrapping it — an observer that
+ * watches the pointer and re-emits `clickable`'s own press at the new position — is tidier in every
+ * way except the one that matters: `clickable` gives the gesture up at the touch slop, so the press
+ * it is mirroring is cancelled by the very movement this exists to follow. Measured, not reasoned:
+ * the wrapped version put a press dragged to the corner **further** from a corner press than from a
+ * centre one, because by then there was no press at all.
  *
- * It replaces `clickable` rather than joining it: two sources of `Press` on one element fight over
- * the same indication. A surface that wants the ordinary behaviour keeps `clickable` and gets the
- * tilt anyway, because the tilt is the theme's indication.
+ * So the gesture is this modifier's own, and the price is paid explicitly. **A change somebody else
+ * has consumed ends the press**, which is how a list scrolls out from under a finger that started on
+ * a tile — without that line the list scrolls *and* the tile stays leaning, which is a defect the
+ * scroll test would not have caught because the list did move. What is still `clickable`'s job and
+ * is not reimplemented here: keyboard activation and focus. A surface that needs those keeps
+ * `clickable` and gets the ordinary tilt, which is the default everywhere anyway.
+ *
+ * A press is this modifier's vocabulary because it is the indication's: a bespoke `Interaction`
+ * would mean every component in the library remembering to emit it, which is the forgotten-call-site
+ * failure the indication design exists to avoid.
  */
 public fun Modifier.kvadrantTilt(
     enabled: Boolean = true,
@@ -54,50 +61,58 @@ public fun Modifier.kvadrantTilt(
         // `awaitEachGesture` runs in a pointer scope, which is not a coroutine scope; emitting an
         // interaction needs one, and the composition's is the one that dies with the component.
         val scope = rememberCoroutineScope()
-        val indication = LocalIndication.current
         if (!enabled) {
             Modifier
         } else {
             Modifier
-                .indication(source, indication)
-                .semantics {
+                .indication(source, LocalIndication.current)
+                // **Merging, because `clickable` merges.** A clickable surface and the label inside
+                // it are one thing to a screen reader and one thing to a test that looks for a node
+                // by its text; leaving them separate quietly changes what `onNodeWithText` returns,
+                // which is how swapping this in under the tiles broke two sample tests that had
+                // nothing to do with tilting.
+                .semantics(mergeDescendants = true) {
                     role = Role.Button
                     onClick {
                         onClick()
                         true
                     }
-                }.pointerInput(source) {
+                }.pointerInput(Unit) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         var press = PressInteraction.Press(down.position)
                         scope.launch { source.emit(press) }
-                        var up = false
-                        var inside = true
-                        while (!up) {
+                        while (true) {
                             val event = awaitPointerEvent()
-                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                            if (change.pressed) {
-                                if (change.position != press.pressPosition) {
-                                    // A press rather than a bespoke interaction: every component in
-                                    // the library would have to remember to emit a custom one, which
-                                    // is the forgotten-call-site failure the indication design was
-                                    // chosen to avoid.
-                                    press = PressInteraction.Press(change.position)
-                                    scope.launch { source.emit(press) }
-                                }
-                                inside =
-                                    change.position.x in 0f..size.width.toFloat() &&
-                                    change.position.y in 0f..size.height.toFloat()
-                            } else {
-                                up = true
+                            val change = event.changes.firstOrNull { it.id == down.id }
+                            if (change == null) {
+                                scope.launch { source.emit(PressInteraction.Cancel(press)) }
+                                break
                             }
-                        }
-                        scope.launch {
-                            if (inside) {
-                                source.emit(PressInteraction.Release(press))
-                                onClick()
-                            } else {
-                                source.emit(PressInteraction.Cancel(press))
+                            // Somebody else took it — a scroll, a pager. The phone's tilt let go at
+                            // the same moment, and a tile still leaning under a list that has
+                            // started moving is the thing this line exists to prevent.
+                            if (change.isConsumed) {
+                                scope.launch { source.emit(PressInteraction.Cancel(press)) }
+                                break
+                            }
+                            if (!change.pressed) {
+                                val inside =
+                                    change.position.x in 0f..size.width.toFloat() &&
+                                        change.position.y in 0f..size.height.toFloat()
+                                scope.launch {
+                                    if (inside) {
+                                        source.emit(PressInteraction.Release(press))
+                                        onClick()
+                                    } else {
+                                        source.emit(PressInteraction.Cancel(press))
+                                    }
+                                }
+                                break
+                            }
+                            if (change.position != press.pressPosition) {
+                                press = PressInteraction.Press(change.position)
+                                scope.launch { source.emit(press) }
                             }
                         }
                     }

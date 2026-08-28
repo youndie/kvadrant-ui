@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
+import io.github.youndie.kvadrant.indication.kvadrantTilt
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import kotlinx.coroutines.delay
@@ -77,11 +77,17 @@ public fun KvadrantTile(
     Box(
         modifier
             .size(w, h)
-            .clickable(
-                interactionSource = interaction,
-                indication = LocalIndication.current,
-                onClick = onClick,
-            ).background(color)
+            // `kvadrantTilt` rather than `clickable`, because a tile is the surface Metro's tilt
+            // was designed on and the phone's leaned towards the finger the whole time it moved —
+            // `TiltEffect.cs` applies the effect from a move handler as well as a press one. The
+            // ordinary indication leans once, at touch-down, and stays there; on a tile that is a
+            // fifth of the effect unused, measured (research D18).
+            //
+            // It gives the gesture up when something else consumes it, so a list still scrolls out
+            // from under a finger that started on a tile. What it does not carry is keyboard
+            // activation, which `clickable` does and which a tile grid has never had a use for.
+            .kvadrantTilt(interactionSource = interaction, onClick = onClick)
+            .background(color)
             // A tile is a hard rectangle and nothing leaves it. Without this the cycle tile's
             // outgoing face — translated by a full tile height — draws above the tile, and the flip
             // tile's perspective spills past its edges: text from one tile appearing over another.

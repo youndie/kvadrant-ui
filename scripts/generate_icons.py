@@ -70,13 +70,7 @@ def render(names: list[str]) -> str:
         "// file and the drawings disagree.",
         "package io.github.youndie.kvadrant.icons",
         "",
-        "import androidx.compose.ui.graphics.Color",
-        "import androidx.compose.ui.graphics.SolidColor",
-        "import androidx.compose.ui.graphics.StrokeCap",
-        "import androidx.compose.ui.graphics.StrokeJoin",
         "import androidx.compose.ui.graphics.vector.ImageVector",
-        "import androidx.compose.ui.graphics.vector.path",
-        "import androidx.compose.ui.unit.dp",
         "",
         "/**",
         " * The application bar's glyphs, drawn for this repository.",
@@ -102,17 +96,12 @@ def render(names: list[str]) -> str:
             out.append("")
         first = False
         out.append(f"    public val {title(stem)}: ImageVector =")
-        out.append(f'        ImageVector.Builder("{title(stem)}", {GRID}.dp, {GRID}.dp, {GRID}f, {GRID}f)')
+        out.append(f'        buildIcon("{title(stem)}") {{')
         for d in paths:
-            out.append("            .path(")
-            out.append("                stroke = SolidColor(Color.Black),")
-            out.append(f"                strokeLineWidth = {STROKE}f,")
-            out.append("                strokeLineCap = StrokeCap.Butt,")
-            out.append("                strokeLineJoin = StrokeJoin.Miter,")
-            out.append("            ) {")
+            out.append("            strokePath {")
             out.extend(kotlin_path(d, stem))
             out.append("            }")
-        out.append("            .build()")
+        out.append("        }")
     out.append("")
     out.append("    /** Every glyph, for a gallery or a test that has to know the set is complete. */")
     out.append("    public val All: List<Pair<String, ImageVector>> =")
