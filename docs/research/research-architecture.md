@@ -1200,19 +1200,41 @@ Consequence for §1.13's conclusion: the AGP 9 Kotlin Multiplatform plugin is *u
 that bundles resources, which was in doubt for as long as the fonts were missing. What it is not is
 usable by default.
 
-**Overscroll compression, and three more numbers that are ours**
-([B-38](../backlog/B-38-the-theme-leaves-the-platform-overscroll.md)). Windows Phone 7.1 added
+**Overscroll compression, and four more numbers that are ours**
+([B-38](../backlog/B-38-the-theme-leaves-the-platform-overscroll.md),
+[B-45](../backlog/B-45-overscroll-ignores-the-fling.md)). Windows Phone 7.1 added
 `HorizontalCompression` and `VerticalCompression` visual state groups to `ScrollViewer`, so *that*
-lists compressed at their ends is published. **How far, against what resistance, and how they return
-is not** — Microsoft published the states and none of their storyboards. So
-`KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, `DEFAULT_RESISTANCE` and `RELEASE_MILLIS` join the
-panorama's peek and its settle on §1.10's list: this project's own, parameters rather than constants,
-named as ours in KDoc.
+lists compressed at their ends is published. **How far, against what resistance, how deep a fling
+into the end goes, and how they return is not** — Microsoft published the states and none of their
+storyboards. So `KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, `DEFAULT_RESISTANCE`,
+`DEFAULT_FLING_REFERENCE` and `RELEASE_MILLIS` join the panorama's peek and its settle on §1.10's
+list: this project's own, parameters rather than constants, named as ours in KDoc.
 
 The consequence for the theme is the part worth keeping. `KvadrantTheme` had replaced
 `LocalIndication` and left `LocalOverscrollFactory` alone, so a Metro list ended with the platform's
 own stretch — as foreign as the ripple would have been, and met as often. It was the same error
 twice, and only one of the two had ever been noticed.
+
+**Amendment — it then shipped working for the rarer of the two gestures.** A list *dragged* past its
+end compressed; a list *flung* into it did nothing, which is how a list usually ends. One condition:
+`applyToScroll` absorbs leftover only for `NestedScrollSource.UserInput`, and a fling's deltas are a
+`SideEffect`. The condition is right and stayed — absorbing a decelerating fling frame by frame makes
+the depth a function of the frame rate — so what was missing is that the leftover at the stop is a
+**velocity**, and `applyToFling` now converts it.
+
+Two things are worth carrying out of that. The comment above the code **asserted the missing
+behaviour**: "everything the scroller could not spend goes into the spring" sat above a release that
+always found zero, and a dead second call guarded by `consumed != velocity` sat under it. A reader
+checking whether the fling was handled found a sentence saying it was. And the test that covered the
+feature dragged, because dragging is what the item that introduced it described — a guard covers the
+shape it was written against, and the shape it was not written against is where the defect lives.
+
+The conversion is `maxCompression · (1 − e^(−v ⁄ reference))` with the speed in **viewports per
+second**, and the alternative is named in the KDoc rather than left implicit: multiplying the
+velocity by a time to reuse the drag's distance arithmetic has no defensible time constant — short
+enough to keep a hard fling inside the bound and every ordinary fling produces nothing, long enough
+to be visible and everything above it clamps to the same depth. Both versions pass a test written at
+one speed, which is why `OverscrollFlingTest` asserts at two.
 
 ### D3. The adapter's Material version is decided by resolving the graph, not by a range
 
