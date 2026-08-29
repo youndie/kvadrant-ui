@@ -22,4 +22,5 @@ long as both passed. `solved` is the camera depth in pixels recovered from the d
 
 | When (UTC) | Device | Android | Camera probe | Commit |
 |---|---|---|---|---|
+| 2026-08-29 17:42 | Pixel 6a | 37 | solved=1526 declared=1512 density=2.625 trapezoid=806/748 | `bec41d0abef9` |
 | 2026-08-29 17:40 | Pixel 6a | 37 | solved=1526 declared=1512 density=2.625 trapezoid=806/748 | `3a75b0536376` |
