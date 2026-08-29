@@ -6,13 +6,14 @@
 
 PY ?= python3
 
-.PHONY: check gate report fix screenshots site help
+.PHONY: check gate report fix screenshots site android help
 
 help:
 	@echo "make check   - the gate: blocking checks, exactly what CI runs"
 	@echo "make report  - non-blocking reports: BDD coverage, code anchors"
 	@echo "make fix     - regenerate the backlog index, fill in missing coverage-map lines"
 	@echo "make screenshots - record the suite twice and name any image that moved (B-31)"
+	@echo "make android   - run the on-device guard and record that it ran (needs a phone)"
 	@echo "make site    - build the documentation site into build/site (needs gradle)"
 
 check: gate report
@@ -24,6 +25,7 @@ gate:
 	$(PY) scripts/component_catalog.py --check
 	$(PY) scripts/doc_images.py
 	$(PY) scripts/doc_links.py
+	$(PY) scripts/android_guard.py --check
 
 # Non-blocking, on purpose. bdd_report counts scenarios, and there are none while there is no
 # behaviour to describe. code_anchors will report the research anchors as absent for as long as the
@@ -32,6 +34,7 @@ gate:
 report:
 	$(PY) scripts/bdd_report.py --repos ..
 	$(PY) scripts/code_anchors.py --repos ..
+	$(PY) scripts/android_guard.py --report
 
 fix:
 	$(PY) scripts/backlog_index.py
@@ -42,6 +45,13 @@ fix:
 # claim that no golden moved. ROUNDS=5 raises the number of recordings compared.
 screenshots:
 	$(PY) scripts/screenshot_determinism.py --rounds $(or $(ROUNDS),2)
+
+# The only thing that executes on Android, and the only thing that records that it did. Outside
+# `check` because it needs hardware (B-29); `make report` says how long ago it last ran, because a
+# guard outside the gate is one whose silence reads as success — which is how it went unnoticed for
+# months (B-36).
+android:
+	$(PY) scripts/android_guard.py --run
 
 # The documentation site (B-34): one wasm bundle, a page per component, and the previews mounted
 # into it by name. Outside `check` because it builds a wasm distribution, which takes a minute — the

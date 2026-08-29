@@ -51,8 +51,13 @@ make site                               # the site + Dokka reference into build/
   pending — B-29 decided it, and Android's guard is a number instead: `./gradlew
   :kvadrant-core:connectedAndroidDeviceTest` solves the tilt's camera out of a rendered trapezoid on
   a real device. It is not in `check` on purpose, because a gate that needs hardware is a gate that
-  gets skipped, and a skipped gate reads as a green one. Run it before trusting anything about the
-  renderer most of this will ship on.
+  gets skipped, and a skipped gate reads as a green one. **Run it with `make android`**, which drives
+  it and records that it ran into [docs/android-device-runs.md](docs/android-device-runs.md) with the
+  device and API level beside the commit — nothing else in this repository is evidence that anything
+  has ever executed on Android. `make report` then prints how many commits ago that was and which of
+  the sources the claim depends on have moved since. The failure this repository actually had was not
+  a broken guard but a guard nobody ran for months while its silence read as success, and the AAR
+  shipping with no fonts stayed invisible for exactly that long (B-36, B-37).
 - **Every glyph in a golden comes from a bundled file, and that alone did not make them portable.**
   The first CI run on Linux failed on twenty-odd images and every one was text: the *file* is the
   same and the **rasteriser** is not, so identical outlines land on different pixels under FreeType
