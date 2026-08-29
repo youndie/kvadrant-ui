@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.PathSensitivity
+import java.util.zip.ZipFile
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
@@ -35,7 +36,11 @@ kotlin {
         binaries.executable()
     }
 
-    androidLibrary {
+    android {
+        // Without this the Android resource pipeline is off and `variant.sources.assets` is null,
+        // so compose-resources has nowhere to put the fonts and the artefact ships without them.
+        androidResources { enable = true }
+
         namespace = "io.github.youndie.kvadrant"
         compileSdk =
             libs.versions.android.compileSdk
@@ -237,29 +242,53 @@ viddik {
     )
 }
 
-// **compose-resources never delivers its fonts to Android, and the build is green about it.**
+// **The artefact is unpacked and checked, because losing its resources is silent** (B-37).
 //
-// The plugin registers a `copyAndroid<Variant>ComposeResourcesToAndroidAssets` task per Android
-// variant and leaves `outputDirectory` unset on both. Invoked directly, each fails at configuration
-// with "property 'outputDirectory' doesn't have a configured value"; neither is in `assemble`'s
-// graph, so the AAR is built without ever running one and comes out with a manifest, a classes.jar
-// and no assets at all. See [B-37](../docs/backlog/B-37-the-android-artefact-ships-without-its-fonts.md).
+// The Android resource pipeline is off by default in AGP's Kotlin Multiplatform plugin. With it off
+// `variant.sources.assets` is null, compose-resources has nowhere to put the fonts, its copy task
+// never enters a task graph, and the AAR comes out with a manifest, a classes.jar and nothing else —
+// green. A consumer then gets `kvadrantLatin()` resolving to nothing and the platform substituting
+// its own face, which reads as a slightly different design decision rather than a missing asset.
 //
-// What is set below is the *device test* variant, and it is a stand-in rather than a fix: the
-// directory is empty, so the tests run and the fonts are still absent. It is here because without
-// it the task fails at configuration and the device suite cannot start at all.
-//
-// **The comment that used to be here said the device test source set "has no resources of its own —
-// it renders shapes, not text".** That was true when the only device test solved a trapezoid, and
-// false the moment one measured a font. It is the shape of exemption that hides the hole it was
-// written to excuse, so it is named here rather than repeated.
-tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach {
-    val output = layout.buildDirectory.dir("generated/compose/androidDeviceTestAssets")
+// Nothing in `check` could see that: the suite is desktop-only by B-29's decision, and the on-device
+// test that would have caught it needed the very fonts that were missing. So the guard is an
+// assertion about the file.
 
-    @Suppress("UNCHECKED_CAST")
-    val property =
-        javaClass.methods
-            .first { it.name == "getOutputDirectory" }
-            .invoke(this) as org.gradle.api.file.DirectoryProperty
-    property.set(output)
+/** Five Selawik faces and the Source Sans variable. */
+val expectedFonts = 6
+
+/** Selawik's and Source Sans 3's, both required by the POM's own licence declaration. */
+val expectedLicences = 2
+
+val androidArtefactCarriesItsFonts by tasks.registering {
+    description = "Fail if the AAR has lost the bundled fonts."
+    val aar = layout.buildDirectory.file("outputs/aar/kvadrant-core.aar")
+    // Copied into locals: a `doLast` that reads a script-level property captures the script object,
+    // which the configuration cache refuses to serialise and says so only when it tries.
+    val wantedFonts = expectedFonts
+    val wantedLicences = expectedLicences
+    dependsOn("assemble")
+    inputs.file(aar)
+    doLast {
+        val entries =
+            ZipFile(aar.get().asFile).use { zip ->
+                zip
+                    .entries()
+                    .asSequence()
+                    .map { entry -> entry.name }
+                    .toList()
+            }
+        val fonts = entries.filter { it.endsWith(".ttf") }
+        val licences = entries.filter { it.endsWith("-OFL.txt") }
+        check(fonts.size == wantedFonts) {
+            "the AAR carries ${fonts.size} font files, not $wantedFonts — an Android consumer " +
+                "would get the platform's own face and no error: $entries"
+        }
+        check(licences.size == wantedLicences) {
+            "the AAR carries ${licences.size} OFL texts, not $wantedLicences, so it ships fonts " +
+                "without the licence that permits it"
+        }
+    }
 }
+
+tasks.named("check") { dependsOn(androidArtefactCarriesItsFonts) }

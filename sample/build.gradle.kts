@@ -29,7 +29,12 @@ kotlin {
     // is forced: since AGP 9 the application plugin refuses to sit in a Kotlin Multiplatform module
     // at all. So the shared screen lives here and `:sample-android` is the thin activity that hosts
     // it — the alternative was two copies of the demo, drifting.
-    androidLibrary {
+    android {
+        // The Android resource pipeline is off by default in AGP's Kotlin Multiplatform plugin, and
+        // with it off `variant.sources.assets` is null — so compose-resources has nowhere to put
+        // anything and the artefact ships without it, green. B-37.
+        androidResources { enable = true }
+
         namespace = "io.github.youndie.kvadrant.sample"
         compileSdk =
             libs.versions.android.compileSdk

@@ -100,17 +100,16 @@ Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)
 - AC met on desktop and wasm, unmet on Android and iOS, and the three reasons differ. Desktop is the
   golden suite. wasm is the documentation site, where every component page renders Cyrillic through
   the bundled companion — that is a demonstration rather than an assertion, and it is the first
-  thing anybody has looked at on that target. **Android is not unverified — it is false**, and the check that says so has now run.
-  `AndroidFontStackTest` on a Pixel 6a: `kvadrantLatin()`, `kvadrantCyrillic()` and
-  `FontFamily.SansSerif` render the same string to the same pixel, because the AAR contains no fonts
-  at all — a manifest, a classes.jar and nothing else. See
-  [B-37](B-37-the-android-artefact-ships-without-its-fonts.md), which is where the remaining work
-  is. iOS has no target yet (D14).
+  thing anybody has looked at on that target. **Android is met**, and it took [B-37](B-37-the-android-artefact-ships-without-its-fonts.md) to get
+  there: the artefact was shipping without any fonts at all, because AGP's Kotlin Multiplatform
+  plugin has the Android resource pipeline off by default. `AndroidFontStackTest` now passes on a
+  Pixel 6a — the bundled companion renders something other than the platform's substitution — and
+  `androidArtefactCarriesItsFonts` counts the files inside the AAR on every `check`. iOS has no
+  target yet (D14).
 
-  This item is finished *for the desktop and wasm artefacts*, which is less than it claimed. The
-  fonts are bundled through compose-resources, the licences ship in the jar — verified by unpacking
-  it — and the ramp is guarded in both scripts. "One declaration serves every target" was the
-  argument for compose-resources over the classpath read it replaced, and on Android it does not.
+  "One declaration serves every target" was the argument for compose-resources over the classpath
+  read it replaced, and it now holds on three of them — verified by unpacking the jar and the AAR
+  rather than by reading the declaration.
 - AC met, at a different path than this asked for. The POM declares SIL OFL 1.1 beside Apache-2.0
   with a comment saying which covers what, and the artefact carries both texts — verified by
   unpacking `kvadrant-core-desktop-0.1.0-SNAPSHOT.jar`, which holds `Selawik-OFL.txt` and

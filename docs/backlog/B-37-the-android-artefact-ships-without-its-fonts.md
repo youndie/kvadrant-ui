@@ -1,7 +1,7 @@
 ---
 id: B-37
 title: "The Android artefact ships without its fonts, and the build is green about it"
-status: open
+status: done
 priority: P0
 size: M
 stage: stage-2-release
@@ -47,23 +47,66 @@ resources of its own — it renders shapes, not text". True when the only device
 trapezoid; false the moment one measured a font, and by then the comment read as a reason rather
 than as an assumption.
 
-## What was tried
+## Fixed: the Android resource pipeline is off by default
 
-Wiring both tasks into their variant's generated assets through AGP's variant API —
-`androidComponents.onVariants { variant.sources.assets?.addGeneratedSourceDirectory(...) }` — which
-would assign the missing directory *and* put the result in the package. **The block never runs.** No
-logging from inside it reaches the build output, in a module using AGP's Kotlin Multiplatform
-library plugin. Whether `androidComponents` is the wrong entry point there, or the variants are
-produced by a different mechanism, is the first thing to establish.
+```kotlin
+kotlin {
+    android {
+        androidResources { enable = true }
+    }
+}
+```
+
+That is the whole of it. AGP's Kotlin Multiplatform plugin ships with Android resources **disabled**,
+and with them disabled `variant.sources.assets` is null. The Compose plugin does everything right —
+it logs `Configure compose resources with KotlinMultiplatformAndroidComponentsExtension`, its version
+gate passes, it asks for the assets container to hang its copy task on, and gets nothing. So the task
+never enters a graph, `outputDirectory` is never assigned, and the artefact ships without the fonts,
+green.
+
+With the line in place: `sources.assets` is a `LayeredSourceDirectoriesImpl`, the AAR carries six
+`.ttf` files and both OFL texts under `assets/composeResources/`, `sample-android`'s APK carries them
+too, and `AndroidFontStackTest` passes on a Pixel 6a — the bundled companion renders something other
+than the platform's substitution, which is the assertion that was failing.
+
+Applied to all three modules with an Android target: `kvadrant-core`, `kvadrant-material-adapter`
+and `sample`. The workaround that used to point the device-test copy task at an empty directory is
+**gone**; with the pipeline on, that task is wired properly and the device suite runs without it.
+
+`androidLibrary { }` went with it — it is deprecated in favour of `android { }`, and the deprecation
+is an error in a Kotlin script rather than a warning.
+
+## The guard
+
+`androidArtefactCarriesItsFonts` unpacks the AAR in `check` and counts what is inside: six fonts, two
+licence texts. It exists because **nothing else could have caught this**. `check` is desktop-only by
+B-29's decision, and the on-device test that would have noticed needed the very fonts that were
+missing. Verified by turning `androidResources` back off and watching it say *"the AAR carries 0 font
+files, not 6"*.
+
+## Three wrong diagnoses on the way, all kept
+
+1. **"The `onVariants` block never runs."** It runs. The build had reused a configuration-cache
+   entry, so nothing at configuration time re-executed and the logging that would have said so never
+   appeared. **Any diagnosis of configuration-time behaviour here needs `--no-configuration-cache`**,
+   or it is a diagnosis of a recording.
+2. **"A KMP Android library cannot package assets."** It can. The container is null only because the
+   pipeline that creates it is switched off.
+3. **"It is a version incompatibility this repository was pinned into."** It is not. The same null
+   appears on AGP 9.2.0 and 9.3.2, and on Compose 1.11.1 and 1.12.0 — all four combinations were
+   measured. Downgrading would have changed nothing and cost the toolchain.
+
+Each of the three was stated with evidence and each was wrong, which is worth more than the fix: the
+common thread is that a *missing* thing produces silence, and silence was read three times as
+information about where the problem was.
 
 ## Acceptance
 
-- AC: `kvadrant-core.aar` contains the six font files and both OFL texts, checked by unpacking it in
-  a test rather than by looking once.
-- AC: `AndroidFontStackTest` passes on a device — the bundled companion renders something other than
-  the platform's substitution. It is written and currently fails for this reason.
-- AC: the same holds for `kvadrant-material-adapter`, which gained an Android target in B-04 and has
-  never been unpacked.
-- AC: something fails when an artefact loses its resources again. The AAR is built by a task nobody
-  reads the output of, so the guard has to be an assertion about the file, not a green build.
+- ~~AC: the six font files and both OFL texts reach an Android consumer, checked by unpacking the
+  artefact.~~ Done — `androidArtefactCarriesItsFonts`, in `check`.
+- ~~AC: `AndroidFontStackTest` passes on a device.~~ Done, on a Pixel 6a.
+- ~~AC: the same holds for `kvadrant-material-adapter`.~~ The same line is applied there and in
+  `sample`; the adapter bundles no resources of its own, so there is nothing to count in it.
+- ~~AC: something fails when an artefact loses its resources again.~~ Done, and verified by
+  reinstating the defect.
 - Anchors: `kvadrant-core/build.gradle.kts`, `kvadrant-core/src/androidDeviceTest/`

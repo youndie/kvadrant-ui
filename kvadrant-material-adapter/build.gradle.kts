@@ -30,7 +30,12 @@ kotlin {
     // target is the half that belongs in `check`. The other half — that it *renders* there — is
     // Android's usual answer and not this gate's: viddik is JVM-only, so a green `check` says
     // nothing about Android (B-29).
-    androidLibrary {
+    android {
+        // The Android resource pipeline is off by default in AGP's Kotlin Multiplatform plugin, and
+        // with it off `variant.sources.assets` is null — so compose-resources has nowhere to put
+        // anything and the artefact ships without it, green. B-37.
+        androidResources { enable = true }
+
         namespace = "io.github.youndie.kvadrant.material"
         compileSdk =
             libs.versions.android.compileSdk
