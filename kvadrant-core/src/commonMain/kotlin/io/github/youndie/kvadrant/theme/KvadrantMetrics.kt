@@ -9,6 +9,10 @@ import androidx.compose.ui.unit.dp
  *
  * Only what is used so far. A token added before something reads it is a number nobody has
  * checked.
+ *
+ * **[focusRingThickness] is the one exception to the first sentence** and says so in its own doc:
+ * it comes from the Windows 8 lineage rather than the phone's, where a pixel is a different length,
+ * so it is converted by a different factor. Everything else here is a Metro phone pixel × 0.75.
  */
 @Immutable
 public data class KvadrantMetrics(
@@ -26,6 +30,21 @@ public data class KvadrantMetrics(
     val margin: Dp = 9.dp,
     /** `PhoneBorderThickness` 3 px — a Metro button's border, and it is thick on purpose. */
     val borderThickness: Dp = 2.25.dp,
+    /**
+     * The dotted keyboard-focus ring's stroke, and **the one number here that is not a phone
+     * pixel**.
+     *
+     * Windows Phone had no keyboard navigation and therefore no focus visual to copy; Windows 8 did
+     * ([drawKvadrantFocusRing][io.github.youndie.kvadrant.indication.drawKvadrantFocusRing]), and
+     * its `Rectangle` takes `Shape.StrokeThickness`'s default of **1**. A WinRT unit is 1/96 inch
+     * against dp's 1/160, so research §1.6c converts it at ×1.667 rather than the ×0.75 every other
+     * line of this class is scaled by — the two lineages measure in different things, and running
+     * this one through the phone's factor would be arithmetic on a unit it was never in.
+     *
+     * The dash pattern and the gap are read off the same thickness, so this is the ring's only
+     * number. See [drawKvadrantFocusRing][io.github.youndie.kvadrant.indication.drawKvadrantFocusRing].
+     */
+    val focusRingThickness: Dp = 1.667.dp,
     /** `PhoneTouchTargetOverhang` 12 px: the invisible padding around a small target. */
     val touchTargetOverhang: Dp = 9.dp,
     /** The canonical touch target. Authentic; [touchTargetMin] is what is actually enforced. */
@@ -113,6 +132,7 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         scale = scale * factor,
         margin = margin * factor,
         borderThickness = borderThickness * factor,
+        focusRingThickness = focusRingThickness * factor,
         touchTargetOverhang = touchTargetOverhang * factor,
         touchTargetVisual = touchTargetVisual * factor,
         // Not scaled: the modern minimum is a fixed number of millimetres under a thumb, and a bigger

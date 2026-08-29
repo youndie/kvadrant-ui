@@ -1611,6 +1611,91 @@ rather than sooner, and the tilt spike ([B-01](../backlog/B-01-spike-tilt-indica
 deliberately exempt from this decision: it checks all four, because its whole purpose is to find out
 where the technique does not work.
 
+### D19. The keyboard is default; the ring it draws is gated on the keyboard being the thing in use
+
+Decision, and it is three decisions that
+[B-40](../backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md) asked to be separated:
+
+| | Default, or behind `remastered`? |
+|---|---|
+| Reachable by Tab, in screen order | **Default.** |
+| Activated by space, enter or the d-pad centre | **Default.** |
+| A visible focus indicator | **Default — and drawn only while the input mode is the keyboard.** |
+
+**The first two were never a decision, because they were already true and nobody had looked.** The
+item opened by stating that nothing in the library was focusable and that space and enter activated
+nothing. Half of that is false: `Modifier.clickable`, `toggleable` and `selectable` each bring
+`Modifier.focusable` and their own key handling, so every control in the library built on one of the
+three — which is every control except one — had the whole of it from the day it was written. What
+was genuinely unreachable was `kvadrantTilt`, this project's own gesture, and therefore
+`KvadrantTile`: the component the library exists for was the one keyboard dead end in it.
+
+| Fact | Where verified |
+|---|---|
+| A `toggleable` switch takes focus on Tab and fires on **both** space and enter | probe against CMP 1.12.0: `focused=true` after one Tab, the callback counted 1 then 2 |
+| A `kvadrantTilt` surface has no `Focused` semantics property at all — the focus system has never heard of it | the same probe: `tile=null` where the switch read `false` |
+| Every tile in every preview, and nothing else, fails a Tab-reachability sweep | `PressableNodesAreReachableTest` with `focusable` removed again: fourteen nodes, all of them tiles |
+| On desktop a **mouse click takes focus**, so a ring drawn on focus alone would outlive every click | `isRequestFocusOnClickEnabled` returns a hard-coded `true` — `javap` on `RequestFocusOnClick_desktopKt` in `foundation-desktop-1.12.0.jar`. The class does not exist in `foundation-android`'s `classes.jar` |
+| `InputModeManager` on desktop moves to `Touch` on a mouse press and back to `Keyboard` on a key | probe printing `LocalInputModeManager.current.inputMode`: `Keyboard`, `Touch`, `Keyboard` |
+| **Not verified on wasm**, which is where the documentation site runs | nothing executes in a browser here — `wasmJsBrowserTest` is skipped ([D14](#d14-desktop-first-the-other-targets-arrive-when-something-runs-on-them)) |
+
+**The third is the decision, and the argument for it not being behind the flag is that the flag
+could not do the job.** `remastered` exists so that a fidelity claim stays falsifiable by looking
+([D17](#d17-one-flag-for-everything-the-phone-did-not-do-remastered)) — it gates what changes how a
+component looks or moves. A focus ring plainly changes how a component looks, so by the letter of
+that rule it belongs behind the flag. By the rule's purpose it does not: gating it ships a default
+in which Tab moves an invisible cursor, on the two targets where a keyboard is the primary input and
+the docs site is the first thing a prospective consumer touches. An invisible focus is worse than
+either having it or not having it, and no flag setting produces a good outcome.
+
+What resolves the conflict is that **the phone cannot be made unfaithful by it.** The ring appears
+only when the input mode is the keyboard, and a Windows Phone had no keyboard to navigate with — so
+on the target this library reproduces, the pixels the flag exists to protect never move.
+
+**The ring itself is transcribed rather than invented, which the item required.** Windows Phone has
+nothing to offer here and Windows 8 does, and it is a more interesting template than "a rectangle":
+
+```xml
+<Rectangle x:Name="FocusVisualWhite" StrokeEndLineCap="Square" StrokeDashArray="1,1"
+           Opacity="0" StrokeDashOffset="1.5" Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" />
+<Rectangle x:Name="FocusVisualBlack" StrokeEndLineCap="Square" StrokeDashArray="1,1"
+           Opacity="0" StrokeDashOffset="0.5" Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" />
+```
+
+| Fact | Where verified |
+|---|---|
+| Two rectangles, not one, turned on together by the `Focused` state | the WinRT XAML 8.1 default `Button` template, `<VisualStateGroup x:Name="FocusStates">` |
+| Their dash offsets are `1.5` and `0.5` — one dash apart, so the white lands in the black's gaps and the ring reads as continuous | the same template |
+| Neither brush varies by theme: `FocusVisualBlackStrokeThemeBrush` is `Black` and `FocusVisualWhiteStrokeThemeBrush` is `White` in all three theme dictionaries | three identical pairs in the same file, at the light, dark and high-contrast blocks |
+| **`PointerFocused` is an empty visual state**: a control the mouse gave focus to drew nothing | the same `FocusStates` group |
+
+That last row is the one that decided the implementation. Windows 8 had a state for "focused by
+something that is not the keyboard" and deliberately drew nothing in it; Compose has no such pair of
+states, but `InputModeManager` is the fact underneath them, and reading it is that condition in this
+framework's vocabulary.
+
+*Consequence — no golden moved, and that is the check rather than a hope.* The screenshot fixtures
+press their subjects, a press on desktop takes focus, and a ring drawn on focus alone would have
+appeared in every pressed golden in the suite. `viddikVerify` passing untouched is what says the
+condition is doing its job in the place it matters most.
+
+*Consequence — the focus state is read from the focus system and never from the interaction stream,
+and this cost a wrong implementation to learn.* `FocusInteraction.Focus` travels down the same
+`InteractionSource` as the presses the tilt already reads, and collecting it there is the obvious
+symmetry. It **loses the event**: `interactions` is a hot flow with no replay and `clickable` builds
+its indication node lazily on the first interaction, so on a mouse click — where focus *is* the first
+interaction — the node attaches in response to an event it then never receives. Tab arrives early
+enough to be seen. So the flow version drew the ring for the keyboard, drew nothing for the mouse,
+and passed both of its own tests: the keyboard one because the ring was there, and the mouse one
+because it asserts *nothing is drawn* and got that for free. **Deleting the input-mode gate left both
+green**, and that is what said the gate had never been wired to anything. `FocusEventModifierNode`
+reports the state rather than a change to it, so there is nothing to miss.
+
+*Consequence — `focusRingThickness` is the first number in `KvadrantMetrics` that is not a phone
+pixel.* Windows 8's unit is 1/96 inch where the phone's is a canvas unit, so §1.6c converts it at
+×1.667 rather than the ×0.75 the rest of the set is written in. The class doc says so; a reader who
+assumes one factor throughout would otherwise re-derive it wrongly and be sure of it.
+
 ---
 
 ## 3. Risks and open questions

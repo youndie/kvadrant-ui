@@ -46,13 +46,13 @@ item must never move its file.
 | [B-36](docs/backlog/B-36-the-on-device-guard-does-not-execute.md) `[ ]` | Android's only guard does not execute, and has not for some time | P0 | M | - |
 | [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
-| [B-40](docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md) `[ ]` | Nothing is focusable, on the two targets where a keyboard is the input | P1 | M | - |
 | [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 | [B-41](docs/backlog/B-41-rtl-is-canon-and-untested.md) `[ ]` | Right-to-left is canon, three layouts would break, nothing tests it | P2 | S | - |
 | [B-42](docs/backlog/B-42-date-and-time-pickers.md) `[ ]` | The picker's parts are built and the picker is not | P2 | S | - |
 | [B-43](docs/backlog/B-43-the-toolkit-was-never-inventoried.md) `[ ]` | The Toolkit was read for metrics and never read for scope | P2 | M | - |
+| [B-44](docs/backlog/B-44-kdoc-links-into-docs-resolve-nowhere.md) `[ ]` | Every KDoc link into docs/ is a 404 on the site, and three of them disagree about the depth | P2 | S | - |
 
-## Closed (34)
+## Closed (35)
 
 **Three answers that decide the architecture**
 
@@ -91,6 +91,7 @@ item must never move its file.
 - [B-37](docs/backlog/B-37-the-android-artefact-ships-without-its-fonts.md) `[x]` - The Android artefact ships without its fonts, and the build is green about it
 - [B-38](docs/backlog/B-38-the-theme-leaves-the-platform-overscroll.md) `[x]` - The theme replaces the ripple and leaves the platform's overscroll
 - [B-39](docs/backlog/B-39-semantics-beyond-touch-targets.md) `[x]` - A screen reader gets a clickable box where a toggle switch is
+- [B-40](docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md) `[x]` - Nothing is focusable, on the two targets where a keyboard is the input
 
 **Everything a design system is expected to have**
 

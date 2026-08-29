@@ -9,23 +9,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusEventModifierNode
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DelegatableNode
+import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.currentValueOf
+import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidatePlacement
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import io.github.youndie.kvadrant.foundation.KvadrantCamera
 import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
+import io.github.youndie.kvadrant.theme.KvadrantMetrics
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Metro's press feedback, in the slot Material fills with a ripple.
+ * Metro's press feedback, in the slot Material fills with a ripple — and, since B-40, the keyboard
+ * focus ring that goes in the same slot.
+ *
+ * Both live here for the reason the tilt does: `LocalIndication` is one place, and a component that
+ * has to remember to apply something is a component that will one day forget. Every
+ * `clickable`/`toggleable`/`selectable` in the library got the ring the moment this drew it, and
+ * nothing had to be edited to receive it. See [drawKvadrantFocusRing] for what is drawn and
+ * [TiltNode.draw] for when.
  *
  * The plane leans towards the finger and sinks away from the eye; see [tiltFor] for the geometry.
  * The press itself is **not** animated — the original sets the properties outright on every
@@ -55,18 +72,23 @@ public class TiltIndication(
     private val cameraDistance: Dp = DEFAULT_CAMERA_DISTANCE,
     private val maxDepression: Dp = Tilt.maxDepression,
     private val animatePress: Boolean = false,
+    private val focusRingThickness: Dp = KvadrantMetrics().focusRingThickness,
 ) : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        TiltNode(interactionSource, cameraDistance, maxDepression, animatePress)
+        TiltNode(interactionSource, cameraDistance, maxDepression, animatePress, focusRingThickness)
 
     override fun equals(other: Any?): Boolean =
         other is TiltIndication &&
             other.cameraDistance == cameraDistance &&
             other.maxDepression == maxDepression &&
-            other.animatePress == animatePress
+            other.animatePress == animatePress &&
+            other.focusRingThickness == focusRingThickness
 
     override fun hashCode(): Int =
-        31 * (31 * cameraDistance.hashCode() + maxDepression.hashCode()) + animatePress.hashCode()
+        31 * (
+            31 * (31 * cameraDistance.hashCode() + maxDepression.hashCode()) +
+                animatePress.hashCode()
+        ) + focusRingThickness.hashCode()
 
     public companion object {
         /**
@@ -95,8 +117,12 @@ private class TiltNode(
     private val cameraDistance: Dp,
     private val maxDepression: Dp,
     private val animatePress: Boolean,
+    private val focusRingThickness: Dp,
 ) : Modifier.Node(),
-    LayoutModifierNode {
+    LayoutModifierNode,
+    DrawModifierNode,
+    FocusEventModifierNode,
+    CompositionLocalConsumerModifierNode {
     /** Where the finger is, or was. Kept after release so the plane has somewhere to return from. */
     private var pressPosition: Offset? by mutableStateOf(null)
 
@@ -109,6 +135,30 @@ private class TiltNode(
 
     private var returning: Job? = null
     private var pressing: Job? = null
+
+    /** Whether the focus ring is owed. Whether it is *drawn* also depends on the input mode. */
+    private var focused by mutableStateOf(false)
+
+    /**
+     * **Read from the focus system, not from the interaction stream, and that is not a preference.**
+     *
+     * `FocusInteraction.Focus` travels down the same `InteractionSource` as the presses above, and
+     * collecting it here looks like the obvious symmetry. It loses the event: `interactions` is a
+     * hot flow with no replay, and `clickable` builds its indication node **lazily, on the first
+     * interaction** — so on a mouse click, where focus is the first interaction there is, the node
+     * attaches in response to an event it then never receives. Tab happens to arrive early enough
+     * to be seen, so the flow version worked for the keyboard and silently did nothing for the
+     * mouse. It passed this file's own tests, both of them, for a fortnight of a morning: the
+     * keyboard test drew its ring, and the mouse test asserted *nothing was drawn* and got it for
+     * free. Removing the input-mode gate below left both green, which is what said the ring was
+     * never wired at all.
+     *
+     * `onFocusEvent` reports the state rather than a change to it, so there is nothing to miss.
+     */
+    override fun onFocusEvent(focusState: FocusState) {
+        focused = focusState.isFocused
+        invalidateDraw()
+    }
 
     /**
      * **There is no shared camera here, and B-26 concluded there should be.** The conclusion was
@@ -228,6 +278,40 @@ private class TiltNode(
                 }
             }
         }
+    }
+
+    /**
+     * The ring, and the one condition on it: **the keyboard has to be the thing being used.**
+     *
+     * Windows 8's template draws the dotted rectangle from a `Focused` visual state and leaves
+     * `PointerFocused` empty, so a button that a mouse gave focus to showed nothing. Compose has no
+     * such pair of states, but it has the fact behind them: `InputModeManager` moves to
+     * [InputMode.Touch] on a pointer event and back to [InputMode.Keyboard] on a key. Reading it
+     * here is that template's condition in this framework's vocabulary.
+     *
+     * **Measured on desktop and nowhere else.** The mode's movement was probed there; Android is
+     * covered by the paragraph below rather than by the mode; and on wasm nothing has been run,
+     * because `wasmJsBrowserTest` is skipped in this repository (research D14). The browser is where
+     * the documentation site runs, so that is a gap worth naming rather than a target worth
+     * assuming.
+     *
+     * **Without it the ring is not a small deviation, it is a permanent one**: on desktop and in the
+     * browser `Modifier.clickable` requests focus on click — `isRequestFocusOnClickEnabled` is
+     * hard-coded `true` in the desktop source set — so every tile a mouse ever touched would keep a
+     * dotted rectangle around it until something else was clicked, on a library whose subject never
+     * had one. Android is not exposed to that: its input mode starts at [InputMode.Touch] and
+     * `clickable` does not take focus there at all.
+     *
+     * Drawn after the content and outside the tilt, which is a placement rather than an accident:
+     * this node's own drawing is in its own coordinates, while the lean is applied to the child in
+     * placement, so the ring stays still while the surface leans under it. That is also how the
+     * template has it — `FocusVisualWhite` is a sibling of the animated `Border`, not a child.
+     */
+    override fun ContentDrawScope.draw() {
+        drawContent()
+        if (!focused) return
+        if (currentValueOf(LocalInputModeManager).inputMode != InputMode.Keyboard) return
+        drawKvadrantFocusRing(focusRingThickness.toPx())
     }
 }
 

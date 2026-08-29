@@ -110,7 +110,14 @@ public fun KvadrantTheme(
         LocalKvadrantRemastered provides remastered,
         LocalKvadrantThemePresent provides true,
         LocalIndication provides
-            TiltIndication(maxDepression = metrics.tiltDepression, animatePress = remastered),
+            TiltIndication(
+                maxDepression = metrics.tiltDepression,
+                animatePress = remastered,
+                // Read from the set rather than left at the default: a theme scaled up for a desktop
+                // window scales its ring with everything else, and a constructor argument nobody
+                // passes is a token that silently stops being the theme's.
+                focusRingThickness = metrics.focusRingThickness,
+            ),
         // The other half of the same argument. Replacing the ripple and leaving the platform's
         // overscroll meant a Metro list ended with Android's stretch — as foreign as the ripple
         // would have been, and met as often. Windows Phone compressed; `KvadrantOverscroll` says
