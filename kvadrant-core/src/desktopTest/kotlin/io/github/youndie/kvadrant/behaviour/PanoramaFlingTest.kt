@@ -32,7 +32,7 @@ import kotlin.test.assertEquals
 /**
  * Which section a flick lands on, and — the part worth guarding — which one it *cannot* land on.
  *
- * [B-33](../../../../../../../../docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)
+ * [B-33](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)
  * asks for "a scenario naming which section is selected after a flick of a given size". The answer
  * is a decision rather than a measurement, because Microsoft published no fling model for the
  * panorama at all: a release settles on **one of the two stops the finger is between**, and the

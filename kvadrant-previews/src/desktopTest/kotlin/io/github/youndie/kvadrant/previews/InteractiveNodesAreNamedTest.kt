@@ -17,12 +17,12 @@ import kotlin.test.assertTrue
 /**
  * Nothing you can press is anonymous.
  *
- * [B-39](../../../../../../../../docs/backlog/B-39-semantics-beyond-touch-targets.md): the library
- * had six mentions of `semantics` in total, so a screen reader on a toggle switch got a box that
- * could be clicked and nothing about it being a switch or being on. Fixing the six controls that had
- * a state is the easy half. **The hard half is that the seventh arrives next month**, and a control
- * shipped without a role looks exactly like one with a role to everybody except the person who
- * cannot see it.
+ * [B-39](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-39-semantics-beyond-touch-targets.md):
+ * the library had six mentions of `semantics` in total, so a screen reader on a toggle switch got a
+ * box that could be clicked and nothing about it being a switch or being on. Fixing the six
+ * controls that had a state is the easy half. **The hard half is that the seventh arrives next
+ * month**, and a control shipped without a role looks exactly like one with a role to everybody
+ * except the person who cannot see it.
  *
  * So this walks the semantics tree of **every preview in the registry** — the registry already
  * enumerates them, so a new component is covered by existing to be previewed at all — and requires

@@ -29,11 +29,11 @@ import kotlin.test.assertTrue
 /**
  * What a screen reader is told, for the six controls that have something to tell it.
  *
- * [B-39](../../../../../../../../docs/backlog/B-39-semantics-beyond-touch-targets.md). Before this,
- * `KvadrantToggleSwitch` was a `Modifier.clickable` — so it announced as a box that could be tapped,
- * with nothing about being a switch and nothing about being on. The same for the check box and the
- * radio; the slider and both progress indicators reported no value at all, which for a progress
- * indicator is the only thing it has.
+ * [B-39](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-39-semantics-beyond-touch-targets.md).
+ * Before this, `KvadrantToggleSwitch` was a `Modifier.clickable` — so it announced as a box that
+ * could be tapped, with nothing about being a switch and nothing about being on. The same for the
+ * check box and the radio; the slider and both progress indicators reported no value at all, which
+ * for a progress indicator is the only thing it has.
  *
  * `InteractiveNodesAreNamedTest` in `kvadrant-previews` guards the general rule — nothing pressable
  * is anonymous — across every preview, so a *new* control cannot arrive unannounced. This one is the

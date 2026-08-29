@@ -26,18 +26,18 @@ import kotlin.test.assertTrue
 /**
  * Both scripts reach the renderer this library will mostly ship on, out of the files it bundles.
  *
- * **[B-07](../../../../../../../../docs/backlog/B-07-font-stack.md)'s last open criterion, and it
- * cannot be answered on the desktop.** The fonts moved to compose-resources so that one declaration
- * would serve every target, and every check of that so far has run on the JVM — where the loader it
- * replaced, a classpath read, also worked. A resource that fails to load on Android does not throw:
- * the text still appears, in whatever the platform substitutes, looking like a slightly different
- * design decision rather than a missing asset. `FontFallbackTest` guards that on the desktop; this
- * asks the same question where the answer could differ.
+ * **[B-07](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-07-font-stack.md)'s last
+ * open criterion, and it cannot be answered on the desktop.** The fonts moved to compose-resources
+ * so that one declaration would serve every target, and every check of that so far has run on the
+ * JVM — where the loader it replaced, a classpath read, also worked. A resource that fails to load
+ * on Android does not throw: the text still appears, in whatever the platform substitutes, looking
+ * like a slightly different design decision rather than a missing asset. `FontFallbackTest` guards
+ * that on the desktop; this asks the same question where the answer could differ.
  *
  * **It does not run today**, and not for any reason of its own:
- * [B-36](../../../../../../../../docs/backlog/B-36-the-on-device-guard-does-not-execute.md) — the
- * whole device suite fails at its first `captureToImage` with "No compose hierarchies found in the
- * app". It is written now because the check is what B-07 needs and writing it later means
+ * [B-36](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-36-the-on-device-guard-does-not-execute.md)
+ * — the whole device suite fails at its first `captureToImage` with "No compose hierarchies found
+ * in the app". It is written now because the check is what B-07 needs and writing it later means
  * rediscovering why; it is *not* evidence of anything until that item closes.
  *
  *     ./gradlew :kvadrant-core:connectedAndroidDeviceTest

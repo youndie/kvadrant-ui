@@ -29,11 +29,12 @@ import kotlin.test.assertTrue
 /**
  * Tab reaches every control, in the order the controls are drawn, and space or enter presses one.
  *
- * [B-40](../../../../../../../../docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md). The order is asserted
- * against the **measured** positions rather than against the list this test declares: the claim is
- * "focus follows the screen", and comparing the walk with my own array would only assert that I can
- * copy a list twice. Reading the geometry means a layout that reverses while the focus order does
- * not — which is the failure the item names, and the one a refactor causes silently — fails here.
+ * [B-40](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md).
+ * The order is asserted against the **measured** positions rather than against the list this test
+ * declares: the claim is "focus follows the screen", and comparing the walk with my own array would
+ * only assert that I can copy a list twice. Reading the geometry means a layout that reverses while
+ * the focus order does not — which is the failure the item names, and the one a refactor causes
+ * silently — fails here.
  *
  * A [Row] inside the [Column] is deliberate. A single column cannot tell an order that follows the
  * screen from one that follows the composition, because in a column they are the same sequence.

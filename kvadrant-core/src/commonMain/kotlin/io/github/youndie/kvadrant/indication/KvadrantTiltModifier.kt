@@ -59,10 +59,11 @@ import kotlinx.coroutines.launch
  * scroll test would not have caught because the list did move.
  *
  * **This used to end by saying keyboard activation and focus were still `clickable`'s job and that a
- * surface needing them should keep `clickable`. That was a sentence, not a plan** ([B-40](
- * ../../../../../../../../docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md)): the only surface in the
- * library that uses this modifier is the tile, the tile is the component the library is *for*, and
- * telling it to use something else means telling it to give up the finger-tracking this exists for.
+ * surface needing them should keep `clickable`. That was a sentence, not a plan**: the only surface
+ * in the library that uses this modifier is the tile, the tile is the component the library is
+ * *for*, and telling it to use something else means telling it to give up the finger-tracking this
+ * exists for.
+ * [B-40](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md).
  * So the two are reimplemented below — [Modifier.focusable] over the same interaction source, and a
  * key handler that presses on the way down and clicks on the way up, which is what
  * `AbstractClickableNode` does. Reusing the source is the whole trick: the focus ring lives in the

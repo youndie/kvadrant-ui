@@ -25,10 +25,10 @@ import kotlin.test.assertTrue
 /**
  * A list held past its end **compresses**, which is how a Windows Phone list ended.
  *
- * [B-38](../../../../../../../../docs/backlog/B-38-the-theme-leaves-the-platform-overscroll.md):
- * `KvadrantTheme` replaced the ripple and left the platform's overscroll, so on Android a Metro list
- * finished with Android's stretch. Compression is Microsoft's own word for what it did instead —
- * Windows Phone 7.1 added `HorizontalCompression` and `VerticalCompression` visual states so an
+ * [B-38](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-38-the-theme-leaves-the-platform-overscroll.md):
+ * `KvadrantTheme` replaced the ripple and left the platform's overscroll, so on Android a Metro
+ * list finished with Android's stretch. Compression is Microsoft's own word for what it did instead
+ * — Windows Phone 7.1 added `HorizontalCompression` and `VerticalCompression` visual states so an
  * application could react to it.
  *
  * **Measured rather than photographed**, because the two candidate behaviours look similar in a

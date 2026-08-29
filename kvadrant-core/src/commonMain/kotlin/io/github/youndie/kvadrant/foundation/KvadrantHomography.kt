@@ -10,11 +10,11 @@ import kotlin.math.sin
  * The geometry a camera over the whole screen needs, and the transform that can express it.
  *
  * **Why this is not `graphicsLayer`.** That gives every element its own camera at its own centre
- * ([B-26](../../../../../../../../docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)), and
- * neither its `transformOrigin` nor nesting two of them can move the projection centre away from the
- * rotation pivot — measured in `NestedCameraTest`. What `Canvas.concat` *will* carry is a projective
- * transform whose divide is driven by x and y rather than by z: a 3 x 3 homography, measured in
- * `CanvasPerspectiveTest`.
+ * ([B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)),
+ * and neither its `transformOrigin` nor nesting two of them can move the projection centre away
+ * from the rotation pivot — measured in `NestedCameraTest`. What `Canvas.concat` *will* carry is a
+ * projective transform whose divide is driven by x and y rather than by z: a 3 x 3 homography,
+ * measured in `CanvasPerspectiveTest`.
  *
  * That is enough, and the reason is worth stating once. A flat surface rotated in space and
  * projected from any eye lands as a **quadrilateral**, and every plane-to-plane projective map is a

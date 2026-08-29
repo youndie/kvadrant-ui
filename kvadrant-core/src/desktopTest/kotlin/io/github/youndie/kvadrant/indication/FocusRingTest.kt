@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
  * asserts the surface **is focused** before asserting that nothing was drawn, so a green result
  * cannot come from focus never having been taken.
  *
- * [B-40](../../../../../../../../docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md).
+ * [B-40](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md).
  */
 @OptIn(ExperimentalTestApi::class)
 class FocusRingTest {

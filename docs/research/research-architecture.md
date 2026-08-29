@@ -1510,6 +1510,26 @@ Why:
   function naming, and generated sources are excluded, because the plugin fixes its file list before
   its own filters would apply.
 
+**Amendment — a link into a document is a fact like any other, and the gate now checks it**
+([B-44](../backlog/B-44-kdoc-links-into-docs-resolve-nowhere.md)). `doc_images.py` checked images
+and stopped at images; `backlog_index.py` checked links and stopped at the backlog. Between them
+nothing looked at KDoc, and **all sixteen of its links into `docs/` were broken**, at four different
+depths of `../`, none of them right — which is proof by itself that no one had followed one.
+
+The interesting half is why the fix is not "count the dots properly". A component's KDoc is
+published twice — as the prose on that component's page, where pages are flat at the root of
+`build/site`, and as the body of its Dokka entry, nested several directories under `api/`. The two
+outputs sit at different depths and **neither ships `docs/` at all**, so no relative path can work in
+both: correcting the count repairs the source tree and leaves both places a reader actually meets the
+text still broken. So KDoc uses the canonical `https://github.com/youndie/kvadrant-ui/blob/main/…`
+URL, which works in the source tree, in an IDE, on the site and in Dokka.
+
+That names a branch, and `scripts/doc_links.py` buys the price back: a URL under that prefix is
+checked by its **path**, against the working copy, with no network. A document renamed without its
+references fails on the branch rather than in a reader's browser three months later. A self-link
+written any other way — another branch, a `tree/` URL, a commit permalink — is reported rather than
+skipped, because a rule that one spelling escapes is a rule.
+
 ### D18. Finger-tracking is an opt-in modifier, not a change to the indication
 
 Decision: `Modifier.kvadrantTilt(onClick)` exists beside the indication and tracks the finger;

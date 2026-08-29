@@ -169,11 +169,12 @@ public fun KvadrantPanorama(
             // direction it was previously moving and animates back into the scene from the other
             // side of the screen" (`ff941126`). That behaviour needs a selected item, and this
             // panorama has no item model — it free-scrolls, which is the same gap as the missing
-            // snap ([B-33](../../../docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)). Until it has one, a second copy is what keeps the wrap from tearing;
-            // the alternative is a title that jumps on every fold, which is worse and was the state
-            // this replaced. A title narrower than the viewport has no overflow, does not move, and
-            // gets no second copy — that one is the original's behaviour by accident rather than by
-            // design.
+            // snap
+            // ([B-33](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)).
+            // Until it has one, a second copy is what keeps the wrap from tearing; the alternative
+            // is a title that jumps on every fold, which is worse and was the state this replaced.
+            // A title narrower than the viewport has no overflow, does not move, and gets no second
+            // copy — that one is the original's behaviour by accident rather than by design.
             val titleMoves = titleWidth > viewport
             Row(Modifier.offset { IntOffset(if (titleMoves) drift(titleWidth) else 0, 0) }) {
                 repeat(if (titleMoves) COPIES else 1) { copy ->
