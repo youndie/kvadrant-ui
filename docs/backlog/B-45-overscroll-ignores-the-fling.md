@@ -56,6 +56,40 @@ checking whether the fling was handled finds a sentence saying it was.
   becomes is named in KDoc as this project's, next to `maxCompression` and `resistance` — research
   §1.10.
 
+## Amendment 2 — the shape was never the thing to fix, and a template said so
+
+Reported again after the first amendment: the list hits the edge, *then* the compression grows and
+falls back — a bounce. Correct, and the first amendment caused it by animating the depth in over the
+release's own 300 ms, which puts the growth after the arrival.
+
+**The template settles it.** A Windows Phone `ScrollViewer` declares `NoVerticalCompression`,
+`CompressionTop` and `CompressionBottom` and gives all three **no storyboard at all** — the same
+shape `PivotItem`'s `Left`/`Center`/`Right` have, which research §1.11 already records as markers the
+code reads rather than animations. The compression was never a template animation: it is the scroll
+engine's own displacement, and the states exist so an application can *notice* it, which is what the
+pull-to-refresh recipes of the day used them for.
+
+So there is nothing to play after the list stops, and the third model — running the leftover velocity
+through a decay, which is the honest physics — lands at the limit in **one frame** at any real speed,
+because the distance a throw would carry a list is hundreds of pixels and the spring is worth tens.
+Every model agrees on the timing. The squeeze is instant because the arrival is.
+
+**What was actually wrong is the depth, and it was pinned.** `flingReference` decides how much force
+spends the whole spring, and at a viewport and a half per second every ordinary flick saturated it.
+That is what "it starts at maximum" meant: not the timing — the saturation. A thumb produces roughly
+3 000–12 000 px/s, which over a phone's ~2 200 px viewport is **1.4 to 5.5 viewports per second**, so
+the reference is now 4: a gentle arrival spends about a third of the spring and a hard one about
+three quarters.
+
+*And the test's speeds were lying for the same reason.* They were chosen in pixels — 4 000 px/s,
+an ordinary flick on a phone and **thirteen viewports a second** in the fixture's 300 px frame, which
+is off the end of anything a thumb produces. A test at a speed nobody reaches cannot say whether
+ordinary ones saturate. They are 1.5 and 5 viewports a second now, and the assertion is that neither
+reaches the limit.
+
+The guard written for the first amendment — that the squeeze takes several frames — asserted the
+wrong requirement and is gone, with this paragraph in its place.
+
 ## Amendment — the depth was right and it arrived in one frame
 
 Reported from a device after this closed: a list flung into its end appears **already fully

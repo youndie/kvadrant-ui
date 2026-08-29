@@ -88,15 +88,27 @@ class OverscrollFlingTest {
     }
 
     @Test
-    fun the_compression_builds_up_rather_than_arriving_at_its_limit() {
-        val series = flungAtTheStop(velocity = HARD)
-        val floor = series.min()
-        val approaching = series.take(series.indexOf(floor)).count { it in (floor + 1) until BAND }
+    fun an_ordinary_throw_does_not_spend_the_whole_spring() {
+        // **The complaint this replaces a test for.** A previous version asserted that the squeeze
+        // took several frames to arrive, on the reading that "it starts at maximum" was about
+        // timing. It was not: the spring's whole range is a few per cent of a viewport and a throw
+        // crosses that in a frame whatever model runs it, so the shape was never the thing to fix.
+        // What was wrong is that every ordinary flick reached the limit, which is a depth that has
+        // stopped answering how hard the list was thrown.
+        val gentle = flungAtTheStop(velocity = GENTLE).min()
+        val hard = flungAtTheStop(velocity = HARD).min()
+        val limit = BAND - (BAND * MAX_COMPRESSION).toInt()
 
         assertTrue(
-            approaching >= MINIMUM_APPROACH_FRAMES,
-            "the last band went from $BAND px to its smallest $floor px through $approaching " +
-                "intermediate frames, so the compression arrives rather than building: $series",
+            gentle > limit,
+            "a $GENTLE px/s throw squeezed the last band to $gentle px, which is the limit at " +
+                "$limit — an ordinary flick is spending the whole spring and the depth no longer " +
+                "says how hard anything was thrown",
+        )
+        assertTrue(
+            hard > limit,
+            "a $HARD px/s throw reached the limit at $limit px. The curve is chosen so that " +
+                "nothing ever spends all of the spring; if this fails the reference has moved",
         )
     }
 
@@ -198,30 +210,33 @@ class OverscrollFlingTest {
 
         /**
          * Short of the 300 px the list can travel, so the drag never reaches the stop itself and
-         * the fling has 50 px left to cover before it does.
+         * the fling has twenty pixels left to cover before it does.
+         *
+         * Twenty and not fifty: Compose's default decay is stiff, and the gentler of the two speeds
+         * below — one and a half viewports a second, an ordinary flick — could not carry the list
+         * fifty pixels. The list then never reached its stop, no frame was sampled, and both tests
+         * failed on an empty series rather than on anything about compression.
          */
-        const val THROW = 250f
+        const val THROW = 280f
 
         /**
-         * Two speeds either side of the reference, in pixels per second.
+         * Two speeds, and they are chosen **in viewports per second** rather than in pixels.
          *
-         * `DEFAULT_FLING_REFERENCE` is a viewport and a half per second, which is 450 px/s here, so
-         * both of these are past it and the curve between them is still climbing. Two speeds chosen
-         * further out would both saturate, and the assertion would hold for a constant.
+         * That is the unit the effect works in, and getting it wrong is how the first version of
+         * these numbers lied: 4 000 px/s is a hard but ordinary flick on a phone and **thirteen
+         * viewports a second** in this fixture's 300 px frame, which is off the end of anything a
+         * thumb produces. It saturated the spring, and a test at a speed nobody reaches cannot say
+         * whether ordinary ones do.
+         *
+         * A thumb produces about 1.4 to 5.5 viewports per second (`DEFAULT_FLING_REFERENCE`), so
+         * these are 1.5 and 5 of them — either side of the reference, both inside the range, and far
+         * enough apart that the curve between them is plainly climbing.
          */
-        const val GENTLE = 900f
-        const val HARD = 4000f
+        const val GENTLE = 450f
+        const val HARD = 1500f
 
-        /**
-         * How many frames the squeeze has to take on its way in.
-         *
-         * **Reported from a device and invisible to the two tests above**: a list flung into its end
-         * appeared already fully compressed and then recovered, where a finger dragged into it
-         * squeezes gradually. Both of those assert the *peak*, which a snap and a squeeze reach
-         * alike — the shape over time is a different claim and needed its own. Three is comfortably
-         * below the nine the fix produces here and unreachable by a step, which produces none.
-         */
-        const val MINIMUM_APPROACH_FRAMES = 3
+        /** `KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, repeated so the limit can be computed. */
+        const val MAX_COMPRESSION = 0.06f
 
         /** A second at sixty a frame: the fling, the peak and most of the 300 ms return. */
         const val FRAMES = 60

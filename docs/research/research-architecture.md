@@ -1311,6 +1311,21 @@ enough to keep a hard fling inside the bound and every ordinary fling produces n
 to be visible and everything above it clamps to the same depth. Both versions pass a test written at
 one speed, which is why `OverscrollFlingTest` asserts at two.
 
+*Amendment 2 — the compression is not an animation, and a template says so.* A Windows Phone
+`ScrollViewer` declares `NoVerticalCompression`, `CompressionTop` and `CompressionBottom` and gives
+all three **no storyboard** — the same shape `PivotItem`'s `Left`/`Center`/`Right` have (§1.11:
+markers the code reads, not animations). The compression is the scroll engine's own displacement and
+the states exist so an application can notice it. So nothing is played after the list stops: the
+squeeze is instant because the arrival is, and running the leftover velocity through a decay — the
+honest physics — reaches the limit in one frame at any real speed, because the distance a throw
+carries a list is hundreds of pixels and the spring is worth tens.
+
+What was wrong was the **depth**, which was pinned: at a reference of a viewport and a half per
+second every ordinary flick spent the whole spring. A thumb produces 1.4–5.5 viewports per second, so
+the reference is 4. *And the test's speeds were in the wrong unit* — 4 000 px/s is an ordinary flick
+on a phone and thirteen viewports a second in a 300 px fixture, so the guard was measuring a speed
+nobody reaches.
+
 *Amendment — the depth was right and it arrived in one frame.* Reported from a device after the item
 closed: the fling's compression appeared at its limit and then recovered, where a drag squeezes
 gradually. Both guards passed on it, because both assert the **peak**, and a snap and a squeeze reach
