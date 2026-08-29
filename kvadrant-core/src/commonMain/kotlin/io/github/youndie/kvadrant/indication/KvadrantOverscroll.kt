@@ -132,7 +132,7 @@ public class KvadrantOverscroll(
     }
 
     /**
-     * The velocity left at the stop, turned into a depth.
+     * The velocity left at the stop, turned into a depth **and into the time it takes to reach it**.
      *
      * **A saturating curve rather than a proportion, and the alternative is worth naming.** The drag
      * path converts a *distance* — leftover pixels over a viewport — and the obvious symmetry is to
@@ -150,8 +150,29 @@ public class KvadrantOverscroll(
      * Speed is measured in **viewports per second** rather than pixels, which is the same
      * normalisation the drag path uses and is what keeps this density-independent without the effect
      * having to know a density.
+     *
+     * **The depth was right and it arrived in one frame, which is a different defect.** Reported
+     * from a device: a list flung into its end appeared already fully compressed and then recovered,
+     * where a finger dragged into it squeezes gradually. The first fix computed the right number and
+     * *set* it, so the effect began at its limit — and the guard that was written for it sampled the
+     * peak, which a snap and a squeeze both reach.
+     *
+     * **The duration is the release's, and the derivation that looked better was measured and
+     * dropped.** The physical model is that the content arrives at the stop with a speed and travels
+     * the compression distance before stopping, which under uniform deceleration takes `2d / v` —
+     * attractive because both terms are already here and no number is invented. It produces times
+     * below the threshold at which anything is visible: the compression distance is six per cent of
+     * a viewport by construction, so a 4 000 px/s fling into a 300 px viewport comes out at **9 ms**
+     * and a 6 000 px/s fling on a phone at **39 ms**. Two frames is the step this exists to replace,
+     * wearing an equation.
+     *
+     * So the squeeze takes as long as the return, and the argument for that is the one
+     * [io.github.youndie.kvadrant.indication.TiltIndication] already makes about a press: a movement
+     * and its reverse costing the same is the only relationship between two unpublished numbers that
+     * does not invent a second one. The curve is the settle's own `ExponentialOut6` — fast at first,
+     * decelerating into the limit, which is what arriving at a stop looks like.
      */
-    private fun absorb(leftover: Velocity) {
+    private suspend fun absorb(leftover: Velocity) {
         if (viewport <= 0f) return
         // The axis is the one the drag that threw this list was on, not the velocity's own. A fling
         // is the end of a gesture, so the two agree; deriving it here instead would let a stray
@@ -159,7 +180,16 @@ public class KvadrantOverscroll(
         val axis = if (horizontal) leftover.x else leftover.y
         if (axis == 0f) return
         val speed = abs(axis) / viewport
-        setCompression(compression + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
+        val from = compression
+        val to =
+            (from + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
+                .coerceIn(-maxCompression, maxCompression)
+        if (to == from) return
+        animate(
+            from,
+            to,
+            animationSpec = tween(RELEASE_MILLIS, easing = KvadrantEasing.ExponentialOut6),
+        ) { value, _ -> setCompression(value) }
     }
 
     private suspend fun performRelease() {

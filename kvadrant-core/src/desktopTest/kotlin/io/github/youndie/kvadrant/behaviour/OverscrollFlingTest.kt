@@ -48,7 +48,9 @@ import kotlin.test.assertTrue
 class OverscrollFlingTest {
     @Test
     fun a_list_flung_into_its_end_compresses() {
-        val (smallest, settled) = flungAtTheStop(velocity = HARD)
+        val series = flungAtTheStop(velocity = HARD)
+        val smallest = series.minOrNull() ?: -1
+        val settled = series.lastOrNull() ?: -1
 
         // The control. Once the spring has finished, the last band is its whole self again — so the
         // measurement means what it is claimed to mean, and a smaller number below is a squeeze
@@ -69,8 +71,8 @@ class OverscrollFlingTest {
 
     @Test
     fun a_harder_throw_compresses_further() {
-        val (gentle, _) = flungAtTheStop(velocity = GENTLE)
-        val (hard, _) = flungAtTheStop(velocity = HARD)
+        val gentle = flungAtTheStop(velocity = GENTLE).min()
+        val hard = flungAtTheStop(velocity = HARD).min()
 
         assertTrue(
             gentle < BAND && hard < BAND,
@@ -82,6 +84,19 @@ class OverscrollFlingTest {
             "a throw at $HARD px/s squeezed the last band to $hard px and one at $GENTLE px/s to " +
                 "$gentle — the depth does not follow the speed, so it is a constant wearing a " +
                 "velocity's clothes and one test at one speed would have missed it",
+        )
+    }
+
+    @Test
+    fun the_compression_builds_up_rather_than_arriving_at_its_limit() {
+        val series = flungAtTheStop(velocity = HARD)
+        val floor = series.min()
+        val approaching = series.take(series.indexOf(floor)).count { it in (floor + 1) until BAND }
+
+        assertTrue(
+            approaching >= MINIMUM_APPROACH_FRAMES,
+            "the last band went from $BAND px to its smallest $floor px through $approaching " +
+                "intermediate frames, so the compression arrives rather than building: $series",
         )
     }
 
@@ -99,9 +114,8 @@ class OverscrollFlingTest {
      * edge keeps that edge still and pulls everything above it down, so the band's visible height
      * shrinks. It cannot shrink for any other reason once the list has stopped.
      */
-    private fun flungAtTheStop(velocity: Float?): Pair<Int, Int> {
-        var smallest = Int.MAX_VALUE
-        var settled = -1
+    private fun flungAtTheStop(velocity: Float?): List<Int> {
+        val series = mutableListOf<Int>()
         runComposeUiTest {
             mainClock.autoAdvance = false
             lateinit var scroll: ScrollState
@@ -151,12 +165,10 @@ class OverscrollFlingTest {
             repeat(FRAMES) {
                 mainClock.advanceTimeByFrame()
                 if (scroll.value != scroll.maxValue) return@repeat
-                val band = lastBandHeight()
-                if (band < smallest) smallest = band
-                settled = band
+                series += lastBandHeight()
             }
         }
-        return (if (smallest == Int.MAX_VALUE) -1 else smallest) to settled
+        return series
     }
 
     /** How many rows of the bottom band are visible: the run of blue upwards from the last row. */
@@ -199,6 +211,17 @@ class OverscrollFlingTest {
          */
         const val GENTLE = 900f
         const val HARD = 4000f
+
+        /**
+         * How many frames the squeeze has to take on its way in.
+         *
+         * **Reported from a device and invisible to the two tests above**: a list flung into its end
+         * appeared already fully compressed and then recovered, where a finger dragged into it
+         * squeezes gradually. Both of those assert the *peak*, which a snap and a squeeze reach
+         * alike — the shape over time is a different claim and needed its own. Three is comfortably
+         * below the nine the fix produces here and unreachable by a step, which produces none.
+         */
+        const val MINIMUM_APPROACH_FRAMES = 3
 
         /** A second at sixty a frame: the fling, the peak and most of the 300 ms return. */
         const val FRAMES = 60

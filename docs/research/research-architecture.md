@@ -1311,6 +1311,20 @@ enough to keep a hard fling inside the bound and every ordinary fling produces n
 to be visible and everything above it clamps to the same depth. Both versions pass a test written at
 one speed, which is why `OverscrollFlingTest` asserts at two.
 
+*Amendment — the depth was right and it arrived in one frame.* Reported from a device after the item
+closed: the fling's compression appeared at its limit and then recovered, where a drag squeezes
+gradually. Both guards passed on it, because both assert the **peak**, and a snap and a squeeze reach
+the same peak — the shape over time was a claim nobody had made. The lesson generalises past this
+control: a test that samples an extreme says nothing about the path to it.
+
+The duration was derived before it was chosen, and the derivation is worth recording because it is
+the attractive one. Under uniform deceleration the content takes `2d / v` to travel the compression
+distance, and both terms are already in the effect, so no number is invented. Measured, it is below
+anything visible — the distance is six per cent of a viewport by construction, giving **9 ms** at
+4 000 px/s into a 300 px viewport and **39 ms** at 6 000 px/s on a phone. Two frames is the step it
+replaces wearing an equation. So the squeeze takes as long as the return, on the tilt's own argument
+that a movement and its reverse cost the same.
+
 ### D3. The adapter's Material version is decided by resolving the graph, not by a range
 
 Brief: `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }`.

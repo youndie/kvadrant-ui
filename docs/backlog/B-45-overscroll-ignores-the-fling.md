@@ -56,6 +56,29 @@ checking whether the fling was handled finds a sentence saying it was.
   becomes is named in KDoc as this project's, next to `maxCompression` and `resistance` — research
   §1.10.
 
+## Amendment — the depth was right and it arrived in one frame
+
+Reported from a device after this closed: a list flung into its end appears **already fully
+compressed** and then recovers, where a finger dragged into it squeezes gradually. True, and the fix
+above is why — it computed the right depth and *set* it, so the effect began at its limit.
+
+**Both of this item's guards pass on that.** They assert the peak: that a fling compresses at all,
+and that a harder one compresses further. A snap and a squeeze reach the same peak, so the shape over
+time was a claim nobody had made. `the_compression_builds_up_rather_than_arriving_at_its_limit` makes
+it, by counting the frames between the resting height and the smallest one — nine with the fix, zero
+with the step put back.
+
+**The duration was derived first and the derivation was measured and dropped.** The physical model is
+that the content arrives with a speed and travels the compression distance before stopping, so under
+uniform deceleration it takes `2d / v`, and both terms are already in the effect — no number
+invented. It comes out below anything visible, because the distance is six per cent of a viewport by
+construction: **9 ms** for a 4 000 px/s fling into the test's 300 px viewport, **39 ms** for a
+6 000 px/s fling on a phone. Two frames is the step it was replacing, wearing an equation.
+
+So the squeeze takes as long as the return, on the argument the tilt already makes about a press: a
+movement and its reverse costing the same is the only relationship between two unpublished numbers
+that does not invent a second one.
+
 ## What it turned out to be
 
 **The `UserInput` condition was right and stayed.** The item allowed for deleting it and it would
