@@ -77,6 +77,13 @@ make site                               # the site + Dokka reference into build/
   resource loader fetches `composeResources/...` relative to the *document*, so a page one directory
   down gets a 404 for the fonts and silently falls back to a system face — a site about a typeface,
   set in the wrong one, with nothing on screen saying so.
+- **A KDoc link to a document in this repository is the canonical
+  `https://github.com/youndie/kvadrant-ui/blob/main/…` URL, never a relative path.** KDoc is
+  published to the site's flat pages *and* to Dokka's nested ones, and neither ships `docs/`, so no
+  relative depth can work in both — all sixteen that existed were broken, at four different depths.
+  `scripts/doc_links.py` checks the URL's path against the working copy, so it costs nothing at the
+  gate and catches a renamed document. Relative links stay right for markdown under `docs/`, and are
+  checked too.
 - **The focus ring lives in the indication and is gated on the input mode, and both halves are
   load-bearing.** `KvadrantTheme` provides `LocalIndication`, so a keyboard focus ring drawn there
   reaches every `clickable`/`toggleable`/`selectable` at once and a new control cannot forget it.

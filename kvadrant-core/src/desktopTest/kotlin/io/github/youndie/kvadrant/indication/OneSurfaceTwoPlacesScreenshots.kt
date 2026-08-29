@@ -28,8 +28,8 @@ import ru.workinprogress.viddik.annotations.ViddikScreenshot
 /**
  * **One** surface, pressed at the same point in its own coordinates, in two places on the screen —
  * under each camera. This is
- * [B-26](../../../../../../../../docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)'s first
- * criterion, in the shape the item's own reopening asked for.
+ * [B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)'s
+ * first criterion, in the shape the item's own reopening asked for.
  *
  * The criterion has been attempted twice and answered neither time. The first fixture rotated **nine
  * tiles at once**, and the shared version bent them into a sheet that looked unmistakably like

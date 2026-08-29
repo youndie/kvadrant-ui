@@ -19,7 +19,8 @@ import kotlin.test.assertTrue
 
 /**
  * What kind of transform `Canvas.concat` actually carries — measured, because the answer decides
- * whether [B-26](../../../../../../../../docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)
+ * whether
+ * [B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)
  * has a route at all.
  *
  * `NestedCameraTest` showed a screen-wide camera cannot come from nesting `graphicsLayer`s, and the

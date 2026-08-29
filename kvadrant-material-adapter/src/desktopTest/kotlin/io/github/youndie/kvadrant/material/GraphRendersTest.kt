@@ -17,7 +17,8 @@ import kotlin.test.assertTrue
 
 /**
  * Which Material graph actually *draws*, which is the only question that decides
- * [B-14](../../../../../../../../docs/backlog/B-14-material-adapter.md)'s dependency line.
+ * [B-14](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-14-material-adapter.md)'s
+ * dependency line.
  *
  * Research §1.2 is explicit that resolving and compiling settle nothing here: the failure it is
  * guarding against — `AbstractMethodError: OutlinedTextFieldDefaults$$Lambda does not define

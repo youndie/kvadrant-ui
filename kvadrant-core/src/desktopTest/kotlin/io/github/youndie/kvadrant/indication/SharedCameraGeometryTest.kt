@@ -10,12 +10,12 @@ import kotlin.test.assertTrue
 /**
  * How much a screen-wide camera would actually change, as arithmetic rather than as a picture.
  *
- * [B-26](../../../../../../../../docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) has
- * asked twice for a comparison and got a picture both times: nine tiles rotated together, which a
- * press never does, and then a `transformOrigin` change that swung elements instead of leaning them
- * and reached a device. Its second acceptance criterion is the one that closes it — *the answer
- * written into research as a measurement, including "the difference is not visible"* — and nobody
- * has produced the number.
+ * [B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)
+ * has asked twice for a comparison and got a picture both times: nine tiles rotated together, which
+ * a press never does, and then a `transformOrigin` change that swung elements instead of leaning
+ * them and reached a device. Its second acceptance criterion is the one that closes it — *the
+ * answer written into research as a measurement, including "the difference is not visible"* — and
+ * nobody has produced the number.
  *
  * It has a closed form. `graphicsLayer` projects about the element's own centre: a local point
  * `(x, z)` lands at `centre + x·s`, where `s = d / (d − z)`. One camera over the display projects

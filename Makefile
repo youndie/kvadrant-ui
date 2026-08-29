@@ -23,6 +23,7 @@ gate:
 	$(PY) scripts/coverage_map.py --check
 	$(PY) scripts/component_catalog.py --check
 	$(PY) scripts/doc_images.py
+	$(PY) scripts/doc_links.py
 
 # Non-blocking, on purpose. bdd_report counts scenarios, and there are none while there is no
 # behaviour to describe. code_anchors will report the research anchors as absent for as long as the

@@ -22,13 +22,13 @@ import kotlin.test.assertTrue
  * preview registry rather than a list of components, so the next component is covered by having a
  * preview at all — which is already required.
  *
- * [B-40](../../../../../../../../docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md) opened claiming nothing
- * in the library was focusable. **That was half wrong and worth writing down**: `clickable`,
- * `toggleable` and `selectable` bring `Modifier.focusable` and Enter/Space activation with them, so
- * every control built on one of the three had all of it already and nobody had checked. What was
- * genuinely unreachable was `kvadrantTilt` — the library's own gesture, and therefore the tile,
- * which is the component the library exists for. One dead end, in the one place a library like this
- * cannot afford one.
+ * [B-40](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md)
+ * opened claiming nothing in the library was focusable. **That was half wrong and worth writing
+ * down**: `clickable`, `toggleable` and `selectable` bring `Modifier.focusable` and Enter/Space
+ * activation with them, so every control built on one of the three had all of it already and nobody
+ * had checked. What was genuinely unreachable was `kvadrantTilt` — the library's own gesture, and
+ * therefore the tile, which is the component the library exists for. One dead end, in the one place
+ * a library like this cannot afford one.
  */
 @OptIn(ExperimentalTestApi::class)
 class PressableNodesAreReachableTest {
