@@ -968,6 +968,28 @@ too big for the screen.
 positions, so "how far the next header peeks" is not a number to recover: it falls out of where the
 canvas is scrolled to. What has to be reproduced is the mechanism.
 
+**Consequence 2b — the title layer is not a cylinder, and reusing the settle's timings is what
+closed [B-33](../backlog/B-33-panorama-is-a-scroller-not-an-item-model.md).** `ff941126`:
+`PanningTitleLayer` "does not repeat itself when you pan past the edges of the content. Instead,
+during a selection change between `PanoramaItem` controls, it animates out of view in the direction
+it was previously moving and animates back into the scene from the other side of the screen." The
+item had stalled on the grounds that the transition's duration and curve are unpublished and
+inventing them would add two more of this project's figures. **That was true about the publication
+and wrong about the consequence**: the whole transition takes the settle's `SETTLE_MILLIS` and its
+halves are `ExponentialIn6` and `ExponentialOut6`, the settle's own curve and its mirror, so nothing
+new is invented. A control's second timing is a second thing to explain; not having one is cheaper
+than having a sourced one.
+
+The *reading* is the interpretation, and it is recorded as such in the KDoc: "during a selection
+change" taken alone would fire at every section, which a panorama plainly did not do, and the clause
+begins "instead" — instead of repeating at the edges. So it belongs to the selection change that
+crosses the edge.
+
+*Consequence — a defect that had been in a golden since the component existed.* Measuring the title
+inside a bounded Column returns the width of the screen, so a title wider than the viewport **wrapped
+onto a second line** rather than overflowing, in the component whose subject is a title too big for
+the screen. Same trap as the background layer's, one layer up; same fix.
+
 **Consequence 3 — the multiplier is not ours, it is annotated.** See the amendment to
 [D5](#d5-metro-pixels-become-dp-and-sp-at-075-everywhere).
 

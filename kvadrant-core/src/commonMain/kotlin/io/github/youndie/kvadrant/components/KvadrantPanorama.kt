@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -74,6 +75,12 @@ import kotlin.math.roundToInt
  * by exactly one of its own circumferences, so a layer's rate is *its own period* over the content's
  * — not a coefficient anybody gets to pick. Each layer is drawn twice and offset modulo its period,
  * and the fold then lands on a seam that is identical to where it started.
+ *
+ * **The title is the one layer that is not a cylinder**, because the original says so: it "does not
+ * repeat itself when you pan past the edges of the content", and instead leaves and re-enters at the
+ * selection change that crosses the edge. So it is drawn once, travels its own overflow exactly once
+ * across a copy, and the seam it would otherwise have is the transition — `titleTransition`, and
+ * [B-33](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md).
  */
 @Composable
 public fun KvadrantPanorama(
@@ -86,10 +93,37 @@ public fun KvadrantPanorama(
 ) {
     var viewport by remember { mutableIntStateOf(0) }
     var titleWidth by remember { mutableIntStateOf(0) }
+    // The title's own displacement during a wrap, on top of the travel below. Zero at every other
+    // moment; see [titleTransition].
+    var titleShift by remember { mutableFloatStateOf(0f) }
     var copyWidth by remember { mutableIntStateOf(0) }
     var backgroundWidth by remember { mutableIntStateOf(0) }
     // The left edge of every section in the first copy, which is where a release has to land.
     val sectionWidths = remember(sections.size) { mutableStateListOf(*Array(sections.size) { 0 }) }
+
+    // A layer of period `period` advances by exactly one period per content copy, so it is where it
+    // started whenever the content is — which is the only arrangement in which the fold cannot be
+    // seen. Zero period means the layer does not move, which is what a title narrower than the
+    // viewport does.
+    fun drift(period: Int): Int =
+        if (period <= 0 || copyWidth <= 0) {
+            0
+        } else {
+            -((scroll.value.toFloat() * period / copyWidth) % period).roundToInt()
+        }
+
+    // The title is the one layer that is **not** a cylinder, so it does not get [drift]. It travels
+    // its own overflow exactly once across one copy of the content — left-aligned at the first
+    // section, its right edge against the right of the viewport at the last — and what happens at
+    // the seam is [titleTransition] rather than a period.
+    fun titleTravelBase(): Float {
+        val overflow = (titleWidth - viewport).coerceAtLeast(0)
+        if (copyWidth <= 0) return 0f
+        val within = (scroll.value % copyWidth).toFloat() / copyWidth
+        return -within * overflow
+    }
+
+    fun titleTravel(): Int = (titleTravelBase() + titleShift).roundToInt()
 
     // The fold, and it folds **both ways**, which needs three copies rather than two.
     //
@@ -109,26 +143,53 @@ public fun KvadrantPanorama(
         // nothing then re-emits, because neither the value nor the gesture changed. The panorama
         // opened part-way through a section and stayed there, one copy from the end it could not
         // wrap past.
+        // **The opening move is not a wrap and must not look like one.** Positioning the scroll
+        // into the middle copy goes through this same branch, more than once while the content is
+        // still being measured, and the title would fly in from the side of the screen every time
+        // the panorama was composed. So nothing animates until the scroll has been observed *at*
+        // home once; after that, a mismatch is a person having panned past the edge.
+        var opened = false
         snapshotFlow { Triple(scroll.isScrollInProgress, scroll.value, scroll.maxValue) }
             .collect { (moving, value, limit) ->
                 if (moving || limit < 2 * copyWidth) return@collect
                 // Modulo rather than one subtraction: a single step gets it home from wherever it
                 // is, including from a position left behind by an earlier, smaller measurement.
                 val home = copyWidth + (((value - copyWidth) % copyWidth) + copyWidth) % copyWidth
-                if (home != value) scroll.scrollTo(home)
+                if (home == value) {
+                    opened = true
+                    return@collect
+                }
+                if (!opened) {
+                    scroll.scrollTo(home)
+                    return@collect
+                }
+                // Panned past the edge of the content, which is the one moment the title is not a
+                // silent passenger. It leaves in the direction the pan was going and comes back
+                // from the other side while the fold happens behind it, unseen.
+                val forward = value > home
+                titleTransition(
+                    // Cleared exactly rather than by a generous constant: the title is somewhere in
+                    // its own travel when the wrap happens, and a fixed distance either leaves a
+                    // sliver on screen or overshoots so far that the whole return happens out of
+                    // sight. One pixel past the edge on each side is what "out of view" means.
+                    exitShift =
+                        if (forward) {
+                            -(titleTravelBase() + titleWidth + 1f)
+                        } else {
+                            viewport - titleTravelBase() + 1f
+                        },
+                    entryShift = {
+                        if (forward) {
+                            viewport - titleTravelBase() + 1f
+                        } else {
+                            -(titleTravelBase() + titleWidth + 1f)
+                        }
+                    },
+                    set = { titleShift = it },
+                    fold = { scroll.scrollTo(home) },
+                )
             }
     }
-
-    // A layer of period `period` advances by exactly one period per content copy, so it is where it
-    // started whenever the content is — which is the only arrangement in which the fold cannot be
-    // seen. Zero period means the layer does not move, which is what a title narrower than the
-    // viewport does.
-    fun drift(period: Int): Int =
-        if (period <= 0 || copyWidth <= 0) {
-            0
-        } else {
-            -((scroll.value.toFloat() * period / copyWidth) % period).roundToInt()
-        }
 
     Box(modifier.fillMaxSize().onSizeChanged { viewport = it.width }) {
         // The background spans both rows in the original and drifts slowest of the three. **No
@@ -163,30 +224,32 @@ public fun KvadrantPanorama(
         ) {
             // Margin 10,-34,0,0: the title deliberately sits above the top of its row.
             //
-            // Drawn twice, and **that is a deviation from the original**, named here rather than
-            // quietly kept. `PanningTitleLayer` "does not repeat itself when you pan past the edges
-            // of the content"; instead, on a selection change, it "animates out of view in the
-            // direction it was previously moving and animates back into the scene from the other
-            // side of the screen" (`ff941126`). That behaviour needs a selected item, and this
-            // panorama has no item model — it free-scrolls, which is the same gap as the missing
-            // snap
+            // **Drawn once**, unlike every other layer here, and that is the whole of what
+            // `PanningTitleLayer` is: it "does not repeat itself when you pan past the edges of the
+            // content. Instead, during a selection change between `PanoramaItem` controls, it
+            // animates out of view in the direction it was previously moving and animates back into
+            // the scene from the other side of the screen" (`ff941126`, quoted in full because the
+            // reading matters — see [titleTransition]). This used to be a cylinder like the others,
+            // a named deviation waiting on an item model; the snap gave it one
             // ([B-33](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md)).
-            // Until it has one, a second copy is what keeps the wrap from tearing; the alternative
-            // is a title that jumps on every fold, which is worse and was the state this replaced.
-            // A title narrower than the viewport has no overflow, does not move, and gets no second
-            // copy — that one is the original's behaviour by accident rather than by design.
-            val titleMoves = titleWidth > viewport
-            Row(Modifier.offset { IntOffset(if (titleMoves) drift(titleWidth) else 0, 0) }) {
-                repeat(if (titleMoves) COPIES else 1) { copy ->
-                    KvadrantText(
-                        title,
-                        Modifier
-                            .onSizeChanged { if (copy == 0) titleWidth = it.width }
-                            .padding(start = 7.5.dp),
-                        KvadrantTheme.typography.panoramaTitle,
-                        cyrillic,
-                    )
-                }
+            //
+            // `unbounded` for the reason the background layer carries a paragraph about: inside a
+            // bounded Column a Row is measured against the viewport, so a title wider than the
+            // screen reports the screen's width, its overflow comes out as zero, and the layer that
+            // exists to be too big to fit sits perfectly still.
+            Row(
+                Modifier
+                    .wrapContentWidth(Alignment.Start, unbounded = true)
+                    .offset { IntOffset(titleTravel(), 0) },
+            ) {
+                KvadrantText(
+                    title,
+                    Modifier
+                        .onSizeChanged { titleWidth = it.width }
+                        .padding(start = 7.5.dp),
+                    KvadrantTheme.typography.panoramaTitle,
+                    cyrillic,
+                )
             }
 
             // No fillMaxWidth: a row inside a horizontal scroll must be free to exceed the viewport,
@@ -326,7 +389,62 @@ private class SectionSnap(
  * parallax coefficient. The curve is the theme's own exponential-out, which every other Metro
  * settle here uses; the duration is the phone's ordinary page-transition length.
  */
+
 private const val SETTLE_MILLIS = 300
+
+/**
+ * The title leaving and returning at a wrap, which is the one thing `PanningTitleLayer` does that
+ * no other layer here does.
+ *
+ * ```
+ * The layer also does not repeat itself when you pan past the edges of the content. Instead,
+ * during a selection change between PanoramaItem controls, it animates out of view in the
+ * direction it was previously moving and animates back into the scene from the other side of
+ * the screen.                                                    — ff941126, verbatim
+ * ```
+ *
+ * **The reading is an interpretation and is stated as one.** Taken alone, "during a selection
+ * change between `PanoramaItem` controls" could mean *every* section change — which would send a
+ * title off the screen and back several times in one pan, and is not what a panorama looked like.
+ * The sentence before it is what settles it: the clause begins "**instead**", and what it is
+ * instead *of* is repeating "when you pan past the edges of the content". So the transition belongs
+ * to the selection change that crosses the edge — last to first — which is exactly the fold. If
+ * somebody measures a device and finds otherwise, this is the paragraph to correct.
+ *
+ * **The timings are the settle's, and that is the point rather than a shortcut.** This item stood
+ * open on the grounds that the duration and the curve are unpublished and inventing them would put
+ * two more of this project's figures into a control that already carries one. Reusing what the
+ * control already has costs none: the whole transition takes `SETTLE_MILLIS`, the same as the snap
+ * that provoked it, and the two halves are `ExponentialIn6` going out and `ExponentialOut6` coming
+ * back — the settle's own curve and its mirror. A movement and its reverse costing the same is the
+ * argument [io.github.youndie.kvadrant.indication.TiltIndication] already makes about the press.
+ *
+ * The split into two halves *is* a choice, and it is the only one here.
+ */
+private suspend fun titleTransition(
+    exitShift: Float,
+    entryShift: () -> Float,
+    set: (Float) -> Unit,
+    fold: suspend () -> Unit,
+) {
+    animate(
+        0f,
+        exitShift,
+        animationSpec = tween(SETTLE_MILLIS / 2, easing = KvadrantEasing.ExponentialIn6),
+    ) { value, _ -> set(value) }
+    // Off the screen, so the fold behind it is invisible for the ordinary reason *and* this one.
+    // **After the exit rather than before**: the fold moves the title's own travel, and doing it
+    // while the title is still visible would show that move rather than hide it.
+    fold()
+    // Read after the fold, because it is measured from where the title now belongs.
+    val entry = entryShift()
+    set(entry)
+    animate(
+        entry,
+        0f,
+        animationSpec = tween(SETTLE_MILLIS / 2, easing = KvadrantEasing.ExponentialOut6),
+    ) { value, _ -> set(value) }
+}
 
 /**
  * Three of everything: one to look at and one to wrap into on **each** side.
