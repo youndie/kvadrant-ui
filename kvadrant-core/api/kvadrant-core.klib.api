@@ -74,7 +74,7 @@ final class io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory : an
 }
 
 final class io.github.youndie.kvadrant.indication/TiltIndication : androidx.compose.foundation/IndicationNodeFactory { // io.github.youndie.kvadrant.indication/TiltIndication|null[0]
-    constructor <init>(androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Boolean = ..., androidx.compose.ui.unit/Dp = ...) // io.github.youndie.kvadrant.indication/TiltIndication.<init>|<init>(androidx.compose.ui.unit.Dp;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.unit.Dp){}[0]
+    constructor <init>(androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Boolean = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Boolean = ...) // io.github.youndie.kvadrant.indication/TiltIndication.<init>|<init>(androidx.compose.ui.unit.Dp;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.unit.Dp;kotlin.Boolean){}[0]
 
     final fun create(androidx.compose.foundation.interaction/InteractionSource): androidx.compose.ui.node/DelegatableNode // io.github.youndie.kvadrant.indication/TiltIndication.create|create(androidx.compose.foundation.interaction.InteractionSource){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // io.github.youndie.kvadrant.indication/TiltIndication.equals|equals(kotlin.Any?){}[0]

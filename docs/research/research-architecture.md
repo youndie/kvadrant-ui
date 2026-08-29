@@ -1173,6 +1173,20 @@ the option of closing B-26 with "the difference is not visible" is gone: it is v
 question is whether it is *right*, which needs an implementation that `graphicsLayer` cannot
 provide at any nesting.
 
+**Answered: the per-layer camera stays**, and the answer is a judgement rather than a measurement —
+made by pressing tiles on a phone with both cameras and a switch between them, which is what the
+question had been short of through two attempts that answered it from stills instead. The
+implementation exists and ships: `TiltIndication(sharedCamera = true)` computes the quad under a
+camera at the root's centre and applies it as a canvas homography, `sample`'s settings page switches
+it, and `SharedCameraIndicationTest` measures it through the shipping indication — 4 pixels of
+28 900 between two screen positions under the per-layer camera against 1 825 under the shared one.
+
+**So the default is the deviation, and it is named here rather than left implicit.** The phone had
+one camera over the display; this library gives every element its own, on the maintainer's judgement
+of how the two feel under a finger. That is the weakest kind of reason this document accepts, which
+is why the alternative is a parameter a reader can turn on rather than a paragraph describing what
+was rejected.
+
 **Android resources are off by default under AGP's Kotlin Multiplatform plugin**
 ([B-37](../backlog/B-37-the-android-artefact-ships-without-its-fonts.md)). `androidResources { enable
 = true }` inside the `android { }` block is what creates the variant's assets container; without it
