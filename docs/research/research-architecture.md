@@ -1727,6 +1727,30 @@ green `check` compiles this target and pins its ABI, and tells you nothing about
 Wiring Karma would make the gate depend on a browser being installed, which is the "gate that gets
 skipped" problem [B-29](../backlog/B-29-android-screenshot-coverage.md) already argued through.
 
+**Amendment 3 — iOS is added, and the something that runs on it is a criterion that could not
+close without it.** [B-07](../backlog/B-07-font-stack.md) held one open line for months: the bundled
+font stack is unverified on iOS *because the target does not exist*. That is this decision and that
+item being each other's blocker, and the way out was to notice it.
+
+| Fact | Where verified |
+|---|---|
+| `compose.uiTest` publishes an `iosSimulatorArm64` variant | its module metadata, read before a line was written |
+| So `runComposeUiTest` runs on a simulator Gradle boots — **inside `check`**, with no hardware and no Xcode project | `:kvadrant-core:iosSimulatorArm64Test` is in `check`'s task graph, and the run's XML is written |
+| The whole of `commonTest` came with it: twenty-seven tests onto a third renderer | the same results directory |
+| The public API is identical on all three declared targets | the klib dump's target line went from `[wasmJs]` to `[iosArm64, iosSimulatorArm64, wasmJs]` and nothing else changed |
+
+**So the standing sentence has an exception now.** "A green `check` says nothing about a second
+renderer" is still true of Android and wasm, for the reasons each of them has, and is *false* of
+iOS — which is worth saying plainly, because the sentence was starting to read as a law rather than
+as an observation about two particular targets.
+
+*Consequence — resources are not in a bundle unless something puts them there.* The demo, run on the
+simulator, died on its first frame with `MissingResourceException` naming a font inside its own
+`.app`. compose-resources reads them out of the bundle on iOS, and a hand-assembled bundle holds what
+the script copies in. It is the same defect as
+[B-37](../backlog/B-37-the-android-artefact-ships-without-its-fonts.md) and the opposite *kind*: iOS
+throws and names the path, where Android substituted a face silently and shipped green for months.
+
 **Amendment — Android is promoted ahead of iOS and wasm** ([B-24](../backlog/B-24-add-the-android-target-next.md)).
 The rule stands; the ordering under it does not follow from "how important is the platform" but from
 **which renderer can disagree**. Desktop, iOS and wasm are all skiko: adding either of the latter
