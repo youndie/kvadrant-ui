@@ -41,13 +41,33 @@ So the plan in the paragraph above would have produced a change that looks like 
 obvious next move — turning the camera distance down until something happens — would have been
 fitting a constant to a mechanism that is not running.
 
-**Where a next attempt would have to start instead.** Not with `graphicsLayer` at all. The
-projection would have to be computed here — the element's screen position, the eye at the display's
-centre, one 4×4 matrix per pressed surface — and applied through a canvas concatenation rather than
-through the layer's own camera. That is a materially larger change than this item was sized for, and
-whether a global camera is worth it is *still* the open question: `SharedCameraTest` records what the
-current behaviour is, and nobody has yet shown a picture of the alternative that a press could
-actually produce.
+**Where a next attempt would have to start instead — and it is narrower than it looked.** Not with
+`graphicsLayer`. The projection has to be computed here and applied through a canvas
+concatenation, and `CanvasPerspectiveTest` establishes what that canvas will actually carry:
+
+- **A projective transform, driven by x and y.** A term at `Matrix[0, 3]` turns a square into a
+  trapezoid ramping 136 px to 175 px down its columns. It works.
+- **Not a depth-driven divide.** The slot a 3D convention puts the camera in — `[2, 3]`, and
+  `[3, 2]`, `[3, 0]`, `[3, 1]` with it — leaves the square a flat 120 px however it is set. What the
+  canvas takes is a **3 × 3 homography** wearing a 4 × 4's clothes, which matches Compose's own
+  `Matrix.map`, where `w = m[0,3]·x + m[1,3]·y + m[3,3]` and z appears nowhere.
+
+**That is enough.** A flat surface rotated in space and projected from any eye maps to a
+quadrilateral, and every plane-to-plane projective map *is* a homography — so a camera anywhere,
+including one over the whole screen, can be expressed as one of these. The work is: compute where
+the element's four corners land under the shared camera, using the arithmetic measured above, and
+solve for the homography that takes its rectangle to that quad. No per-platform code, because this
+is Compose's own `Matrix` and `Canvas`.
+
+The first reading of this was the opposite and would have closed the item as impossible: the term
+was set at `[3, 2]`, the square came out a parallelogram, and the conclusion drawn was that the
+canvas drops perspective. It drops *that* term. Sweeping the rest is what found the one it keeps —
+and the sweep took two attempts of its own, because a shell loop silently passed no arguments and
+printed nothing, which looks identical to a slot that does nothing.
+
+What is still open is unchanged: whether a screen-wide camera looks *right*. `SharedCameraTest`
+records the current behaviour and nobody has yet seen the alternative that a press could actually
+produce.
 
 The measurement's own control took two corrections before it worked — a row profile, which a
 `rotationY` leaves flat, and a camera distance of 900 units, which is 64 800 px of depth and
