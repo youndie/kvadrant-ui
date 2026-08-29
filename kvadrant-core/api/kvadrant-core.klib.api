@@ -44,6 +44,35 @@ final enum class io.github.youndie.kvadrant.components/TileSize : kotlin/Enum<io
     final fun values(): kotlin/Array<io.github.youndie.kvadrant.components/TileSize> // io.github.youndie.kvadrant.components/TileSize.values|values#static(){}[0]
 }
 
+final class io.github.youndie.kvadrant.indication/KvadrantOverscroll : androidx.compose.foundation/OverscrollEffect { // io.github.youndie.kvadrant.indication/KvadrantOverscroll|null[0]
+    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscroll.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float){}[0]
+
+    final val isInProgress // io.github.youndie.kvadrant.indication/KvadrantOverscroll.isInProgress|{}isInProgress[0]
+        final fun <get-isInProgress>(): kotlin/Boolean // io.github.youndie.kvadrant.indication/KvadrantOverscroll.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
+    final val node // io.github.youndie.kvadrant.indication/KvadrantOverscroll.node|{}node[0]
+        final fun <get-node>(): androidx.compose.ui.node/DelegatableNode // io.github.youndie.kvadrant.indication/KvadrantOverscroll.node.<get-node>|<get-node>(){}[0]
+
+    final fun applyToScroll(androidx.compose.ui.geometry/Offset, androidx.compose.ui.input.nestedscroll/NestedScrollSource, kotlin/Function1<androidx.compose.ui.geometry/Offset, androidx.compose.ui.geometry/Offset>): androidx.compose.ui.geometry/Offset // io.github.youndie.kvadrant.indication/KvadrantOverscroll.applyToScroll|applyToScroll(androidx.compose.ui.geometry.Offset;androidx.compose.ui.input.nestedscroll.NestedScrollSource;kotlin.Function1<androidx.compose.ui.geometry.Offset,androidx.compose.ui.geometry.Offset>){}[0]
+    final suspend fun applyToFling(androidx.compose.ui.unit/Velocity, kotlin.coroutines/SuspendFunction1<androidx.compose.ui.unit/Velocity, androidx.compose.ui.unit/Velocity>) // io.github.youndie.kvadrant.indication/KvadrantOverscroll.applyToFling|applyToFling(androidx.compose.ui.unit.Velocity;kotlin.coroutines.SuspendFunction1<androidx.compose.ui.unit.Velocity,androidx.compose.ui.unit.Velocity>){}[0]
+
+    final object Companion { // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion|null[0]
+        final const val DEFAULT_MAX_COMPRESSION // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_MAX_COMPRESSION|{}DEFAULT_MAX_COMPRESSION[0]
+            final fun <get-DEFAULT_MAX_COMPRESSION>(): kotlin/Float // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_MAX_COMPRESSION.<get-DEFAULT_MAX_COMPRESSION>|<get-DEFAULT_MAX_COMPRESSION>(){}[0]
+        final const val DEFAULT_RESISTANCE // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_RESISTANCE|{}DEFAULT_RESISTANCE[0]
+            final fun <get-DEFAULT_RESISTANCE>(): kotlin/Float // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_RESISTANCE.<get-DEFAULT_RESISTANCE>|<get-DEFAULT_RESISTANCE>(){}[0]
+        final const val RELEASE_MILLIS // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.RELEASE_MILLIS|{}RELEASE_MILLIS[0]
+            final fun <get-RELEASE_MILLIS>(): kotlin/Int // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.RELEASE_MILLIS.<get-RELEASE_MILLIS>|<get-RELEASE_MILLIS>(){}[0]
+    }
+}
+
+final class io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory : androidx.compose.foundation/OverscrollFactory { // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory|null[0]
+    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float){}[0]
+
+    final fun createOverscrollEffect(): androidx.compose.foundation/OverscrollEffect // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.createOverscrollEffect|createOverscrollEffect(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.hashCode|hashCode(){}[0]
+}
+
 final class io.github.youndie.kvadrant.indication/TiltIndication : androidx.compose.foundation/IndicationNodeFactory { // io.github.youndie.kvadrant.indication/TiltIndication|null[0]
     constructor <init>(androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Boolean = ...) // io.github.youndie.kvadrant.indication/TiltIndication.<init>|<init>(androidx.compose.ui.unit.Dp;androidx.compose.ui.unit.Dp;kotlin.Boolean){}[0]
 
@@ -524,6 +553,8 @@ final val io.github.youndie.kvadrant.components/io_github_youndie_kvadrant_compo
 final val io.github.youndie.kvadrant.components/io_github_youndie_kvadrant_components_KvadrantTextBoxDefaults$stableprop // io.github.youndie.kvadrant.components/io_github_youndie_kvadrant_components_KvadrantTextBoxDefaults$stableprop|#static{}io_github_youndie_kvadrant_components_KvadrantTextBoxDefaults$stableprop[0]
 final val io.github.youndie.kvadrant.foundation/io_github_youndie_kvadrant_foundation_KvadrantCamera$stableprop // io.github.youndie.kvadrant.foundation/io_github_youndie_kvadrant_foundation_KvadrantCamera$stableprop|#static{}io_github_youndie_kvadrant_foundation_KvadrantCamera$stableprop[0]
 final val io.github.youndie.kvadrant.icons/io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop // io.github.youndie.kvadrant.icons/io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop|#static{}io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop[0]
+final val io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop|#static{}io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop[0]
+final val io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop|#static{}io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop[0]
 final val io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_Tilt$stableprop // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_Tilt$stableprop|#static{}io_github_youndie_kvadrant_indication_Tilt$stableprop[0]
 final val io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltIndication$stableprop // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltIndication$stableprop|#static{}io_github_youndie_kvadrant_indication_TiltIndication$stableprop[0]
 final val io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltTransform$stableprop // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltTransform$stableprop|#static{}io_github_youndie_kvadrant_indication_TiltTransform$stableprop[0]
@@ -604,6 +635,8 @@ final fun io.github.youndie.kvadrant.foundation/kvadrantCyrillic(androidx.compos
 final fun io.github.youndie.kvadrant.foundation/kvadrantCyrillic(kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.ui.text.font/FontFamily // io.github.youndie.kvadrant.foundation/kvadrantCyrillic|kvadrantCyrillic(kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun io.github.youndie.kvadrant.foundation/kvadrantLatin(androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.ui.text.font/FontFamily // io.github.youndie.kvadrant.foundation/kvadrantLatin|kvadrantLatin(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun io.github.youndie.kvadrant.icons/io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.icons/io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop_getter|io_github_youndie_kvadrant_icons_KvadrantIcons$stableprop_getter(){}[0]
+final fun io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop_getter|io_github_youndie_kvadrant_indication_KvadrantOverscroll$stableprop_getter(){}[0]
+final fun io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop_getter|io_github_youndie_kvadrant_indication_KvadrantOverscrollFactory$stableprop_getter(){}[0]
 final fun io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_Tilt$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_Tilt$stableprop_getter|io_github_youndie_kvadrant_indication_Tilt$stableprop_getter(){}[0]
 final fun io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltIndication$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltIndication$stableprop_getter|io_github_youndie_kvadrant_indication_TiltIndication$stableprop_getter(){}[0]
 final fun io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltTransform$stableprop_getter(): kotlin/Int // io.github.youndie.kvadrant.indication/io_github_youndie_kvadrant_indication_TiltTransform$stableprop_getter|io_github_youndie_kvadrant_indication_TiltTransform$stableprop_getter(){}[0]

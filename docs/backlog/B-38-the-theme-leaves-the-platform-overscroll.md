@@ -1,7 +1,7 @@
 ---
 id: B-38
 title: "The theme replaces the ripple and leaves the platform's overscroll"
-status: open
+status: done
 priority: P0
 size: M
 stage: stage-2-release
@@ -47,13 +47,51 @@ constant fitted to one screen at one window size is unre-derivable a week later.
 against a source first — the visual state groups say *what* changes, and the WinJS animation library
 is the nearest published relative for *how fast*.
 
+## Done
+
+`KvadrantOverscroll` compresses the content towards the edge the finger is pushing against, and
+`KvadrantTheme` provides it through `LocalOverscrollFactory` — one line below the one that provides
+the tilt, which was the whole argument.
+
+**Measured, because the two candidate behaviours look alike in a still and are opposites in a
+gesture.** A translation — iOS's rubber band, and what an easier implementation produces — slides the
+content away from the boundary and leaves a gap. A compression keeps the boundary where it is and
+squeezes what is behind it. So `OverscrollCompressionTest` asserts *which edge moved*: at the bottom
+of a list the band boundary comes down by 18 px of a 300 px viewport — exactly the 6 % the parameter
+says — while the bottom edge stays at 299. Removing the factory from the theme fails it; that was
+checked.
+
+Three numbers are this project's own and none is a constant: `DEFAULT_MAX_COMPRESSION`,
+`DEFAULT_RESISTANCE` and `RELEASE_MILLIS`, each a parameter with KDoc naming it as ours. Microsoft
+published the visual state groups and none of their storyboards. They are on research §1.10's list
+now, beside the panorama's peek.
+
+There is a preview, `overscroll`, because this is the kind of thing the documentation site exists
+for: it cannot be understood from a still, only by dragging one.
+
+### Three wrong turns, all caught by measurement rather than by review
+
+**The state was an `Animatable`.** A drag is synchronous — `applyToScroll` is called and the next
+frame is drawn — while `snapTo` suspends, so updating through `scope.launch` meant the draw pass read
+the value from before the gesture. Nothing compressed at all. Animation belongs only to the release,
+which genuinely is a coroutine.
+
+**The pivot was on the wrong edge.** The sign belongs to the finger, not to the boundary: a finger
+travelling *up* at the end of a list leaves a negative delta and is pushing against the **bottom**.
+Before the fix the measurement showed the bottom edge rising and the top staying — a list compressing
+away from the boundary it was resting on, which is precisely backwards.
+
+**And the first fixture could not have shown either of those.** It scrolled one solid white block
+taller than the viewport, where whatever is squeezed away at the far edge is replaced by more of the
+same colour. It reported no change from an effect that was working. Bands fixed it, and the reason is
+written in the test.
+
 ## Acceptance
 
-- AC: a scrolling surface under `KvadrantTheme` compresses at its end on every target, and the
-  platform's own overscroll is gone — asserted by a test that scrolls past the end and measures the
-  content's displacement, not by looking at a still.
-- AC: the theme installs it, so a consumer gets it without asking, exactly as they get the tilt.
-- AC: the distance and timing are parameters with KDoc naming them as this project's, because
-  Microsoft published neither.
-- AC: research §1.10's list of unpublished numbers gains these two.
+- ~~AC: a scrolling surface compresses at its end, asserted by measurement rather than by a still.~~
+  Done — `OverscrollCompressionTest`. Desktop only, for B-29's reason; the on-device check belongs
+  with whatever next runs there.
+- ~~AC: the theme installs it.~~ Done, in `KvadrantTheme`.
+- ~~AC: the distance and timing are parameters named as ours.~~ Done — three of them.
+- ~~AC: research §1.10's list of unpublished numbers gains these.~~ Done — three, not two.
 - Anchors: `kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/theme/KvadrantTheme.kt`

@@ -107,6 +107,12 @@ make site                               # the site + Dokka reference into build/
   where the canon was read. **Restoring behaviour the original had is not a deviation and is not
   gated** — that distinction is the flag's whole value. A number nobody published is a different
   thing again: it is not gated either, it is marked in KDoc and shipped as a parameter. Restoring behaviour the original had is not a deviation and is not gated.
+- **The theme replaces two platform behaviours, not one.** `KvadrantTheme` provides
+  `LocalIndication` with the tilt *and* `LocalOverscrollFactory` with the compression, because a
+  Metro surface neither ripples nor stretches. For a long time it did only the first, so a Metro list
+  ended with Android's own overscroll — the same error as leaving the ripple would have been, one
+  line apart, and nobody had noticed. If a third platform default turns up in a `CompositionLocal`,
+  it belongs on this list.
 - **A number that is not Microsoft's says so**, in KDoc, and ships as a parameter of the public API
   rather than as a constant. Where the specification has gaps they are named in research §1.10.
 - **The light theme is not an inversion of the dark one.** Transcribe both; never derive one.

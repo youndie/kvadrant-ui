@@ -1,13 +1,16 @@
 package io.github.youndie.kvadrant.theme
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import io.github.youndie.kvadrant.indication.KvadrantOverscrollFactory
 import io.github.youndie.kvadrant.indication.TiltIndication
 
 /**
@@ -108,6 +111,11 @@ public fun KvadrantTheme(
         LocalKvadrantThemePresent provides true,
         LocalIndication provides
             TiltIndication(maxDepression = metrics.tiltDepression, animatePress = remastered),
+        // The other half of the same argument. Replacing the ripple and leaving the platform's
+        // overscroll meant a Metro list ended with Android's stretch — as foreign as the ripple
+        // would have been, and met as often. Windows Phone compressed; `KvadrantOverscroll` says
+        // which of its numbers are ours. B-38.
+        LocalOverscrollFactory provides KvadrantOverscrollFactory(rememberCoroutineScope()),
         LocalKvadrantTextStyle provides scaled.normal,
         content = content,
     )

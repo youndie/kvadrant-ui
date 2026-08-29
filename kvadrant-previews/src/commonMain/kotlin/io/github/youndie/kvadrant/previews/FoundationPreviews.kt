@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +36,15 @@ internal fun foundationPreviews(): List<KvadrantPreview> =
             summary = "press and hold: the plane leans towards the finger and follows it",
             heightDp = 260,
         ) { TiltPreview() },
+        KvadrantPreview(
+            id = "overscroll",
+            group = "foundation",
+            component = "KvadrantOverscroll",
+            summary =
+                "drag the list past either end: the content compresses towards the edge rather " +
+                    "than sliding off it",
+            heightDp = 300,
+        ) { OverscrollPreview() },
         KvadrantPreview(
             id = "type-ramp",
             group = "foundation",
@@ -83,6 +93,31 @@ private fun TiltPreview() {
             contentAlignment = Alignment.Center,
         ) {
             KvadrantText("press me", style = KvadrantTheme.typography.large)
+        }
+    }
+}
+
+/**
+ * A list with an end to reach.
+ *
+ * Short enough that the end arrives in one drag, and banded so the compression is visible: a plain
+ * column of text compresses too, but there is nothing in it whose position the eye can hold on to.
+ */
+@Composable
+private fun OverscrollPreview() {
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+    ) {
+        repeat(8) { index ->
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(if (index % 2 == 0) KvadrantTheme.colors.chrome else KvadrantTheme.colors.background),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                KvadrantText("  row $index", style = KvadrantTheme.typography.normal)
+            }
         }
     }
 }
