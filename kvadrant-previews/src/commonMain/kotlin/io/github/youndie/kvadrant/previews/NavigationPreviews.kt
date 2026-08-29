@@ -181,9 +181,9 @@ private fun AppBarPreview() {
             menuExpanded = expanded,
             onMenuToggle = { expanded = !expanded },
         ) {
-            KvadrantAppBarButton({}) { Glyph("add") }
-            KvadrantAppBarButton({}) { Glyph("check") }
-            KvadrantAppBarButton({}) { Glyph("delete") }
+            KvadrantAppBarButton({}, label = "new") { Glyph("add") }
+            KvadrantAppBarButton({}, label = "confirm") { Glyph("check") }
+            KvadrantAppBarButton({}, label = "delete") { Glyph("delete") }
         }
     }
 }
@@ -194,6 +194,6 @@ private fun AppBarButtonPreview() {
         Modifier.fillMaxSize().background(KvadrantTheme.colors.chrome),
         contentAlignment = Alignment.Center,
     ) {
-        KvadrantAppBarButton({}) { Glyph("check") }
+        KvadrantAppBarButton({}, label = "confirm") { Glyph("check") }
     }
 }

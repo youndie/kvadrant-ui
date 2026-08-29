@@ -10,6 +10,13 @@ blocked_by: [B-05]
 
 # B-11 — Authentic visuals with extended hit areas, and an opt-in contrast palette
 
+> **This item is narrower than its filename.** `B-11-accessibility-policy.md` reads as the whole
+> subject; what it covered is touch targets and contrast, and both are done. Roles, labels and state
+> descriptions were not in it — a screen reader got a clickable box where a toggle switch was, for as
+> long as this item looked closed. That is
+> [B-39](B-39-semantics-beyond-touch-targets.md), and the filename stays because renaming it would
+> break every citation.
+
 **Half done, and the half that is done is the palette.** `KvadrantColors.accessible()` and
 `accessibleAccent()` raise every accent to WCAG AA by walking it towards black or white until the
 ratio is reached — computed rather than hand-picked, so a caller's own accent gets the same

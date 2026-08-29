@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,11 +71,18 @@ public fun KvadrantCheckBox(
     Row(
         modifier
             .defaultMinSize(minHeight = KvadrantTheme.metrics.touchTargetMin)
-            .clickable(
+            // `toggleable` rather than `clickable`, and that is the whole of the accessibility fix
+            // for this control: it carries the role and the on/off state into the semantics tree,
+            // where `clickable` reported a box that could be tapped and nothing about what it was.
+            // The interaction source and indication are unchanged, so the tilt is untouched.
+            .toggleable(
+                value = checked,
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 enabled = enabled,
-            ) { onCheckedChange(!checked) },
+                role = Role.Checkbox,
+                onValueChange = onCheckedChange,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(CONTENT_GAP),
     ) {
@@ -149,10 +162,14 @@ public fun KvadrantRadioButton(
     Row(
         modifier
             .defaultMinSize(minHeight = KvadrantTheme.metrics.touchTargetMin)
-            .clickable(
+            // `selectable`, so a screen reader is told this is one of a set and which one is
+            // chosen. A radio button that only reports "clickable" is indistinguishable from a row.
+            .selectable(
+                selected = selected,
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 enabled = enabled,
+                role = Role.RadioButton,
                 onClick = onClick,
             ),
         verticalAlignment = Alignment.CenterVertically,
@@ -206,6 +223,12 @@ public fun KvadrantSlider(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
+    // A slider that reports no value is a bar a screen reader can find and not read. The range is
+    // the control's own 0..1, so a caller scaling it to something else does not have to restate it.
+    val announced =
+        Modifier.semantics {
+            progressBarRangeInfo = ProgressBarRangeInfo(value.coerceIn(0f, 1f), 0f..1f)
+        }
     val colors = KvadrantTheme.colors
     val metrics = KvadrantTheme.metrics
     val fraction = value.coerceIn(0f, 1f)
@@ -216,6 +239,7 @@ public fun KvadrantSlider(
 
     Box(
         modifier
+            .then(announced)
             .fillMaxWidth()
             .defaultMinSize(minHeight = metrics.touchTargetMin)
             // The gestures sit **outside** the horizontal margin, because the template's root is a
