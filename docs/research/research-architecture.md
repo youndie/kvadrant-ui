@@ -1209,6 +1209,29 @@ of how the two feel under a finger. That is the weakest kind of reason this docu
 is why the alternative is a parameter a reader can turn on rather than a paragraph describing what
 was rejected.
 
+**The only thing that runs on Android is outside the gate, and that cost a silent year**
+([B-36](../backlog/B-36-the-on-device-guard-does-not-execute.md)). `connectedAndroidDeviceTest` is
+deliberately not in `check` — a gate that needs hardware is a gate that gets skipped — and the price
+turned out to be larger than the design allowed for: it errored on a device, nobody ran it for
+months, and the AAR shipping with **no fonts in it at all** stayed invisible for exactly that long.
+
+*The cause was never found, and that is the finding.* The "No compose hierarchies found in the app"
+failure did not recur with the device reconnected; two hypotheses were eliminated — the test manifest
+(the merged manifest already declares `ComponentActivity`, and adding one by hand changed nothing)
+and a version skew (`ui-test`, `ui-test-manifest` and `ui-android` all resolve to 1.12.0) — and no
+third was applied. A stale install is a guess. It is recorded because the next person to meet that
+message needs to know which two dead ends are already walked.
+
+*What replaced the investigation is the part worth keeping.* A guard outside the gate is one whose
+silence reads as success, and the answer cannot itself be a gate: failing `check` on a stale record
+would block every change to the tilt on owning a phone, and a check that cannot be satisfied honestly
+is one people satisfy dishonestly. So `make android` records a row — date, device, API, commit — for
+runs that **passed**, and `make report` prints how long ago that was and which of the sources the
+claim depends on have moved since. Silence becomes a number that grows. The gate holds only that the
+record exists, and `CameraProbeTest` holds the same solver on the desktop, so what is genuinely
+uncovered is narrowed to hwui disagreeing with skiko — which is what
+[B-25](../backlog/B-25-tilt-camera-is-in-inches.md) was.
+
 **Android resources are off by default under AGP's Kotlin Multiplatform plugin**
 ([B-37](../backlog/B-37-the-android-artefact-ships-without-its-fonts.md)). `androidResources { enable
 = true }` inside the `android { }` block is what creates the variant's assets container; without it

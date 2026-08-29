@@ -1,5 +1,6 @@
 package io.github.youndie.kvadrant.indication
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +20,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sin
 import kotlin.test.Test
@@ -102,6 +104,22 @@ class AndroidCameraProbeTest {
             val r = top.toFloat() / bottom
             val solved = s * (r + 1) / (r - 1)
             val declared = TiltIndication.DEFAULT_CAMERA_DISTANCE.value * density
+
+            // **Kept, not just asserted.** B-29's decision was that Android gets a *number* where the
+            // desktop gets goldens, and until this line the number was computed, compared against a
+            // six per cent window and thrown away — so two runs a year apart on two Android versions
+            // were indistinguishable as long as both were inside the window. `scripts/android_guard.py`
+            // reads this out of logcat and writes it into the run record, where a drift is visible
+            // as a drift rather than as a pass.
+            Log.i(
+                "KvadrantProbe",
+                // `Locale.ROOT`, and the first run without it recorded `density=2,625`. The
+                // formatter follows the *device's* locale, so a machine-readable line written for a
+                // record file comes out with a decimal comma on a phone set to most of Europe — a
+                // number that no longer parses, produced by a passing test.
+                "camera solved=%.0f declared=%.0f density=%.3f trapezoid=%d/%d"
+                    .format(Locale.ROOT, solved, declared, density, top, bottom),
+            )
 
             assertTrue(
                 abs(solved - declared) / declared < 0.06f,
