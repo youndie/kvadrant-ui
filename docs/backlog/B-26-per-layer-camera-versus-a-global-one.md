@@ -65,9 +65,33 @@ canvas drops perspective. It drops *that* term. Sweeping the rest is what found 
 and the sweep took two attempts of its own, because a shell loop silently passed no arguments and
 printed nothing, which looks identical to a slot that does nothing.
 
-What is still open is unchanged: whether a screen-wide camera looks *right*. `SharedCameraTest`
-records the current behaviour and nobody has yet seen the alternative that a press could actually
-produce.
+## Built, and there is a picture at last
+
+`KvadrantHomography` projects an element's four corners from an eye at any point and solves for the
+transform that takes its rectangle there. It is **not wired into the tilt**: the shipping behaviour
+is unchanged, and this exists so the question can be looked at instead of argued about.
+
+The maths is checked against the renderer rather than against itself, which matters because three
+independent guesses go into it — the order the two rotations compose in, the shape of the divide,
+and the layout Compose's `Matrix` wants its projective terms in — and each can be wrong in a way
+that still draws a plausible trapezoid. At `eye = Offset.Zero` the homography and
+`Modifier.graphicsLayer` are describing the same camera, so they must draw the same shape, and
+`KvadrantHomographyTest` requires them to agree within a column. Reversing the divide, ignoring the
+eye, or dropping the projective terms each fail it; that was checked by doing all three.
+
+`camera/one surface per layer` and `camera/one surface shared` are the criterion's stills, in the
+shape the reopening asked for — **one** surface, pressed at the same point in its own coordinates,
+in two places on the screen. Per-layer, the two are deformed identically, because every element
+carries its own camera at its own centre and where it sits cannot matter. Shared, the upper surface
+sits nearly square-on and the lower-left one is seen from the side. It *leans*; it does not swing,
+which is what the first attempt did and what a device reported.
+
+## Still open, and it is now the only thing open
+
+Whether that is what the tilt should do. The measurement above says the difference is 19.5 dp at the
+screen edge, so it is not nothing; the stills say what it looks like. What has never been available
+is a judgement made while looking at it on a device, and the previous attempt made that judgement
+from a fixture of nine tiles rotating together, which a press never does.
 
 The measurement's own control took two corrections before it worked — a row profile, which a
 `rotationY` leaves flat, and a camera distance of 900 units, which is 64 800 px of depth and
@@ -122,9 +146,11 @@ to one screen at one window size, and the number would be unre-derivable a week 
 first *which* of the two the eye is reporting — the per-element perspective or the missing
 screen-position dependence — by rendering the same tile grid both ways.
 
-- AC: a still of a tile grid, pressed at the same point, under a per-layer camera and under a
-  camera shared across the grid, side by side, so the difference can be looked at rather than
-  argued about.
+- ~~AC: a still of a tile grid, pressed at the same point, under a per-layer camera and under a
+  camera shared across the grid, side by side.~~ Done, and **not of a grid** — the item's own
+  reopening replaced that with one surface in two places, because the grid picture is what
+  persuaded the first attempt to ship. `camera/one surface per layer` and
+  `camera/one surface shared`.
 - ~~AC: whichever way it goes, the answer is written into research §1.6 as a measurement — including
   "the difference is not visible", which is a legitimate outcome and closes this.~~ Done, and the
   answer is **19.5 dp at the screen edge** — visible, so this item does not close on it. See the
