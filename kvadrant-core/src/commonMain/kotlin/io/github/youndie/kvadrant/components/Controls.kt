@@ -35,10 +35,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.theme.KvadrantEasing
@@ -291,6 +294,16 @@ public fun onAccent(): Color = contrastOn(KvadrantTheme.colors.accent)
  * invisible field surround it exactly as they surround a button, and the content carries
  * `Padding="2"` plus `PhoneTextBoxInnerMargin` of `1,2`. [contentPadding] is a parameter only
  * because `PhonePasswordBox` differs from this in one number — its inner margin is `3,2`.
+ *
+ * **[actionIcon] is the Toolkit's half of this control**, and it was missing for as long as the
+ * library had the plain half ([B-43](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-43-the-toolkit-was-never-inventoried.md)).
+ * The Toolkit's `PhoneTextBox` puts an `ActionIconBorder` of `Width="84" Height="72"` at the bottom
+ * right of the field, transparent, holding a `26 × 26` image — so the icon is small and its target
+ * is not, which is the same relationship the app bar's glyphs have to their rings. Twenty-six is
+ * also the app bar's own icon size, which is corroboration rather than coincidence.
+ *
+ * The icon is a slot rather than a drawable because [D10](https://github.com/youndie/kvadrant-ui/blob/main/docs/research/research-architecture.md)
+ * says so: no Segoe asset enters this repository, and a caller's glyph is the only kind there is.
  */
 @Composable
 public fun KvadrantTextBox(
@@ -300,6 +313,9 @@ public fun KvadrantTextBox(
     placeholder: String = "",
     enabled: Boolean = true,
     contentPadding: PaddingValues = KvadrantTextBoxDefaults.ContentPadding,
+    actionIcon: (@Composable () -> Unit)? = null,
+    onActionIconClick: (() -> Unit)? = null,
+    actionIconLabel: String? = null,
     cyrillic: FontFamily? = null,
 ) {
     val colors = KvadrantTheme.colors
@@ -353,6 +369,32 @@ public fun KvadrantTextBox(
             cursorBrush = SolidColor(ink),
             singleLine = true,
         )
+        if (actionIcon != null) {
+            // Bottom right and inside the border, as `ActionIconBorder` is: an 84 × 72 px target
+            // around a 26 × 26 px glyph, so what a thumb hits is nearly three times what the eye
+            // sees. Aligned to the *end* rather than the right, because a right-to-left layout
+            // wants it on the other side and B-41 is where that gets checked.
+            Box(
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(KvadrantTextBoxDefaults.ActionIconTarget)
+                    .then(if (onActionIconClick == null) Modifier else Modifier.clickable(onClick = onActionIconClick))
+                    // The same arrangement `KvadrantAppBarButton` has, for the same reason and
+                    // found the same way: a glyph is a picture, so the only name it can have is the
+                    // caller's. `InteractiveNodesAreNamedTest` failed on this target the first time
+                    // it existed, which is what that guard is for.
+                    .then(
+                        if (actionIconLabel == null) {
+                            Modifier
+                        } else {
+                            Modifier.semantics { contentDescription = actionIconLabel }
+                        },
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(Modifier.size(KvadrantTextBoxDefaults.ActionIconSize)) { actionIcon() }
+            }
+        }
     }
 }
 
@@ -363,6 +405,12 @@ public object KvadrantTextBoxDefaults {
 
     /** The same, with `PhonePasswordBoxInnerMargin="3,2"` instead. */
     public val PasswordContentPadding: PaddingValues = PaddingValues(horizontal = 3.75.dp, vertical = 3.dp)
+
+    /** `ActionIconBorder`'s `Width="84" Height="72"`, at 0.75. */
+    public val ActionIconTarget: DpSize = DpSize(63.dp, 54.dp)
+
+    /** The `Image` inside it: `26 × 26`, the app bar's icon size as well. */
+    public val ActionIconSize: Dp = 19.5.dp
 }
 
 /**

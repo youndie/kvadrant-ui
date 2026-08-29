@@ -47,6 +47,7 @@ public fun KvadrantPivot(
     modifier: Modifier = Modifier,
     title: String? = null,
     state: PagerState = rememberKvadrantPivotState(titles.size),
+    swipeEnabled: Boolean = true,
     cyrillic: FontFamily? = null,
     content: @Composable (page: Int) -> Unit,
 ) {
@@ -66,7 +67,18 @@ public fun KvadrantPivot(
 
         KvadrantPivotHeaders(titles, state, cyrillic, Modifier.padding(top = 4.dp))
 
-        HorizontalPager(state = state, modifier = Modifier.fillMaxWidth()) { page ->
+        // **`LockablePivot` is this parameter and not a component**, which is
+        // [B-43](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-43-the-toolkit-was-never-inventoried.md)'s
+        // one-sentence answer. The Toolkit shipped a whole subclass because Silverlight had no way
+        // to turn a `Pivot`'s manipulation off from outside it; a pager takes a boolean, and a
+        // second component whose only difference is a boolean is a second thing to document, test
+        // and keep in step. A page that owns a horizontal gesture — a map, a slider that fills the
+        // width — sets this to false while it has the finger.
+        HorizontalPager(
+            state = state,
+            modifier = Modifier.fillMaxWidth(),
+            userScrollEnabled = swipeEnabled,
+        ) { page ->
             // PivotItemMargin 12,28,12,0 — the item's own margin, inside the page. Putting it on
             // the pager instead makes the neighbouring page peek, which the content never does.
             //

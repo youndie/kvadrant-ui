@@ -1,6 +1,8 @@
 package io.github.youndie.kvadrant.previews
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.youndie.kvadrant.components.KvadrantAutoCompleteBox
 import io.github.youndie.kvadrant.components.KvadrantButton
 import io.github.youndie.kvadrant.components.KvadrantCheckBox
 import io.github.youndie.kvadrant.components.KvadrantPasswordBox
@@ -43,6 +46,13 @@ internal fun controlPreviews(): List<KvadrantPreview> =
             summary = "type in it: a light field in both themes, and focus does not bring in the accent",
             heightDp = 200,
         ) { TextBoxPreview() },
+        KvadrantPreview(
+            id = "auto-complete-box",
+            group = "controls",
+            component = "KvadrantAutoCompleteBox",
+            summary = "the field that offers what it thinks you are typing, on a sheet of white in either theme",
+            heightDp = 260,
+        ) { AutoCompleteBoxPreview() },
         KvadrantPreview(
             id = "password-box",
             group = "controls",
@@ -114,7 +124,34 @@ private fun TextBoxPreview() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         KvadrantTextBox(name, { name = it }, Modifier.fillMaxWidth(), placeholder = "your name")
-        KvadrantTextBox(done, { done = it }, Modifier.fillMaxWidth())
+        // The Toolkit's action icon: an 84 × 72 px target around a 26 × 26 glyph, bottom right and
+        // inside the border. The glyph is the caller's, because no Segoe asset enters this
+        // repository — a filled square is what a library can draw of somebody else's icon.
+        KvadrantTextBox(
+            done,
+            { done = it },
+            Modifier.fillMaxWidth(),
+            actionIcon = {
+                Box(Modifier.fillMaxSize().background(KvadrantTheme.colors.textBoxForeground))
+            },
+            onActionIconClick = { done = "" },
+            actionIconLabel = "clear",
+        )
+    }
+}
+
+@Composable
+private fun AutoCompleteBoxPreview() {
+    var typed by remember { mutableStateOf("b") }
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
+        KvadrantAutoCompleteBox(
+            value = typed,
+            onValueChange = { typed = it },
+            suggestions = CITIES,
+            onSuggestionSelect = { typed = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = "city",
+        )
     }
 }
 
@@ -201,3 +238,6 @@ private fun ProgressDotsPreview() {
         KvadrantProgressDots(Modifier.fillMaxWidth())
     }
 }
+
+/** The autocomplete box filters what it is given; what it is given is the caller's. */
+private val CITIES = listOf("Amsterdam", "Berlin", "Bruges", "Copenhagen", "Dublin")
