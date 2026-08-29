@@ -32,6 +32,13 @@ import io.github.youndie.kvadrant.theme.KvadrantWeights
  * The phone did not put its pickers in a dialog — it navigated to a **page** of these, filling the
  * screen, which is why the squares are as big as they are and the numbers are 54 px. A picker that
  * fits in a popover is a different control wearing the same name.
+ *
+ * **The picker those columns belong to is [KvadrantDatePicker] and [KvadrantTimePicker].** For a
+ * long time this sentence said "of a date or time picker" about a thing that did not exist: both
+ * halves — this and [KvadrantPickerPage] — were built, tested and previewed before anything
+ * assembled them. Use this directly for a column of something that is not a date; use the pickers
+ * for a date, because the wrapping window and the day that has to stay inside its month are theirs
+ * rather than yours.
  */
 @Composable
 public fun KvadrantLoopingSelector(

@@ -76,6 +76,8 @@ nicer than Windows Phone is a defect rather than a feature.
 | `KvadrantAppBar` | `app-bar` | [KvadrantAppBar.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantAppBar.kt) | The bar along the bottom of a Windows Phone page: at most four circular buttons and an overflow menu, 72 px tall |
 | `KvadrantAppBarButton` | `app-bar-button` | [KvadrantAppBar.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantAppBar.kt) | One circular button: 48×48 px with a 1.5 px ring, and a 26×26 px space in the middle for a glyph |
 | `KvadrantContextMenuHost` | `context-menu` | [KvadrantContextMenu.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantContextMenu.kt) | The menu a long press opens, and the page pushed away behind it |
+| `KvadrantDatePicker` | `date-picker` | [KvadrantDateTimePicker.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantDateTimePicker.kt) | The date picker the phone navigated to: a page of tall square columns, one per component of the date, tipping in from -50° |
+| `KvadrantTimePicker` | `time-picker` | [KvadrantDateTimePicker.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantDateTimePicker.kt) | The same page with an hour and a minute on it, and a meridiem column when the cycle is twelve |
 | `KvadrantListPicker` | `list-picker` | [KvadrantListPicker.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantListPicker.kt) | A one-line control that opens into its options — or, past a threshold, into a whole page |
 | `KvadrantListPickerPage` | `list-picker-page` | [KvadrantListPickerPage.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantListPickerPage.kt) | The page a picker with more than five options opens, rather than unfolding in place |
 | `KvadrantLongList` | `long-list` | [KvadrantLongList.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantLongList.kt) | A list broken into groups, each under a letter — the contacts list, the app list, every long list the phone had |
@@ -115,7 +117,7 @@ nicer than Windows Phone is a defect rather than a feature.
 | `KvadrantText` | `text` | [KvadrantText.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/foundation/KvadrantText.kt) | Text in the current theme's colour and style |
 | `KvadrantTheme` | — | [KvadrantTheme.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/theme/KvadrantTheme.kt) | Wraps `content` in a Metro theme, and replaces the press indication with `TiltIndication` — the plane leaning towards the finger is Metro's ripple, and it is the default rather than something a caller remembers to apply |
 
-48 public composables, 48 previews, 5 composables with no preview of their own.
+50 public composables, 50 previews, 5 composables with no preview of their own.
 
 <!-- END CATALOG -->
 

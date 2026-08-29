@@ -14,7 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantContextMenuHost
+import io.github.youndie.kvadrant.components.KvadrantDate
+import io.github.youndie.kvadrant.components.KvadrantDateOrder
+import io.github.youndie.kvadrant.components.KvadrantDatePicker
 import io.github.youndie.kvadrant.components.KvadrantGroupHeader
+import io.github.youndie.kvadrant.components.KvadrantHourCycle
 import io.github.youndie.kvadrant.components.KvadrantJumpList
 import io.github.youndie.kvadrant.components.KvadrantListItem
 import io.github.youndie.kvadrant.components.KvadrantListPicker
@@ -23,9 +27,15 @@ import io.github.youndie.kvadrant.components.KvadrantLongList
 import io.github.youndie.kvadrant.components.KvadrantLoopingSelector
 import io.github.youndie.kvadrant.components.KvadrantMessageBox
 import io.github.youndie.kvadrant.components.KvadrantPickerPage
+import io.github.youndie.kvadrant.components.KvadrantTime
+import io.github.youndie.kvadrant.components.KvadrantTimePicker
 import io.github.youndie.kvadrant.components.KvadrantToast
 
 private val CITIES = listOf("Amsterdam", "Berlin", "Copenhagen", "Dublin", "Edinburgh", "Frankfurt")
+
+/** The picker takes its month names from the caller, for the reason its KDoc gives. */
+private val MONTHS =
+    listOf("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
 
 internal fun listPreviews(): List<KvadrantPreview> =
     listOf(
@@ -85,6 +95,20 @@ internal fun listPreviews(): List<KvadrantPreview> =
             summary = "the surface a looping selector arrives on, tipping in from -50°",
             heightDp = 360,
         ) { PickerPagePreview() },
+        KvadrantPreview(
+            id = "date-picker",
+            group = "lists and pickers",
+            component = "KvadrantDatePicker",
+            summary = "three wrapping columns on a picker page, in the order the locale writes a date",
+            heightDp = 420,
+        ) { DatePickerPreview() },
+        KvadrantPreview(
+            id = "time-picker",
+            group = "lists and pickers",
+            component = "KvadrantTimePicker",
+            summary = "hours, minutes and the half of the day, on a twelve-hour clock",
+            heightDp = 420,
+        ) { TimePickerPreview() },
         KvadrantPreview(
             id = "message-box",
             group = "lists and pickers",
@@ -173,6 +197,42 @@ private fun ListPickerPagePreview() {
         header = "city",
         applicationTitle = "SETTINGS",
     )
+}
+
+@Composable
+private fun DatePickerPreview() {
+    var date by remember { mutableStateOf(KvadrantDate(2026, 8, 29)) }
+    Box(Modifier.fillMaxSize().padding(16.dp)) {
+        KvadrantDatePicker(
+            value = date,
+            onValueChange = { date = it },
+            // **Pinned, and the first recording is why.** The default reads `Locale.current`, so
+            // the golden came back month-day-year — a picture of the machine that recorded it,
+            // which is the same class of defect as a golden recording its rasteriser (B-35). What
+            // the order does with a locale is `DateTimePickerTest`'s claim; a preview's job is to
+            // look the same wherever it is built.
+            order = KvadrantDateOrder.DayMonthYear,
+            monthNames = MONTHS,
+            dayLabel = "day",
+            monthLabel = "month",
+            yearLabel = "year",
+        )
+    }
+}
+
+@Composable
+private fun TimePickerPreview() {
+    var time by remember { mutableStateOf(KvadrantTime(13, 30)) }
+    Box(Modifier.fillMaxSize().padding(16.dp)) {
+        KvadrantTimePicker(
+            value = time,
+            onValueChange = { time = it },
+            hourCycle = KvadrantHourCycle.Twelve,
+            minuteStep = 5,
+            hourLabel = "hour",
+            minuteLabel = "minute",
+        )
+    }
 }
 
 @Composable
