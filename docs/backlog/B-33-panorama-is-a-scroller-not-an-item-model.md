@@ -1,7 +1,7 @@
 ---
 id: B-33
 title: "The panorama free-scrolls where the phone snapped to a section"
-status: wip
+status: done
 priority: P1
 size: M
 stage: stage-2-controls
@@ -9,12 +9,30 @@ stage: stage-2-controls
 
 # B-33 — The panorama free-scrolls where the phone snapped to a section
 
-**Half done. The snap is in and held by `PanoramaSnapTest`; the title's exit-and-re-entry is not,
-and the reason is a number rather than an effort.** The out-and-in animation has no published
-duration and no published curve, and inventing them would put two more of this project's figures
-into a control that already carries the settle's 300 ms. The deviation stays named in the KDoc until
-somebody measures a device — the same condition §2.3 already puts on the peek and the parallax
-coefficient.
+**Done. The snap was the first half; the title's exit-and-re-entry is the second, and the reason it
+had stalled did not survive being looked at again.**
+
+This paragraph used to say the out-and-in had no published duration and no published curve, so
+building it would put two more of this project's figures into a control that already carries the
+settle's 300 ms. True about the publication, wrong about the consequence: **reusing what the control
+already has costs nothing.** The whole transition takes `SETTLE_MILLIS` — the same as the snap that
+provoked it — and its two halves are `ExponentialIn6` going out and `ExponentialOut6` coming back,
+the settle's own curve and its mirror. No new number, no new curve. Only the split into halves is a
+choice, and it is named as one.
+
+**The reading of the source is the part that needed care, and it is written down as an
+interpretation.** "During a selection change between `PanoramaItem` controls" could mean *every*
+section change, which would throw the title off the screen several times in one pan and is not what
+a panorama looked like. What settles it is the sentence it belongs to: the clause begins
+**"instead"**, and what it is instead *of* is repeating "when you pan past the edges of the content".
+So the transition belongs to the selection change that crosses the edge, which is the fold. If a
+device says otherwise, the KDoc names the paragraph to correct.
+
+**And the change turned up a defect nobody had reported.** Measuring the title inside a bounded
+Column returned the width of the screen, so a title wider than the viewport *wrapped onto a second
+line* instead of overflowing — in the component whose whole point is a title too big for the screen.
+The golden had recorded it as correct for as long as the panorama has existed. `unbounded` is the
+same fix the background layer already carries a paragraph about, one layer up.
 
 `KvadrantPanorama` is a horizontal scroller with a wraparound. The original is an **item model**,
 and two behaviours follow from that which this does not have.
@@ -74,7 +92,21 @@ to the index.
   1500 px/s throw settles on `two` bracketed and on `three` under the old rule — the skipped section
   — and a 3000 px/s throw settles on `two` bracketed and on `one`, having wrapped past everything.
   Those are the assertions, and putting the old rule back fails them.
-- The title's KDoc deviation is removed because the behaviour it stands in for exists.
+- ~~The title's KDoc deviation is removed because the behaviour it stands in for exists.~~ Done.
+  `PanoramaTitleTest` holds it, and **absence is the assertion**: the old title was drawn three
+  times and offset modulo its own width, so some copy of it was on screen at every moment of every
+  pan — a frame with an empty title band cannot be produced by that model at all. One measurement
+  therefore carries both halves of the claim, that it goes and that it does not repeat, without
+  having to find a seam inside a word.
+
+  The second test is the one that took two attempts. It asserts that the transition does **not**
+  fire when the panorama merely opens — positioning the scroll into the middle copy goes through the
+  same branch — and the first version measured after the panorama had settled, which let the opening
+  animation finish before the camera was switched on. Removing the guard failed the *wrap* test and
+  left that one green. The second version measures from the first frame, and the threshold is not
+  emptiness: the opening transition's extreme still leaves eighteen pixels of ink where a real wrap
+  leaves none, so what separates the cases is the two orders of magnitude to the eight thousand the
+  title draws at rest.
 
 ## Deviation: orientation is derived, not declared
 
