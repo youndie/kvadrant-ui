@@ -109,6 +109,13 @@ kotlin {
         // boots one, installs the test binary and runs it, so this needs no script and no Xcode
         // project. `compose.uiTest` publishes an `iosSimulatorArm64` variant — checked in its module
         // metadata before this line was written.
+        //
+        // `maybeCreate` and not `by getting`, which fails here with "KotlinSourceSet with name
+        // 'iosTest' not found" — the intermediate set the default hierarchy template creates is not
+        // there yet at this point in configuration, and the message names the set rather than the
+        // ordering. What is asserted rather than assumed is that `src/iosTest` ends up in the iOS
+        // test compilation: `IosFontStackTest` runs, and its results are written under
+        // `build/test-results/iosSimulatorArm64Test`.
         val iosTest = maybeCreate("iosTest")
         iosTest.dependencies {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
