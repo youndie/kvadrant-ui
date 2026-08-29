@@ -1,7 +1,7 @@
 ---
 id: B-26
 title: "A per-layer camera is not the global one Metro tilted under"
-status: open
+status: done
 priority: P1
 size: M
 stage: stage-1-core
@@ -86,7 +86,33 @@ carries its own camera at its own centre and where it sits cannot matter. Shared
 sits nearly square-on and the lower-left one is seen from the side. It *leans*; it does not swing,
 which is what the first attempt did and what a device reported.
 
-## Still open, and it is now the only thing open
+## Answered, on a phone, which is the only place it could be answered
+
+**The per-layer camera stays.** The judgement was made by pressing tiles on a device with both
+cameras and switching between them, which is what this item had been short of through two previous
+attempts — one of which shipped a change and was reported from a device within a day.
+
+The switch is `TiltIndication(sharedCamera = …)`, off by default, and the demo's settings page keeps
+it. Two things follow from keeping rather than deleting it:
+
+- **the default is the deviation here, not the option.** Research §1.6 records that the original had
+  one camera over the whole screen; `graphicsLayer` gives every element its own. A library whose
+  default departs from the thing it reproduces owes a reader the other behaviour and a way to look
+  at it, and one boolean is a cheaper way to owe that than a paragraph;
+- **it was measured through the shipping code, not beside it.** `SharedCameraIndicationTest` presses
+  a real surface under the real indication in two places on one screen: under the per-layer camera
+  the two frames differ by **4** pixels of 28 900, which is the quad's edge landing on different
+  subpixels, and under the shared one by **1 825**. The first number is the control, and it is not
+  zero — demanding equality would have made the control fail for a reason that has nothing to do
+  with cameras.
+
+That control took a correction of its own. The first version put both surfaces in **one**
+composition, and a press on desktop takes focus: only one thing can hold it, so the focus ring
+[B-40](B-40-keyboard-and-focus-on-desktop-and-wasm.md) added landed on whichever surface was pressed
+second, and the control failed on a dotted border rather than on any camera. Two compositions make
+the frames identical in everything but the one variable, which is what a control has to mean.
+
+## What was open until then
 
 Whether that is what the tilt should do. The measurement above says the difference is 19.5 dp at the
 screen edge, so it is not nothing; the stills say what it looks like. What has never been available
@@ -155,8 +181,11 @@ screen-position dependence — by rendering the same tile grid both ways.
   "the difference is not visible", which is a legitimate outcome and closes this.~~ Done, and the
   answer is **19.5 dp at the screen edge** — visible, so this item does not close on it. See the
   section above and `SharedCameraGeometryTest`.
-- AC: if a shared camera wins, it is a documented deviation with its own reason, because the
-  original's camera distance is unknown and the shared one would be ours.
+- ~~AC: if a shared camera wins, it is a documented deviation with its own reason.~~ **It did not
+  win**, so this AC's own condition does not apply — and the obligation it describes lands on the
+  other side instead. Keeping the per-layer camera is the deviation, because §1.6 says the original
+  had one camera over the screen. It is documented in `TiltIndication.sharedCamera`'s KDoc, where a
+  reader meets it, and the option is reachable rather than described.
 - Depends on nothing, but overlaps [B-25](B-25-tilt-camera-is-in-inches.md): both touch the same
   parameter, and doing this one first would decide B-25's units for the wrong reason. B-25 fixes a
   defect; this one asks a question.

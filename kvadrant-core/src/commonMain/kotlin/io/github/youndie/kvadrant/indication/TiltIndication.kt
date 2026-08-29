@@ -14,10 +14,13 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.findRootCoordinates
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
@@ -25,10 +28,12 @@ import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidatePlacement
+import androidx.compose.ui.node.requireLayoutCoordinates
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import io.github.youndie.kvadrant.foundation.KvadrantCamera
+import io.github.youndie.kvadrant.foundation.KvadrantHomography
 import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantMetrics
 import kotlinx.coroutines.Job
@@ -73,22 +78,33 @@ public class TiltIndication(
     private val maxDepression: Dp = Tilt.maxDepression,
     private val animatePress: Boolean = false,
     private val focusRingThickness: Dp = KvadrantMetrics().focusRingThickness,
+    private val sharedCamera: Boolean = false,
 ) : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        TiltNode(interactionSource, cameraDistance, maxDepression, animatePress, focusRingThickness)
+        TiltNode(
+            interactionSource,
+            cameraDistance,
+            maxDepression,
+            animatePress,
+            focusRingThickness,
+            sharedCamera,
+        )
 
     override fun equals(other: Any?): Boolean =
         other is TiltIndication &&
             other.cameraDistance == cameraDistance &&
             other.maxDepression == maxDepression &&
             other.animatePress == animatePress &&
-            other.focusRingThickness == focusRingThickness
+            other.focusRingThickness == focusRingThickness &&
+            other.sharedCamera == sharedCamera
 
     override fun hashCode(): Int =
         31 * (
-            31 * (31 * cameraDistance.hashCode() + maxDepression.hashCode()) +
-                animatePress.hashCode()
-        ) + focusRingThickness.hashCode()
+            31 * (
+                31 * (31 * cameraDistance.hashCode() + maxDepression.hashCode()) +
+                    animatePress.hashCode()
+            ) + focusRingThickness.hashCode()
+        ) + sharedCamera.hashCode()
 
     public companion object {
         /**
@@ -118,6 +134,7 @@ private class TiltNode(
     private val maxDepression: Dp,
     private val animatePress: Boolean,
     private val focusRingThickness: Dp,
+    private val sharedCamera: Boolean,
 ) : Modifier.Node(),
     LayoutModifierNode,
     DrawModifierNode,
@@ -246,7 +263,10 @@ private class TiltNode(
             // never measurement or composition.
             val position = pressPosition
             val amount = amount
-            if (position == null || amount == 0f) {
+            if (position == null || amount == 0f || sharedCamera) {
+                // Under the shared camera the whole transform is a canvas concatenation in `draw`,
+                // because the projection centre and the rotation pivot have to be different points
+                // and one `graphicsLayer` cannot express that — B-26, measured twice.
                 placeable.place(0, 0)
             } else {
                 val tilt =
@@ -281,6 +301,63 @@ private class TiltNode(
     }
 
     /**
+     * One camera over the whole display, which is what the phone had and what this is not by
+     * default.
+     *
+     * [B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md)
+     * asked which of the two the tilt should use and was answered by pressing tiles on a phone with
+     * both, through **this** code rather than through a fixture: a copy of the tilt built beside the
+     * real one is a different tilt — its press timing, its unwind and `kvadrantTilt`'s gesture would
+     * all be the fixture's — and the judgement would have been about the fixture. The two previous
+     * attempts at the item were made from stills of things a press never does, and one of them
+     * shipped and was reported from a device within a day.
+     *
+     * The answer was to keep the per-layer camera. So this is off, and it is a parameter rather than
+     * a deleted branch because the *default* is the deviation here: research §1.6 records that the
+     * original had one camera over the screen, and a library whose default departs from that owes a
+     * reader the other option and a way to look at it. `sample`'s settings page has the switch.
+     *
+     * The eye is the root's centre expressed in this element's coordinates, which is the whole of
+     * the difference between the two cameras: at `Offset.Zero` the homography and
+     * `Modifier.graphicsLayer` describe the same camera and `KvadrantHomographyTest` requires them
+     * to draw the same shape.
+     *
+     * The sink goes **inside** the concatenation. It is a shrink in the element's own plane, and
+     * `graphicsLayer` applies scale before the projection; applying it outside would scale the
+     * projected quad instead, which is a different picture and a plausible-looking one.
+     */
+    private fun ContentDrawScope.drawUnderSharedCamera() {
+        val position = pressPosition
+        val amount = amount
+        if (position == null || amount == 0f) {
+            drawContent()
+            return
+        }
+        val tilt = tiltFor(position, size, maxDepression)
+        val coordinates = requireLayoutCoordinates()
+        val root = coordinates.findRootCoordinates()
+        val topLeft = coordinates.positionInRoot()
+        val eye =
+            Offset(
+                x = root.size.width / 2f - (topLeft.x + size.width / 2f),
+                y = root.size.height / 2f - (topLeft.y + size.height / 2f),
+            )
+        val quad =
+            KvadrantHomography.quadUnderCamera(
+                size = size,
+                rotationXDegrees = -tilt.rotationX * amount,
+                rotationYDegrees = -tilt.rotationY * amount,
+                cameraDistance = this@TiltNode.cameraDistance.toPx(),
+                eye = eye,
+            )
+        val sink = depressionScale(tilt.depression.toPx() * amount, this@TiltNode.cameraDistance.toPx())
+        drawContext.canvas.save()
+        drawContext.canvas.concat(KvadrantHomography.homographyFromRect(size, quad))
+        scale(sink, sink) { this@drawUnderSharedCamera.drawContent() }
+        drawContext.canvas.restore()
+    }
+
+    /**
      * The ring, and the one condition on it: **the keyboard has to be the thing being used.**
      *
      * Windows 8's template draws the dotted rectangle from a `Focused` visual state and leaves
@@ -308,7 +385,7 @@ private class TiltNode(
      * template has it — `FocusVisualWhite` is a sibling of the animated `Border`, not a child.
      */
     override fun ContentDrawScope.draw() {
-        drawContent()
+        if (sharedCamera) drawUnderSharedCamera() else drawContent()
         if (!focused) return
         if (currentValueOf(LocalInputModeManager).inputMode != InputMode.Keyboard) return
         drawKvadrantFocusRing(focusRingThickness.toPx())

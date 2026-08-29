@@ -303,8 +303,8 @@ public final class io/github/youndie/kvadrant/indication/Tilt {
 public final class io/github/youndie/kvadrant/indication/TiltIndication : androidx/compose/foundation/IndicationNodeFactory {
 	public static final field $stable I
 	public static final field Companion Lio/github/youndie/kvadrant/indication/TiltIndication$Companion;
-	public synthetic fun <init> (FFZFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (FFZFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFZFZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFZFZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Landroidx/compose/foundation/interaction/InteractionSource;)Landroidx/compose/ui/node/DelegatableNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I

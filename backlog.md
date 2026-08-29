@@ -44,14 +44,14 @@ item must never move its file.
 |---|---|---|---|---|
 | [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
 | [B-36](docs/backlog/B-36-the-on-device-guard-does-not-execute.md) `[ ]` | Android's only guard does not execute, and has not for some time | P0 | M | - |
-| [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[ ]` | A per-layer camera is not the global one Metro tilted under | P1 | M | - |
 | [B-33](docs/backlog/B-33-panorama-is-a-scroller-not-an-item-model.md) `[~]` | The panorama free-scrolls where the phone snapped to a section | P1 | M | - |
+| [B-45](docs/backlog/B-45-overscroll-ignores-the-fling.md) `[ ]` | The overscroll compresses under a finger and not under a fling, which is how a list usually ends | P1 | S | - |
 | [B-31](docs/backlog/B-31-screenshot-suite-is-not-deterministic.md) `[ ]` | Six goldens change between two recordings of unchanged source | P2 | M | - |
 | [B-41](docs/backlog/B-41-rtl-is-canon-and-untested.md) `[ ]` | Right-to-left is canon, three layouts would break, nothing tests it | P2 | S | - |
 | [B-42](docs/backlog/B-42-date-and-time-pickers.md) `[ ]` | The picker's parts are built and the picker is not | P2 | S | - |
 | [B-43](docs/backlog/B-43-the-toolkit-was-never-inventoried.md) `[ ]` | The Toolkit was read for metrics and never read for scope | P2 | M | - |
 
-## Closed (36)
+## Closed (37)
 
 **Three answers that decide the architecture**
 
@@ -73,6 +73,7 @@ item must never move its file.
 - [B-23](docs/backlog/B-23-viddik-pins-the-compose-line.md) `[x]` - Bring the screenshot suite back once viddik runs on the current Compose line
 - [B-24](docs/backlog/B-24-add-the-android-target-next.md) `[x]` - Add the Android target next, ahead of the plan
 - [B-25](docs/backlog/B-25-tilt-camera-is-in-inches.md) `[x]` - The tilt camera is measured in pixels while the geometry is in dp
+- [B-26](docs/backlog/B-26-per-layer-camera-versus-a-global-one.md) `[x]` - A per-layer camera is not the global one Metro tilted under
 - [B-27](docs/backlog/B-27-tilt-does-not-follow-the-finger.md) `[x]` - The tilt is fixed at touch-down where the original followed the finger
 - [B-28](docs/backlog/B-28-remastered-flag.md) `[x]` - One flag for every deviation from canon: remastered
 - [B-30](docs/backlog/B-30-list-picker-full-mode.md) `[x]` - A picker with six options reports Full mode and nothing happens

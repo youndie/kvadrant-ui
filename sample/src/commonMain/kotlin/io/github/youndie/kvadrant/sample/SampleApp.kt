@@ -1,5 +1,6 @@
 package io.github.youndie.kvadrant.sample
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +62,7 @@ import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
+import io.github.youndie.kvadrant.indication.TiltIndication
 import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantMetrics
@@ -95,6 +98,11 @@ private val Layout =
 public fun KvadrantSampleApp() {
     var dark by remember { mutableStateOf(true) }
     var accessible by remember { mutableStateOf(false) }
+
+    // B-26. It lives in the demo because the question it answers is "which of these does a press
+    // feel like on a phone", which nothing but a phone can be asked — and it stays there now that
+    // the answer is recorded, so the answer can be checked.
+    var sharedCamera by remember { mutableStateOf(false) }
     var accent by remember { mutableStateOf(KvadrantAccents.Cyan) }
     var menuOpen by remember { mutableStateOf(false) }
     var scale by remember { mutableStateOf<Float?>(null) }
@@ -156,10 +164,11 @@ public fun KvadrantSampleApp() {
             // is the only thing it was ever for.
             val fitted = KvadrantMetrics().scaledToWidth(maxWidth)
 
-            KvadrantTheme(
+            SampleTheme(
                 colors = colors,
                 typography = KvadrantTypography.default(kvadrantLatin()),
                 metrics = scale?.let { KvadrantMetrics().scaled(it) } ?: fitted,
+                sharedCamera = sharedCamera,
             ) {
                 // A Box, so the page can sit *over* the screen. It was a sibling in the Column
                 // below, and `fillMaxSize` there takes the whole height: the weighted Pivot was left
@@ -204,6 +213,8 @@ public fun KvadrantSampleApp() {
                                         onDark = { dark = it },
                                         accessible = accessible,
                                         onAccessible = { accessible = it },
+                                        sharedCamera = sharedCamera,
+                                        onSharedCamera = { sharedCamera = it },
                                         accent = accent,
                                         onAccent = { accent = it },
                                         density = scale ?: (fitted.margin / KvadrantMetrics().margin),
@@ -460,12 +471,52 @@ private fun MailPage(cyrillic: androidx.compose.ui.text.font.FontFamily) {
     }
 }
 
+/**
+ * The theme, plus the switch that answered
+ * [B-26](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-26-per-layer-camera-versus-a-global-one.md).
+ *
+ * `KvadrantTheme` provides `LocalIndication` with the tilt, so overriding that local *inside* it is
+ * the whole of the switch: every surface in the demo changes camera at once, with the library's own
+ * press, unwind and gesture underneath. Reimplementing the tilt here to compare the two would have
+ * been comparing the demo's tilt with the library's, and the item had already been answered twice
+ * from pictures of things a press never does.
+ *
+ * It stays in the demo now that the question is closed. The answer was made by pressing tiles on a
+ * phone, and it is the sort of answer somebody will want to check.
+ */
+@Composable
+private fun SampleTheme(
+    colors: KvadrantColors,
+    typography: KvadrantTypography,
+    metrics: KvadrantMetrics,
+    sharedCamera: Boolean,
+    content: @Composable () -> Unit,
+) {
+    KvadrantTheme(colors = colors, typography = typography, metrics = metrics) {
+        if (!sharedCamera) {
+            content()
+        } else {
+            CompositionLocalProvider(
+                LocalIndication provides
+                    TiltIndication(
+                        maxDepression = KvadrantTheme.metrics.tiltDepression,
+                        focusRingThickness = KvadrantTheme.metrics.focusRingThickness,
+                        sharedCamera = true,
+                    ),
+                content = content,
+            )
+        }
+    }
+}
+
 @Composable
 private fun SettingsPage(
     dark: Boolean,
     onDark: (Boolean) -> Unit,
     accessible: Boolean,
     onAccessible: (Boolean) -> Unit,
+    sharedCamera: Boolean,
+    onSharedCamera: (Boolean) -> Unit,
     accent: androidx.compose.ui.graphics.Color,
     onAccent: (androidx.compose.ui.graphics.Color) -> Unit,
     density: Float,
@@ -493,6 +544,10 @@ private fun SettingsPage(
         Row(verticalAlignment = Alignment.CenterVertically) {
             KvadrantToggleSwitch(accessible, onAccessible)
             KvadrantText("контрастная палитра", Modifier.padding(start = 12.dp), cyrillic = cyrillic)
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            KvadrantToggleSwitch(sharedCamera, onSharedCamera)
+            KvadrantText("одна камера над экраном", Modifier.padding(start = 12.dp), cyrillic = cyrillic)
         }
 
         KvadrantText("акцент", cyrillic = cyrillic)
