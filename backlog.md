@@ -42,7 +42,6 @@ item must never move its file.
 
 | Task | | Priority | Size | Blocked by |
 |---|---|---|---|---|
-| [B-07](docs/backlog/B-07-font-stack.md) `[~]` | Bundle the font stack through compose-resources | P0 | M | B-03 |
 | [B-41](docs/backlog/B-41-rtl-is-canon-and-untested.md) `[ ]` | Right-to-left is canon, three layouts would break, nothing tests it | P2 | S | - |
 
 ## Closed (43)
@@ -58,6 +57,7 @@ item must never move its file.
 - [B-04](docs/backlog/B-04-repository-skeleton.md) `[x]` - Skeleton: modules, targets, version catalog, CI, snapshot publishing
 - [B-05](docs/backlog/B-05-theme-model-and-tokens.md) `[x]` - KvadrantTheme: colours, typography, metrics, motion
 - [B-06](docs/backlog/B-06-token-generator.md) `[x]` - Generate the token constants from metro-tokens.json instead of typing them
+- [B-07](docs/backlog/B-07-font-stack.md) `[x]` - Bundle the font stack through compose-resources
 - [B-08](docs/backlog/B-08-tilt-indication.md) `[x]` - TiltIndication in production quality
 - [B-09](docs/backlog/B-09-base-controls.md) `[x]` - Ten base controls: button, text box, toggle, progress, message box, list item
 - [B-10](docs/backlog/B-10-tiles.md) `[x]` - Tile and TileGrid

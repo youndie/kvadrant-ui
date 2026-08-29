@@ -33,13 +33,18 @@ make site                               # the site + Dokka reference into build/
 - **Compose Multiplatform stays on the current release.** skiko is never declared here — it comes
   transitively with `compose.ui` at the version CMP pins, and forcing it means running a renderer
   the Compose runtime above it was not built against.
-- **Desktop, Android and wasm.** Android was added ahead of the plan because it is the only target
-  that is not skiko (B-24); wasm because B-34 wants the components running in a browser page. iOS
-  still waits for something to run on it (D14). **Neither Android nor wasm executes anything in
-  `check`** — on wasm `wasmJsBrowserTest` is *skipped*, which in a green build reads exactly like a
-  pass. `./gradlew :sample:wasmJsBrowserDevelopmentRun` serves the demo; the on-device Android guard
-  is `connectedAndroidDeviceTest`. Gradle 9.7.1 forces
-  AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
+- **Desktop, Android, wasm and iOS.** Android was added ahead of the plan because it is the only
+  target that is not skiko (B-24); wasm because B-34 wants the components running in a browser page;
+  iOS last, because B-07 held a criterion that could not close without it (D14).
+  **Neither Android nor wasm executes anything in `check`** — on wasm `wasmJsBrowserTest` is
+  *skipped*, which in a green build reads exactly like a pass.
+  **iOS is the exception and is worth knowing about**: Gradle boots a simulator and runs
+  `iosSimulatorArm64Test` inside `check`, so `IosFontStackTest` and the whole of `commonTest` execute
+  on a third renderer with no hardware and no Xcode project. `scripts/ios-sample-app.sh` puts the
+  demo on a simulator to look at, and copies the assembled resources into the bundle — without that
+  the app dies on its first frame naming a font inside its own `.app`.
+  `./gradlew :sample:wasmJsBrowserDevelopmentRun` serves the demo; the on-device Android guard is
+  `connectedAndroidDeviceTest`. Gradle 9.7.1 forces AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
   must be declared in the **root** build file or the Compose plugin cannot see its classes —
   research §1.13 before touching the build.
 - **Screenshots**: `ScreenshotSuiteTest` guards the set — empty registry, fixture without a golden,

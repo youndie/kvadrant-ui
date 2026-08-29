@@ -1,7 +1,7 @@
 ---
 id: B-07
 title: "Bundle the font stack through compose-resources"
-status: wip
+status: done
 priority: P0
 size: M
 stage: stage-1-core
@@ -68,9 +68,32 @@ something wants the fonts without the components — the same reasoning [B-18](B
 reached about the icons, on the same evening, which is either consistency or a bias and is written
 down so the next reader can decide which.
 
-**What is left is one criterion and it cannot be worked harder at.** iOS and wasm are unverified
-because those targets do not exist ([D14](../research/research-architecture.md)). This item stays
-open holding exactly that, and closes when a target does.
+**Closed. The criterion that could not be worked harder at was a target, so the target exists.**
+iOS was unverified *because iOS did not exist* — and D14 grants a target when something runs on it,
+which made this item and that decision each other's blocker until one of them moved.
+
+`kvadrant-core` declares `iosArm64` and `iosSimulatorArm64`, and `IosFontStackTest` makes the same
+claim `AndroidFontStackTest` makes: both scripts draw, and Cyrillic does not draw what a family
+with no Cyrillic in it draws. Verified by reinstating the defect — with `kvadrantCyrillic()`
+returning the Latin family, it fails.
+
+**And iOS is the first target after the desktop that is inside `check`.** Gradle boots a simulator,
+installs the test binary and runs it, with no hardware and no Xcode project — so the standing line
+that a green `check` says nothing about a second renderer now has an exception. It also carried the
+whole of `commonTest` onto a third renderer as a side effect: twenty-seven tests that had only ever
+run on the JVM.
+
+**Two targets and not three.** `iosX64` is the Intel simulator, which nothing here has, so it would
+be exactly the target-nobody-looks-at D14 exists to prevent. Adding it is a line, later.
+
+*Consequence — the resources are not in a bundle unless something puts them there.* The demo, run on
+the simulator by `scripts/ios-sample-app.sh`, died on its first frame with
+`MissingResourceException` naming a font inside its own `.app`: compose-resources on iOS reads
+`compose-resources/composeResources/…` out of the bundle, and a hand-assembled bundle has whatever
+the script copies in. That is the iOS shape of [B-37](B-37-the-android-artefact-ships-without-its-fonts.md),
+and it is the **kind** one: iOS throws and names the path, where Android substituted a face silently
+and shipped green for months. A loud failure on a third renderer is worth more than a quiet one on
+the second.
 
 Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)), bundled in
 `kvadrant-resources` and reachable from every target through
@@ -97,15 +120,16 @@ Five Selawik weights plus **Source Sans 3** ([B-03](B-03-spike-cyrillic-font.md)
   ([research §1.7](../research/research-architecture.md)).
 - Not covered: the type ramp itself, which is part of [B-05](B-05-theme-model-and-tokens.md).
 
-- AC met on desktop and wasm, unmet on Android and iOS, and the three reasons differ. Desktop is the
+- AC met on desktop, wasm, Android **and iOS**, and the four reasons differ. Desktop is the
   golden suite. wasm is the documentation site, where every component page renders Cyrillic through
   the bundled companion — that is a demonstration rather than an assertion, and it is the first
   thing anybody has looked at on that target. **Android is met**, and it took [B-37](B-37-the-android-artefact-ships-without-its-fonts.md) to get
   there: the artefact was shipping without any fonts at all, because AGP's Kotlin Multiplatform
   plugin has the Android resource pipeline off by default. `AndroidFontStackTest` now passes on a
   Pixel 6a — the bundled companion renders something other than the platform's substitution — and
-  `androidArtefactCarriesItsFonts` counts the files inside the AAR on every `check`. iOS has no
-  target yet (D14).
+  `androidArtefactCarriesItsFonts` counts the files inside the AAR on every `check`. **iOS is met
+  and is the only one of the four whose check is inside the gate**: `IosFontStackTest` runs on a
+  simulator Gradle boots, so it needs neither hardware nor a person remembering to run it.
 
   "One declaration serves every target" was the argument for compose-resources over the classpath
   read it replaced, and it now holds on three of them — verified by unpacking the jar and the AAR

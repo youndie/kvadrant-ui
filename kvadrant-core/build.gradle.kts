@@ -36,6 +36,17 @@ kotlin {
         binaries.executable()
     }
 
+    // **iOS, and it is here because something finally runs on it** — D14's rule, which the desktop,
+    // Android and wasm targets each arrived under. `B-07`'s last open criterion was that the bundled
+    // font stack is unverified on iOS *because the target does not exist*, and a criterion that can
+    // only be closed by adding a target is what "arrives when something runs on it" means.
+    //
+    // Two targets and not three. `iosX64` is the Intel simulator; nothing here has one, so it would
+    // be a target whose failures nobody looks at — the thing D14 exists to prevent. Adding it later
+    // is additive and costs a line.
+    iosArm64()
+    iosSimulatorArm64()
+
     android {
         // Without this the Android resource pipeline is off and `variant.sources.assets` is null,
         // so compose-resources has nowhere to put the fonts and the artefact ships without them.
@@ -94,6 +105,23 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
         }
+        // The simulator is a device the way a phone is, and Gradle drives it: `iosSimulatorArm64Test`
+        // boots one, installs the test binary and runs it, so this needs no script and no Xcode
+        // project. `compose.uiTest` publishes an `iosSimulatorArm64` variant — checked in its module
+        // metadata before this line was written.
+        //
+        // `maybeCreate` and not `by getting`, which fails here with "KotlinSourceSet with name
+        // 'iosTest' not found" — the intermediate set the default hierarchy template creates is not
+        // there yet at this point in configuration, and the message names the set rather than the
+        // ordering. What is asserted rather than assumed is that `src/iosTest` ends up in the iOS
+        // test compilation: `IosFontStackTest` runs, and its results are written under
+        // `build/test-results/iosSimulatorArm64Test`.
+        val iosTest = maybeCreate("iosTest")
+        iosTest.dependencies {
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
+
         // Rendering a real window in a test needs the host's skiko native library, and only
         // `currentOs` brings it in. It must not leak into a published source set: a POM that pins a
         // host-specific skiko artefact is broken for every other host.

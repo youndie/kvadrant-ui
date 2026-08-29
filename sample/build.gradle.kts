@@ -25,6 +25,19 @@ kotlin {
         binaries.executable()
     }
 
+    // The demo on the phone the library has never run on. `binaries.executable` is what turns this
+    // from a klib into a Mach-O with an entry point — and a `.app` for the simulator is a directory
+    // holding that binary and an `Info.plist`, so no Xcode project appears anywhere in this
+    // repository. `scripts/ios-sample-app.sh` assembles and installs it.
+    //
+    // The simulator only: `iosArm64` would be a binary for a device nobody here can install on, and
+    // the library's own `iosArm64` target is what a consumer builds against.
+    iosSimulatorArm64 {
+        binaries.executable {
+            entryPoint = "io.github.youndie.kvadrant.sample.ios.main"
+        }
+    }
+
     // The demo is a library on Android and an application on the desktop, which looks lopsided and
     // is forced: since AGP 9 the application plugin refuses to sit in a Kotlin Multiplatform module
     // at all. So the shared screen lives here and `:sample-android` is the thin activity that hosts
