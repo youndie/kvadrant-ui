@@ -1,8 +1,8 @@
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantAppBarKt {
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/ComposableSingletons$KvadrantAppBarKt;
 	public fun <init> ()V
+	public final fun getLambda$-398966531$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 	public final fun getLambda$-497675858$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$1735444220$io_github_youndie_kvadrant_core ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class io/github/youndie/kvadrant/components/ComposableSingletons$KvadrantMessageBoxKt {
@@ -45,7 +45,7 @@ public final class io/github/youndie/kvadrant/components/ControlsKt {
 
 public final class io/github/youndie/kvadrant/components/KvadrantAppBarKt {
 	public static final fun KvadrantAppBar (Landroidx/compose/ui/Modifier;ZLjava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantAppBarButton (Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantAppBarButton (Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLjava/lang/String;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getKvadrantAppBarGlyphSize ()F
 }
 

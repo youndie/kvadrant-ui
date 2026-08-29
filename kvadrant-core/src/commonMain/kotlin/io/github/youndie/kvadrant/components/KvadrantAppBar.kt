@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -109,14 +111,27 @@ public fun KvadrantAppBarButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    label: String? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    // **A circle with a glyph in it is unreadable to anything that is not looking at it.** The
+    // original had no such problem: an ApplicationBar button carried a `Text` alongside its icon,
+    // shown when the bar was opened, and that text was the button's name. This is that name, and it
+    // is nullable only because it arrived after the component did — a button without one announces
+    // as a button and nothing else, which is what every one of them did until now.
+    val described =
+        if (label == null) {
+            Modifier
+        } else {
+            Modifier.semantics { contentDescription = label }
+        }
     val colors = KvadrantTheme.colors
     val interaction = remember { MutableInteractionSource() }
     val tint = if (enabled) colors.foreground else colors.disabled
 
     Box(
         modifier
+            .then(described)
             .size(BUTTON)
             .clickable(
                 interactionSource = interaction,

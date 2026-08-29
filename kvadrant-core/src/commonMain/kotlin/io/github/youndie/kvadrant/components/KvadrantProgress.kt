@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.theme.KvadrantEasing
 import io.github.youndie.kvadrant.theme.KvadrantTheme
@@ -43,6 +46,9 @@ public fun KvadrantProgressDots(
     modifier: Modifier = Modifier,
     color: Color = KvadrantTheme.colors.accent,
 ) {
+    // Indeterminate, and saying so is the point: a screen reader announces "busy" rather than
+    // reading a position that does not exist. Five dots crossing a bar carry no progress value.
+    val announced = Modifier.semantics { progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate }
     val transition = rememberInfiniteTransition(label = "dots")
     val dots =
         List(DOT_COUNT) { index ->
@@ -69,6 +75,7 @@ public fun KvadrantProgressDots(
     val metrics = KvadrantTheme.metrics
     Canvas(
         modifier
+            .then(announced)
             .fillMaxWidth()
             .height(metrics.progressThickness)
             .padding(horizontal = metrics.margin),

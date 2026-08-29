@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +33,10 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -195,12 +200,18 @@ public fun KvadrantToggleSwitch(
     Box(
         modifier
             .size(ROOT_WIDTH, ROOT_HEIGHT)
-            .clickable(
+            // `toggleable` carries `Role.Switch` and the on/off state into the semantics tree;
+            // `clickable`, which this was, reported a tappable box and nothing about what it was or
+            // which way it was set. The interaction source and indication are unchanged, so the
+            // tilt is untouched.
+            .toggleable(
+                value = checked,
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 enabled = enabled,
-            ) { onCheckedChange(!checked) }
-            .alpha(if (enabled) 1f else DISABLED_OPACITY),
+                role = Role.Switch,
+                onValueChange = onCheckedChange,
+            ).alpha(if (enabled) 1f else DISABLED_OPACITY),
         contentAlignment = Alignment.CenterStart,
     ) {
         Box(Modifier.size(TRACK_WIDTH, ROOT_HEIGHT), contentAlignment = Alignment.CenterStart) {
@@ -430,10 +441,17 @@ public fun KvadrantProgressBar(
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
+    // Determinate, so it announces where it is. Without this a screen reader finds a coloured
+    // rectangle and can say nothing about how far along it is, which is the only thing it is for.
+    val announced =
+        Modifier.semantics {
+            progressBarRangeInfo = ProgressBarRangeInfo(progress.coerceIn(0f, 1f), 0f..1f)
+        }
     val colors = KvadrantTheme.colors
     val metrics = KvadrantTheme.metrics
     Box(
         modifier
+            .then(announced)
             .fillMaxWidth()
             .padding(horizontal = metrics.margin)
             .height(metrics.progressThickness)

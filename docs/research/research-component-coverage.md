@@ -89,6 +89,17 @@ A screen reader on `KvadrantToggleSwitch` gets a box that is clickable and nothi
 switch or being on. That is not a gap in the policy — it is a gap the policy's name conceals, which
 is why it is written here rather than left to be discovered by someone reading the title.
 
+**Closed by [B-39](../backlog/B-39-semantics-beyond-touch-targets.md).** The six controls with a
+state now carry it, and no pixel moved. The part worth keeping is the second test: it walks every
+preview in the registry and refuses anything pressable that cannot be named, so the *next* control is
+covered by existing to be previewed. On its first run it found seven anonymous press targets and four
+were in the previews written alongside the fix — a parameter nobody passes is not a fix.
+
+What overstated B-11 turned out to be its **filename** rather than its title: `title:` said
+"authentic visuals with extended hit areas, and an opt-in contrast palette", which is exactly what it
+did. `B-11-accessibility-policy.md` is what a reader sees in a link. An id is a name, and that one
+was making a claim.
+
 ### 3.3 Focus and keyboard, on the two targets where they are the input method
 
 Nothing in the library is focusable, handles a key event or requests focus — `grep` finds no
@@ -112,11 +123,13 @@ places compute an x offset by hand in a custom layout — the pivot header strip
 
 ## Consequences
 
-1. **Overscroll is the highest-value single addition** and it is not a component. It is one factory
-   in the theme, it affects every scrolling surface at once, and until it lands an Android build
-   shows a Material behaviour at the end of every list.
-2. **Two items' titles overstate them** — B-11 covers less than "accessibility policy" implies. A
-   title that promises more than the criteria deliver is how a gap becomes invisible.
+1. ~~**Overscroll is the highest-value single addition**~~ — done,
+   [B-38](../backlog/B-38-the-theme-leaves-the-platform-overscroll.md). One factory in the theme,
+   every scrolling surface at once, and three numbers that are ours because Microsoft published the
+   visual states and none of their storyboards.
+2. **An item's *name* overstated it** — and it was the filename, not the title. Corrected in place
+   rather than renamed, because a rename breaks every citation.
+   [B-39](../backlog/B-39-semantics-beyond-touch-targets.md) is done.
 3. **The Toolkit was read for metrics and never read for scope.** Seven controls were transcribed
    from and then not counted.
 4. The remaining component work is mostly P2 and mostly small, with one exception worth doing next:
