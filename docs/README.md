@@ -91,10 +91,13 @@ The list below is **checked** against the files on disk: a document missing here
 no file behind it, fails `coverage_map.py`. The grouping and the descriptions are written by a
 person — the machine only guards the membership.
 
-### Research (1)
+### Research (2)
 
 - [x] [research-architecture](research/research-architecture.md) — what was verified and against
   what, the twelve decisions and what each rejected, the six risks and their machinery
+- [x] [research-component-coverage](research/research-component-coverage.md) — what the set is still
+  missing, against the brief's catalogue, the Toolkit's controls and the behaviours a Metro surface
+  had; the largest gaps turn out not to be components
 
 ### Reference (1)
 

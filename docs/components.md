@@ -119,6 +119,28 @@ nicer than Windows Phone is a defect rather than a feature.
 
 <!-- END CATALOG -->
 
+## What Microsoft shipped that this does not
+
+The table above lists what exists. This is the other half, because a catalogue that only lists what
+is present reads as a complete one. Full reasoning in
+[research: component coverage](research/research-component-coverage.md); the decisions are
+[B-42](backlog/B-42-date-and-time-pickers.md) and
+[B-43](backlog/B-43-the-toolkit-was-never-inventoried.md).
+
+| Missing | Where it came from | Status |
+|---|---|---|
+| `DatePicker`, `TimePicker` | platform | Both halves exist — `KvadrantLoopingSelector` and `KvadrantPickerPage` — and the assembly does not (B-42) |
+| `AutoCompleteBox` | Toolkit | Its type slot is already transcribed in `KvadrantTypography.mediumLarge` (B-43) |
+| Text box with an action icon | Toolkit `PhoneTextBox` | `KvadrantTextBox` is the plain half of a control that had two (B-43) |
+| `ExpanderView`, `HubTile`, `MultiselectList` | Toolkit | Never inventoried (B-43) |
+| `HyperlinkButton` | platform | Not a variant of `KvadrantButton` — that button *is* its border |
+| `Hub`, `SemanticZoom`, Win8 page header | Windows 8 | Deferred whole ([B-22](backlog/B-22-win8-branch.md)) |
+
+**And three behaviours rather than components**, which is where the larger gaps turned out to be:
+overscroll compression ([B-38](backlog/B-38-the-theme-leaves-the-platform-overscroll.md)), semantics
+beyond touch targets ([B-39](backlog/B-39-semantics-beyond-touch-targets.md)), and keyboard focus on
+the desktop and browser targets ([B-40](backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md)).
+
 ## Adding a component
 
 1. Write it in `kvadrant-core`, from a document, and say in the KDoc which one.
