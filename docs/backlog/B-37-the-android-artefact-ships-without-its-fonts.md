@@ -47,51 +47,61 @@ resources of its own — it renders shapes, not text". True when the only device
 trapezoid; false the moment one measured a font, and by then the comment read as a reason rather
 than as an assumption.
 
-## Diagnosed: an AGP Kotlin Multiplatform library cannot package assets at all
+## Diagnosed: AGP 9.3.2 returns no assets container for a KMP variant
 
-The obvious fix is to wire each copy task into its variant's generated assets through AGP's variant
-API, which would assign the missing directory *and* put the result in the package. It cannot be
-done, and the reason is one line:
+**The Compose plugin is doing everything right.** It logs
+`Configure compose resources with KotlinMultiplatformAndroidComponentsExtension`, so its Kotlin
+Multiplatform branch runs and its AGP version gate (`>= 8.10`) passes. It then asks the variant for
+its assets container to hang the copy task on, and:
 
 ```
-variant.sources.assets == null      // for androidMain and for androidTest
+KmpComponentImpl$KmpSourcesImpl.assets == null      // AGP 9.3.2, androidMain and androidTest
 ```
 
-`Sources.getAssets()` exists on the interface and returns **null** for a
-`KotlinMultiplatformAndroidVariant`. Confirmed from the other end without any of our own machinery:
-a plain `src/androidMain/assets/probe.txt` does not appear in the AAR either. The artefact comes out
-with four entries — `R.txt`, `AndroidManifest.xml`, `classes.jar`, `aar-metadata.properties` — and
-there is no assets path into it.
+There is nothing to attach the task to, so `copyAndroid*ComposeResourcesToAndroidAssets` never
+enters any task graph, `outputDirectory` is never assigned, and no assets reach the artefact.
+Confirmed from three directions:
 
-So compose-resources is not doing anything wrong that this repository can correct. Its Android
-delivery is assets, and this module has no assets.
+- the AAR has four entries and no `assets/`;
+- `sample-android`'s APK has `res/` and `resources.arsc` but **no `assets/` at all**, so this is not
+  a library-packaging question but a whole-pipeline one;
+- a plain `src/androidMain/assets/probe.txt` does not arrive either — nothing of ours is involved.
 
-**Java resources, in contrast, do arrive.** `src/androidMain/resources/probe.txt` lands inside
-`classes.jar`, and `sources.resources` is a real `SourceDirectories.Flat`. That is the foundation
-for the only fix available on our side.
+**This is a version incompatibility, not a configuration mistake**, and it is one this repository was
+pinned into rather than chose: Gradle 9.7.1 forces AGP 9.x, AGP 9 forbids `com.android.library` in a
+Kotlin Multiplatform module, so the only Android target available here is the one whose `sources`
+implementation returns null for assets (research §1.13). The same code on an AGP 8.x line, where
+that container exists, would work untouched.
 
-## Two routes, and neither is a build tweak
+**Java resources do arrive.** `src/androidMain/resources/probe.txt` lands inside `classes.jar`, and
+`sources.resources` is a real `SourceDirectories.Flat`. That is the only delivery path this module
+currently has.
 
-1. **Wait for AGP or the Compose plugin.** A KMP Android library that cannot ship assets is an
-   upstream gap; compose-resources depends on the thing it does not have. Cheapest, and leaves the
-   library broken on Android meanwhile — which is where it is now, silently.
-2. **Load the fonts on Android from the classpath instead of from assets.** The bytes can be shipped
-   as Java resources, which is verified above, and read by an `androidMain` implementation rather
-   than through `Res.font`. That keeps one public API — `kvadrantLatin()` and `kvadrantCyrillic()`
-   stay as they are — and confines the platform difference to how the bytes are found. It is the
-   opposite of the argument that moved this project to compose-resources in the first place (B-07:
-   "one declaration serves every target"), and that argument is worth re-reading before choosing:
-   it was made against a *classpath read*, which is what this would restore for one target.
+## Three routes
 
-## The first diagnosis of this was wrong, and it is worth knowing why
+1. **Establish which AGP line has a non-null assets container and whether this build can sit on it.**
+   The cheapest thing to know first, and the answer decides the other two. Gradle 9.7.1 is what
+   forces AGP 9; whether AGP 9.x regains it in a later patch is a question for its release notes
+   rather than for this repository.
+2. **Wait**, and leave the library silently broken on Android meanwhile — which is where it is now.
+3. **Load the fonts from the classpath on Android**: ship the bytes as Java resources, read them in
+   an `androidMain` implementation, keep `kvadrantLatin()` and `kvadrantCyrillic()` unchanged. Worth
+   weighing against B-07's own argument, which moved this project *to* compose-resources precisely
+   to stop reading fonts off a classpath — that argument was made about the JVM, and this would
+   restore the practice for one target.
 
-It concluded the `onVariants` block never runs, because no logging from inside it ever appeared. The
-block runs. The build had **reused a configuration-cache entry**, so nothing at configuration time
-re-executed and the logging could not appear. The same thing had, minutes earlier, made a probe that
-listed the project's extensions print nothing at all.
+## Two wrong diagnoses on the way here, both worth keeping
 
-Any diagnosis of configuration-time behaviour in this repository needs `--no-configuration-cache`,
-or it is a diagnosis of a recording rather than of a build.
+**"The `onVariants` block never runs."** It runs. The build had reused a configuration-cache entry,
+so nothing at configuration time re-executed and the logging that would have said so never appeared —
+and the same thing had, minutes earlier, made a probe listing the project's extensions print nothing
+at all. **Any diagnosis of configuration-time behaviour here needs `--no-configuration-cache`**, or
+it is a diagnosis of a recording rather than of a build.
+
+**"A KMP Android library cannot package assets."** Too broad. It cannot on *this* AGP, and the
+mechanism is one null field rather than an absent feature. The difference matters: the first version
+of that sentence would have sent the next reader to redesign font loading, when the first thing to
+check is a version.
 
 ## Acceptance
 
