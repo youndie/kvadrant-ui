@@ -10,6 +10,20 @@ blocked_by: []
 
 # B-36 — Android's only guard does not execute, and has not for some time
 
+## Not reproducing, and the failure it was hiding turned out to be the real one
+
+With the device connected again, `connectedAndroidDeviceTest` **runs**.
+`AndroidCameraProbeTest` passes, so B-29's on-device number is being produced. The "No compose
+hierarchies found in the app" failure this item was opened for did not recur, and nothing in this
+repository changed that should explain it — the two hypotheses it eliminated are still eliminated,
+and no third was applied. A stale install on the device is the likeliest candidate and is a guess.
+
+**So this item stays open at a lower value than it was written with, and its trigger is what
+matters:** if that message returns, this is where the two dead ends are already recorded.
+
+What the run did produce is [B-37](B-37-the-android-artefact-ships-without-its-fonts.md) — the AAR
+ships no fonts at all — which was invisible for exactly as long as nothing executed on Android.
+
 `./gradlew :kvadrant-core:connectedAndroidDeviceTest` fails on a connected Pixel 6a before it
 measures anything:
 
