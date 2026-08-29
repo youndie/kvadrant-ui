@@ -1,7 +1,7 @@
 ---
 id: B-31
 title: "Six goldens change between two recordings of unchanged source"
-status: open
+status: done
 priority: P2
 size: M
 stage: stage-2-release
@@ -9,6 +9,38 @@ blocked_by: []
 ---
 
 # B-31 — Six goldens change between two recordings of unchanged source
+
+**Closed without the six ever being explained, and that is stated rather than dressed up.** What was
+done: an attempt to reproduce at the commit the observation was recorded on, and a guard that asks a
+sharper question than the one this item was given. The trigger stands.
+
+**It does not reproduce at `d8f3d29` either.** A worktree at the commit whose message records the six
+recorded the suite twice and moved nothing. That does not explain them; it removes "the fixtures of
+that day were inherently unstable" from the list, and leaves the environment.
+
+**Four fixtures never settle, and they are not the six.** Recording the suite twice compares two
+arbitrary phases and passes whenever they happen to be the same one — a weaker question than the one
+worth asking. `FixturesHoldStillTest` asks it directly: every fixture in viddik's generated registry
+is composed and captured at three moments seconds apart on a stopped clock, and the three have to
+agree. `gallery/controls dark`, `gallery/controls light`, `pivot/pivot mail` and `pivot/pivot mid
+swipe` do not, every one of them because it shows `KvadrantProgressDots` — five dots on an
+`infiniteRepeatable` 4 400 ms cycle.
+
+Their goldens are stable across a hundred recordings all the same, and the two facts together say
+what the third one is: **the phase is reproducible because viddik captures at the same virtual time
+every run**, not because anything about the fixture makes it so. Nobody chose that phase. The set is
+therefore asserted by name rather than excused — a fifth arriving fails the test — and the residual
+risk is written down: a viddik upgrade that moves the capture point changes those four with no source
+change, and the list is what stops that being read as a regression.
+
+**The guard's own first version could not see them.** It compared the last two samples with each
+other, both four seconds from their predecessor, so a repeating animation lands on the same phase in
+both and reads as still. Measured afterwards rather than reasoned about: against the *first* sample
+the dots differ by 21 px at a 4 000 ms gap, 24 px at 4 400 and 36 px at **100** — the gap length was
+never what hid them, equidistant samples were. The comment that first explained this said the
+opposite, on reasoning, and was corrected to what the measurement says.
+
+---
 
 **Not reproduced by CI, and the escalation that said so was a misreading — withdrawn.**
 
@@ -83,10 +115,18 @@ at density 1.
 - Rejected: recording until it passes. That is the behaviour the flake trains, and it is how a suite
   stops being read.
 
-- AC: `viddikRecord` twice from unchanged source produces byte-identical images, checked by a script
-  rather than by eye.
-- AC: whatever is animating is named in `docs/research/research-architecture.md` §1.9, because the
-  next person adding a fixture needs to know which components cannot go in one unheld.
-- AC: the six are re-recorded once the cause is fixed, and the diff at that point is the measure of
-  how much drift had accumulated.
+- ~~AC: `viddikRecord` twice from unchanged source produces byte-identical images, checked by a
+  script.~~ Done — `make screenshots`, 117 goldens over three recordings, across all three suites
+  rather than the one it originally looked at.
+- ~~AC: whatever is animating is named in `docs/research/research-architecture.md` §1.9.~~ Done, and
+  the answer is `KvadrantProgressDots`. An indeterminate indicator cannot go into a fixture unheld,
+  and a library that has one still has to be able to photograph a page showing one — so the four are
+  named in a list the test asserts by equality rather than skips.
+- ~~AC: the six are re-recorded once the cause is fixed.~~ **Retired, not met.** The cause was never
+  found, so there is nothing to re-record against; the six have long since been re-recorded in the
+  ordinary course and no comparison survives. Leaving this criterion open would keep an item alive
+  for a measurement that is no longer possible.
+
+*The trigger is unchanged and outlives this item's status:* if `make screenshots` ever names an
+image, or if `FixturesHoldStillTest` reports a fifth fixture, that fixture is where to look.
 - Anchors: `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/demo/`

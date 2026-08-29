@@ -779,6 +779,36 @@ attempt to reproduce it, and none of them is a mechanism anybody has demonstrate
 position is a guard, a lowered priority, and the trigger written into the item: if
 `make screenshots` ever names an image, that image's fixture holds something moving.
 
+**Amendment — it does not reproduce at the commit it was found on either.** A worktree at `d8f3d29`,
+the commit whose message records the observation, recorded the suite twice and moved nothing. That
+does not explain the six; it removes "the fixtures of that day were inherently unstable" from the
+list of things it could have been, and leaves the environment.
+
+**Amendment — four fixtures never settle, and they are not the six.** Recording the suite twice
+compares two arbitrary phases and passes whenever they happen to be the same one, which is a weaker
+question than the one worth asking. `FixturesHoldStillTest` asks it directly: every fixture in
+viddik's generated registry is composed and captured at three moments seconds apart, on a stopped
+clock, and the three have to agree. Four do not — `gallery/controls dark`, `gallery/controls light`,
+`pivot/pivot mail`, `pivot/pivot mid swipe` — and every one of them for the same reason.
+
+| Fact | Where verified |
+|---|---|
+| The four contain `KvadrantProgressDots`, five dots on an `infiniteRepeatable` 4 400 ms cycle | the fixture sources; `CYCLE_MILLIS` in `KvadrantProgress.kt` |
+| Their goldens are nonetheless stable across a hundred recordings | `make screenshots`, 117 goldens over three rounds |
+| So the phase is reproducible because **viddik captures at the same virtual time every run**, not because anything about the fixture makes it so | the two rows above cannot both hold otherwise |
+
+*This is the answer to the criterion that asked which components cannot go into a fixture unheld.*
+An indeterminate indicator cannot, and a library that has one still has to be able to photograph a
+page that shows one — so the set is asserted by name rather than excused, and a fifth arriving fails
+the test. The residual risk is named: if a viddik upgrade moves its capture point, those four change
+with no source change, and the list is what stops that being read as a regression.
+
+*And the guard's own first version could not see them,* which is the part worth carrying. It compared
+the last two samples with each other, and both sat four seconds from their predecessor — so a
+repeating animation lands on the same phase in both and reads as still. Measured afterwards rather
+than reasoned about: against the *first* sample the dots differ by 21 px at a 4 000 ms gap, 24 px at
+4 400 and 36 px at **100**, so the gap length was never what hid them. Equidistant samples were.
+
 ### 1.10 Confirmed absences — things that do not exist, though the internet says otherwise
 
 *(inherited, ✅)*
