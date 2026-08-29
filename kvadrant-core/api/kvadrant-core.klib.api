@@ -45,7 +45,7 @@ final enum class io.github.youndie.kvadrant.components/TileSize : kotlin/Enum<io
 }
 
 final class io.github.youndie.kvadrant.indication/KvadrantOverscroll : androidx.compose.foundation/OverscrollEffect { // io.github.youndie.kvadrant.indication/KvadrantOverscroll|null[0]
-    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscroll.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float){}[0]
+    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscroll.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
 
     final val isInProgress // io.github.youndie.kvadrant.indication/KvadrantOverscroll.isInProgress|{}isInProgress[0]
         final fun <get-isInProgress>(): kotlin/Boolean // io.github.youndie.kvadrant.indication/KvadrantOverscroll.isInProgress.<get-isInProgress>|<get-isInProgress>(){}[0]
@@ -56,6 +56,8 @@ final class io.github.youndie.kvadrant.indication/KvadrantOverscroll : androidx.
     final suspend fun applyToFling(androidx.compose.ui.unit/Velocity, kotlin.coroutines/SuspendFunction1<androidx.compose.ui.unit/Velocity, androidx.compose.ui.unit/Velocity>) // io.github.youndie.kvadrant.indication/KvadrantOverscroll.applyToFling|applyToFling(androidx.compose.ui.unit.Velocity;kotlin.coroutines.SuspendFunction1<androidx.compose.ui.unit.Velocity,androidx.compose.ui.unit.Velocity>){}[0]
 
     final object Companion { // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion|null[0]
+        final const val DEFAULT_FLING_REFERENCE // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_FLING_REFERENCE|{}DEFAULT_FLING_REFERENCE[0]
+            final fun <get-DEFAULT_FLING_REFERENCE>(): kotlin/Float // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_FLING_REFERENCE.<get-DEFAULT_FLING_REFERENCE>|<get-DEFAULT_FLING_REFERENCE>(){}[0]
         final const val DEFAULT_MAX_COMPRESSION // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_MAX_COMPRESSION|{}DEFAULT_MAX_COMPRESSION[0]
             final fun <get-DEFAULT_MAX_COMPRESSION>(): kotlin/Float // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_MAX_COMPRESSION.<get-DEFAULT_MAX_COMPRESSION>|<get-DEFAULT_MAX_COMPRESSION>(){}[0]
         final const val DEFAULT_RESISTANCE // io.github.youndie.kvadrant.indication/KvadrantOverscroll.Companion.DEFAULT_RESISTANCE|{}DEFAULT_RESISTANCE[0]
@@ -66,7 +68,7 @@ final class io.github.youndie.kvadrant.indication/KvadrantOverscroll : androidx.
 }
 
 final class io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory : androidx.compose.foundation/OverscrollFactory { // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory|null[0]
-    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float){}[0]
+    constructor <init>(kotlinx.coroutines/CoroutineScope, kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ...) // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.<init>|<init>(kotlinx.coroutines.CoroutineScope;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
 
     final fun createOverscrollEffect(): androidx.compose.foundation/OverscrollEffect // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.createOverscrollEffect|createOverscrollEffect(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // io.github.youndie.kvadrant.indication/KvadrantOverscrollFactory.equals|equals(kotlin.Any?){}[0]

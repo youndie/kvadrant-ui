@@ -262,11 +262,12 @@ public final class io/github/youndie/kvadrant/icons/KvadrantIcons {
 public final class io/github/youndie/kvadrant/indication/KvadrantOverscroll : androidx/compose/foundation/OverscrollEffect {
 	public static final field $stable I
 	public static final field Companion Lio/github/youndie/kvadrant/indication/KvadrantOverscroll$Companion;
+	public static final field DEFAULT_FLING_REFERENCE F
 	public static final field DEFAULT_MAX_COMPRESSION F
 	public static final field DEFAULT_RESISTANCE F
 	public static final field RELEASE_MILLIS I
-	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FF)V
-	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FFF)V
+	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun applyToFling-BMRW4eQ (JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun applyToScroll-Rhakbz0 (JILkotlin/jvm/functions/Function1;)J
 	public fun getEffectModifier ()Landroidx/compose/ui/Modifier;
@@ -279,8 +280,8 @@ public final class io/github/youndie/kvadrant/indication/KvadrantOverscroll$Comp
 
 public final class io/github/youndie/kvadrant/indication/KvadrantOverscrollFactory : androidx/compose/foundation/OverscrollFactory {
 	public static final field $stable I
-	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FF)V
-	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FFF)V
+	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun createOverscrollEffect ()Landroidx/compose/foundation/OverscrollEffect;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I

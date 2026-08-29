@@ -17,6 +17,7 @@ import io.github.youndie.kvadrant.theme.KvadrantEasing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.exp
 import kotlin.math.sign
 
 /**
@@ -32,9 +33,10 @@ import kotlin.math.sign
  * **Compression is Microsoft's word, not a description chosen here.** Windows Phone 7.1 added
  * `HorizontalCompression` and `VerticalCompression` visual state groups to `ScrollViewer` so that an
  * application could react to the end of a scroll. What it did *not* publish is any of the numbers:
- * how far the content compresses, how the resistance builds, or how it returns. Those three are
- * therefore **this project's own**, they are parameters rather than constants, and they are named as
- * ours here — the same rule research §1.10 applies to the panorama's peek.
+ * how far the content compresses, how the resistance builds, how deep a *fling* into the end goes,
+ * or how it returns. Those four are therefore **this project's own**, they are parameters rather
+ * than constants, and they are named as ours here — the same rule research §1.10 applies to the
+ * panorama's peek.
  *
  * It is a scale rather than a translation, and that distinction is the whole of the effect. A
  * translation is what iOS does — the content slides away from the edge and leaves a gap. Compression
@@ -45,11 +47,15 @@ import kotlin.math.sign
  *   **Ours.** 0.06 is a twentieth, which reads as give rather than as a bounce.
  * @param resistance how much finger travel it takes to reach that limit, as a multiple of the
  *   viewport. **Ours.** Below 1 the effect is reached before the finger has crossed the screen.
+ * @param flingReference the speed, in viewports per second, at which a fling arriving at the end
+ *   spends about two thirds of [maxCompression]. **Ours**, and the shape around it is a choice too:
+ *   see [absorb].
  */
 public class KvadrantOverscroll(
     private val scope: CoroutineScope,
     private val maxCompression: Float = DEFAULT_MAX_COMPRESSION,
     private val resistance: Float = DEFAULT_RESISTANCE,
+    private val flingReference: Float = DEFAULT_FLING_REFERENCE,
 ) : OverscrollEffect {
     /**
      * Signed, in fractions of the viewport: negative at the start edge, positive at the end.
@@ -95,6 +101,11 @@ public class KvadrantOverscroll(
         val consumedByScroll = performScroll(left)
         val leftover = left - consumedByScroll
 
+        // **`UserInput` only, and that condition survived B-45 rather than causing it.** A fling's
+        // deltas arrive as a `SideEffect`, so this drops them — which is right: absorbing a
+        // decelerating fling frame by frame would make the depth a function of the frame rate, and
+        // `SideEffect` also carries a nested scroll's propagation. What the fling leaves at the wall
+        // is a *velocity*, and it is absorbed once, in [applyToFling].
         if (source == NestedScrollSource.UserInput && viewport > 0f) {
             val leftoverAxis = if (horizontal) leftover.x else leftover.y
             if (leftoverAxis != 0f) {
@@ -109,10 +120,46 @@ public class KvadrantOverscroll(
         performFling: suspend (Velocity) -> Velocity,
     ) {
         val consumed = performFling(velocity)
-        // Everything the scroller could not spend goes into the spring, and then the spring returns.
+        // What the scroller could not spend hits the stop, and this is where it becomes compression.
+        // **These two lines used to be one comment saying so and no code doing it** ([B-45](
+        // https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-45-overscroll-ignores-the-fling.md)):
+        // the release ran on a compression of zero and returned at once, so a list flung into its
+        // end did nothing while a list dragged into it compressed — and a list is flung into its end
+        // far more often than it is dragged into one.
+        absorb(velocity - consumed)
         // The release curve is the theme's own exponential-out, which every other Metro settle uses.
         performRelease()
-        if (consumed != velocity) performRelease()
+    }
+
+    /**
+     * The velocity left at the stop, turned into a depth.
+     *
+     * **A saturating curve rather than a proportion, and the alternative is worth naming.** The drag
+     * path converts a *distance* — leftover pixels over a viewport — and the obvious symmetry is to
+     * do the same to a velocity by multiplying it by some time. That time has no defensible value:
+     * short enough that a hard fling stays inside [maxCompression] and every ordinary fling produces
+     * almost nothing; long enough for an ordinary fling to be visible and everything above it is
+     * clamped to the same depth, so the effect stops answering how hard the list was thrown. Both
+     * versions pass a test written at one speed.
+     *
+     * `1 − e^(−v)` has neither problem: it is bounded by construction, so nothing is ever clipped,
+     * and it keeps varying across the whole range of speeds a thumb produces. The one number in it
+     * is [flingReference] and it is **ours** — Microsoft published nothing here, as it published
+     * nothing for the other three.
+     *
+     * Speed is measured in **viewports per second** rather than pixels, which is the same
+     * normalisation the drag path uses and is what keeps this density-independent without the effect
+     * having to know a density.
+     */
+    private fun absorb(leftover: Velocity) {
+        if (viewport <= 0f) return
+        // The axis is the one the drag that threw this list was on, not the velocity's own. A fling
+        // is the end of a gesture, so the two agree; deriving it here instead would let a stray
+        // sideways component flip the axis after `viewport` had been measured along the other one.
+        val axis = if (horizontal) leftover.x else leftover.y
+        if (axis == 0f) return
+        val speed = abs(axis) / viewport
+        setCompression(compression + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
     }
 
     private suspend fun performRelease() {
@@ -174,6 +221,13 @@ public class KvadrantOverscroll(
         /** **Ours.** A full viewport of travel to reach the limit. */
         public const val DEFAULT_RESISTANCE: Float = 1f
 
+        /**
+         * **Ours.** A fling arriving at a viewport and a half per second spends about two thirds of
+         * the available compression; nothing ever spends all of it, which is what a saturating curve
+         * buys.
+         */
+        public const val DEFAULT_FLING_REFERENCE: Float = 1.5f
+
         /** **Ours.** The phone's ordinary settle, as the panorama's is. */
         public const val RELEASE_MILLIS: Int = 300
     }
@@ -184,13 +238,17 @@ public class KvadrantOverscrollFactory(
     private val scope: CoroutineScope,
     private val maxCompression: Float = KvadrantOverscroll.DEFAULT_MAX_COMPRESSION,
     private val resistance: Float = KvadrantOverscroll.DEFAULT_RESISTANCE,
+    private val flingReference: Float = KvadrantOverscroll.DEFAULT_FLING_REFERENCE,
 ) : OverscrollFactory {
-    override fun createOverscrollEffect(): OverscrollEffect = KvadrantOverscroll(scope, maxCompression, resistance)
+    override fun createOverscrollEffect(): OverscrollEffect =
+        KvadrantOverscroll(scope, maxCompression, resistance, flingReference)
 
     override fun equals(other: Any?): Boolean =
         other is KvadrantOverscrollFactory &&
             other.maxCompression == maxCompression &&
-            other.resistance == resistance
+            other.resistance == resistance &&
+            other.flingReference == flingReference
 
-    override fun hashCode(): Int = 31 * maxCompression.hashCode() + resistance.hashCode()
+    override fun hashCode(): Int =
+        31 * (31 * maxCompression.hashCode() + resistance.hashCode()) + flingReference.hashCode()
 }

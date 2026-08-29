@@ -1,7 +1,7 @@
 ---
 id: B-45
 title: "The overscroll compresses under a finger and not under a fling, which is how a list usually ends"
-status: open
+status: done
 priority: P1
 size: S
 stage: stage-2-release
@@ -56,15 +56,38 @@ checking whether the fling was handled finds a sentence saying it was.
   becomes is named in KDoc as this project's, next to `maxCompression` and `resistance` — research
   §1.10.
 
+## What it turned out to be
+
+**The `UserInput` condition was right and stayed.** The item allowed for deleting it and it would
+have been the wrong fix: absorbing a decelerating fling's deltas frame by frame makes the depth a
+function of the frame rate. What was missing is that the leftover at the stop is a **velocity**, so
+`applyToFling` converts it once, and the condition now carries the reason it is there.
+
+**The conversion is a saturating curve, and the obvious alternative is named rather than dropped.**
+Multiplying the velocity by a time to reuse the drag's distance arithmetic has no defensible time
+constant: short enough to keep a hard fling inside `maxCompression` and every ordinary fling produces
+almost nothing; long enough for an ordinary fling to show and everything above it clamps to the same
+depth, so the effect stops answering how hard the list was thrown. Both versions pass a test written
+at one speed. `maxCompression · (1 − e^(−v ⁄ reference))` is bounded by construction and keeps
+varying across the whole range a thumb produces; speed is in viewports per second, which is the
+normalisation the drag path already uses and keeps this density-independent without the effect having
+to know a density.
+
 ## Acceptance
 
-- AC: a list flung into its end compresses, asserted by driving a fling rather than a drag —
-  `OverscrollCompressionTest` drags, which is why this shipped.
-- AC: the guard is checked by putting the `UserInput` condition back and watching it fail. A test
-  that passes before the fix is a test of something else.
-- AC: the compression a fling produces varies with the velocity it arrived at, asserted at two
-  speeds, because a bound that ignores speed would pass a test written at one.
-- AC: the comment above `applyToFling` describes what the code does, and the dead second
-  `performRelease()` goes.
+- ~~AC: a list flung into its end compresses, asserted by driving a fling rather than a drag.~~ Done
+  — `OverscrollFlingTest`. It throws the list from the **top** rather than starting at the stop:
+  starting there means the drag compresses before the fling begins, and the frame at the peak cannot
+  say which of the two did it.
+- ~~AC: the guard is checked by putting the defect back.~~ Done — with `absorb` removed, both tests
+  fail; with the depth replaced by a constant, only the second does. A guard that cannot tell those
+  two apart is one test doing one job and claiming two.
+- ~~AC: the compression varies with the velocity.~~ Done, at 900 and 4 000 px/s — both past the
+  reference and still on the climbing part of the curve. Two speeds chosen further out would both
+  saturate and the assertion would hold for a constant.
+- ~~AC: the comment describes what the code does, and the dead second `performRelease()` goes.~~
+  Done. The old comment is quoted in the KDoc where the fix is, because *what it said* is the
+  transferable part: it asserted the missing behaviour, so a reader checking whether the fling was
+  handled found a sentence saying it was.
 - Anchors: `kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/indication/KvadrantOverscroll.kt`,
-  `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/behaviour/OverscrollCompressionTest.kt`
+  `kvadrant-core/src/desktopTest/kotlin/io/github/youndie/kvadrant/behaviour/OverscrollFlingTest.kt`
