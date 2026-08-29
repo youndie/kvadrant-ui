@@ -115,7 +115,7 @@ nicer than Windows Phone is a defect rather than a feature.
 | `KvadrantText` | `text` | [KvadrantText.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/foundation/KvadrantText.kt) | Text in the current theme's colour and style |
 | `KvadrantTheme` | — | [KvadrantTheme.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/theme/KvadrantTheme.kt) | Wraps `content` in a Metro theme, and replaces the press indication with `TiltIndication` — the plane leaning towards the finger is Metro's ripple, and it is the default rather than something a caller remembers to apply |
 
-48 public composables, 47 previews, 5 composables with no preview of their own.
+48 public composables, 48 previews, 5 composables with no preview of their own.
 
 <!-- END CATALOG -->
 

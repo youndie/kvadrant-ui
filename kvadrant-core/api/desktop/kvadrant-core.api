@@ -259,6 +259,33 @@ public final class io/github/youndie/kvadrant/icons/KvadrantIcons {
 	public final fun getWarning ()Landroidx/compose/ui/graphics/vector/ImageVector;
 }
 
+public final class io/github/youndie/kvadrant/indication/KvadrantOverscroll : androidx/compose/foundation/OverscrollEffect {
+	public static final field $stable I
+	public static final field Companion Lio/github/youndie/kvadrant/indication/KvadrantOverscroll$Companion;
+	public static final field DEFAULT_MAX_COMPRESSION F
+	public static final field DEFAULT_RESISTANCE F
+	public static final field RELEASE_MILLIS I
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FF)V
+	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun applyToFling-BMRW4eQ (JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun applyToScroll-Rhakbz0 (JILkotlin/jvm/functions/Function1;)J
+	public fun getEffectModifier ()Landroidx/compose/ui/Modifier;
+	public fun getNode ()Landroidx/compose/ui/node/DelegatableNode;
+	public fun isInProgress ()Z
+}
+
+public final class io/github/youndie/kvadrant/indication/KvadrantOverscroll$Companion {
+}
+
+public final class io/github/youndie/kvadrant/indication/KvadrantOverscrollFactory : androidx/compose/foundation/OverscrollFactory {
+	public static final field $stable I
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FF)V
+	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineScope;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun createOverscrollEffect ()Landroidx/compose/foundation/OverscrollEffect;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+}
+
 public final class io/github/youndie/kvadrant/indication/KvadrantTiltModifierKt {
 	public static final fun kvadrantTilt (Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
 	public static synthetic fun kvadrantTilt$default (Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;

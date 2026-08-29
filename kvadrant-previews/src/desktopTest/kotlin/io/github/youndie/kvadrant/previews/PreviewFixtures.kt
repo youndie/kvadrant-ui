@@ -218,3 +218,7 @@ internal fun PreviewRotate(): Unit = mount("rotate")
 @ViddikScreenshot(name = "scrim", group = "preview", width = 360, height = 240)
 @Composable
 internal fun PreviewScrim(): Unit = mount("scrim")
+
+@ViddikScreenshot(name = "overscroll", group = "preview", width = 360, height = 300)
+@Composable
+internal fun PreviewOverscroll(): Unit = mount("overscroll")

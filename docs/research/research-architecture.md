@@ -1186,6 +1186,20 @@ Consequence for §1.13's conclusion: the AGP 9 Kotlin Multiplatform plugin is *u
 that bundles resources, which was in doubt for as long as the fonts were missing. What it is not is
 usable by default.
 
+**Overscroll compression, and three more numbers that are ours**
+([B-38](../backlog/B-38-the-theme-leaves-the-platform-overscroll.md)). Windows Phone 7.1 added
+`HorizontalCompression` and `VerticalCompression` visual state groups to `ScrollViewer`, so *that*
+lists compressed at their ends is published. **How far, against what resistance, and how they return
+is not** — Microsoft published the states and none of their storyboards. So
+`KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, `DEFAULT_RESISTANCE` and `RELEASE_MILLIS` join the
+panorama's peek and its settle on §1.10's list: this project's own, parameters rather than constants,
+named as ours in KDoc.
+
+The consequence for the theme is the part worth keeping. `KvadrantTheme` had replaced
+`LocalIndication` and left `LocalOverscrollFactory` alone, so a Metro list ended with the platform's
+own stretch — as foreign as the ripple would have been, and met as often. It was the same error
+twice, and only one of the two had ever been noticed.
+
 ### D3. The adapter's Material version is decided by resolving the graph, not by a range
 
 Brief: `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }`.
