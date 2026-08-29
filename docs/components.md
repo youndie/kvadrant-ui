@@ -136,10 +136,14 @@ is present reads as a complete one. Full reasoning in
 | `HyperlinkButton` | platform | Not a variant of `KvadrantButton` — that button *is* its border |
 | `Hub`, `SemanticZoom`, Win8 page header | Windows 8 | Deferred whole ([B-22](backlog/B-22-win8-branch.md)) |
 
-**And three behaviours rather than components**, which is where the larger gaps turned out to be:
-overscroll compression ([B-38](backlog/B-38-the-theme-leaves-the-platform-overscroll.md)), semantics
-beyond touch targets ([B-39](backlog/B-39-semantics-beyond-touch-targets.md)), and keyboard focus on
-the desktop and browser targets ([B-40](backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md)).
+**And three behaviours rather than components**, which is where the larger gaps turned out to be —
+all three now closed: overscroll compression
+([B-38](backlog/B-38-the-theme-leaves-the-platform-overscroll.md)), semantics beyond touch targets
+([B-39](backlog/B-39-semantics-beyond-touch-targets.md)), and keyboard focus on the desktop and
+browser targets ([B-40](backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md)). Two of the three
+landed in the **theme** rather than in any component, which is the pattern worth noticing: a
+behaviour every surface needs is one factory in one place, and a component that has to remember to
+apply it is a component that will one day forget.
 
 ## Adding a component
 

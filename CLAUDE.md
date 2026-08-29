@@ -77,6 +77,14 @@ make site                               # the site + Dokka reference into build/
   resource loader fetches `composeResources/...` relative to the *document*, so a page one directory
   down gets a 404 for the fonts and silently falls back to a system face — a site about a typeface,
   set in the wrong one, with nothing on screen saying so.
+- **The focus ring lives in the indication and is gated on the input mode, and both halves are
+  load-bearing.** `KvadrantTheme` provides `LocalIndication`, so a keyboard focus ring drawn there
+  reaches every `clickable`/`toggleable`/`selectable` at once and a new control cannot forget it.
+  The gate is what keeps it out of the screenshots: on desktop `clickable` takes focus on **click**,
+  so a ring drawn on focus alone appears in every pressed golden and around every tile a mouse has
+  touched. `PressableNodesAreReachableTest` guards reachability across the whole preview registry;
+  `FocusRingTest` guards the gate, and it asserts the surface *is* focused before asserting nothing
+  was drawn — without that line it passes for a control that was never focusable. Research D19.
 - **Style is in `.editorconfig`**, not in the build script.
 - **`androidResources { enable = true }` is load-bearing in every module with an Android target.**
   AGP's Kotlin Multiplatform plugin ships with the Android resource pipeline *off*, and with it off
