@@ -123,6 +123,14 @@ internal fun PreviewLoopingSelector(): Unit = mount("looping-selector")
 @Composable
 internal fun PreviewPickerPage(): Unit = mount("picker-page")
 
+@ViddikScreenshot(name = "date-picker", group = "preview", width = 360, height = 420)
+@Composable
+internal fun PreviewDatePicker(): Unit = mount("date-picker")
+
+@ViddikScreenshot(name = "time-picker", group = "preview", width = 360, height = 420)
+@Composable
+internal fun PreviewTimePicker(): Unit = mount("time-picker")
+
 @ViddikScreenshot(name = "message-box", group = "preview", width = 360, height = 320)
 @Composable
 internal fun PreviewMessageBox(): Unit = mount("message-box")
