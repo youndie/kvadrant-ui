@@ -237,13 +237,22 @@ viddik {
     )
 }
 
-// compose-resources registers a copy task for every Android variant and leaves this one without an
-// output directory, so `connectedAndroidDeviceTest` fails during configuration rather than on the
-// device: "property 'outputDirectory' doesn't have a configured value". The device test source set
-// has no resources of its own — it renders shapes, not text — so any directory will do; what it
-// must not be is unset.
-// The task type is internal to the plugin, so the property is set through Gradle's own property
-// lookup rather than through a cast that will not compile.
+// **compose-resources never delivers its fonts to Android, and the build is green about it.**
+//
+// The plugin registers a `copyAndroid<Variant>ComposeResourcesToAndroidAssets` task per Android
+// variant and leaves `outputDirectory` unset on both. Invoked directly, each fails at configuration
+// with "property 'outputDirectory' doesn't have a configured value"; neither is in `assemble`'s
+// graph, so the AAR is built without ever running one and comes out with a manifest, a classes.jar
+// and no assets at all. See [B-37](../docs/backlog/B-37-the-android-artefact-ships-without-its-fonts.md).
+//
+// What is set below is the *device test* variant, and it is a stand-in rather than a fix: the
+// directory is empty, so the tests run and the fonts are still absent. It is here because without
+// it the task fails at configuration and the device suite cannot start at all.
+//
+// **The comment that used to be here said the device test source set "has no resources of its own —
+// it renders shapes, not text".** That was true when the only device test solved a trapezoid, and
+// false the moment one measured a font. It is the shape of exemption that hides the hole it was
+// written to excuse, so it is named here rather than repeated.
 tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach {
     val output = layout.buildDirectory.dir("generated/compose/androidDeviceTestAssets")
 
