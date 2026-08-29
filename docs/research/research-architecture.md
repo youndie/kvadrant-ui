@@ -1173,6 +1173,19 @@ the option of closing B-26 with "the difference is not visible" is gone: it is v
 question is whether it is *right*, which needs an implementation that `graphicsLayer` cannot
 provide at any nesting.
 
+**Android resources are off by default under AGP's Kotlin Multiplatform plugin**
+([B-37](../backlog/B-37-the-android-artefact-ships-without-its-fonts.md)). `androidResources { enable
+= true }` inside the `android { }` block is what creates the variant's assets container; without it
+`variant.sources.assets` is null, compose-resources has nowhere to put the bundled fonts, and the AAR
+ships with a manifest, a classes.jar and nothing else — with no error anywhere. This is not a version
+problem: the same null appears on AGP 9.2.0 and 9.3.2 and on Compose 1.11.1 and 1.12.0, all four
+measured. `androidLibrary { }` is deprecated in favour of `android { }`, and in a Kotlin script that
+deprecation is an error rather than a warning.
+
+Consequence for §1.13's conclusion: the AGP 9 Kotlin Multiplatform plugin is *usable* for a library
+that bundles resources, which was in doubt for as long as the fonts were missing. What it is not is
+usable by default.
+
 ### D3. The adapter's Material version is decided by resolving the graph, not by a range
 
 Brief: `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }`.

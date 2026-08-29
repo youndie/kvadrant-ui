@@ -78,6 +78,14 @@ make site                               # the site + Dokka reference into build/
   down gets a 404 for the fonts and silently falls back to a system face — a site about a typeface,
   set in the wrong one, with nothing on screen saying so.
 - **Style is in `.editorconfig`**, not in the build script.
+- **`androidResources { enable = true }` is load-bearing in every module with an Android target.**
+  AGP's Kotlin Multiplatform plugin ships with the Android resource pipeline *off*, and with it off
+  `variant.sources.assets` is null — so compose-resources has nowhere to put the bundled fonts, its
+  copy task never enters a task graph, and the AAR comes out with a manifest, a classes.jar and
+  nothing else, green. A consumer then gets `kvadrantLatin()` resolving to nothing and the platform
+  substituting its own face. `androidArtefactCarriesItsFonts` unpacks the AAR in `check` and counts
+  what is inside, because that is the only place this can be seen: `check` is desktop-only, and the
+  on-device test that would notice needs the very fonts that go missing. B-37.
 - **The public ABI is pinned.** `check` runs `checkKotlinAbi` against
   `kvadrant-core/api/desktop/kvadrant-core.api`. A deliberate API change means running
   `./gradlew :kvadrant-core:updateKotlinAbi` and committing the diff, so a reviewer sees it. The
