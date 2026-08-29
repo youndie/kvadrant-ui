@@ -38,7 +38,7 @@ public final class io/github/youndie/kvadrant/components/ControlsKt {
 	public static final fun KvadrantListItem (Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantPasswordBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;CLandroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantProgressBar (FLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
-	public static final fun KvadrantTextBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZLandroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantTextBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZLandroidx/compose/foundation/layout/PaddingValues;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantToggleSwitch (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLandroidx/compose/runtime/Composer;II)V
 	public static final fun onAccent (Landroidx/compose/runtime/Composer;I)J
 }
@@ -47,6 +47,10 @@ public final class io/github/youndie/kvadrant/components/KvadrantAppBarKt {
 	public static final fun KvadrantAppBar (Landroidx/compose/ui/Modifier;ZLjava/util/List;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantAppBarButton (Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLjava/lang/String;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getKvadrantAppBarGlyphSize ()F
+}
+
+public final class io/github/youndie/kvadrant/components/KvadrantAutoCompleteBoxKt {
+	public static final fun KvadrantAutoCompleteBox (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZIILkotlin/jvm/functions/Function2;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantButtonDefaults {
@@ -151,7 +155,7 @@ public final class io/github/youndie/kvadrant/components/KvadrantPanoramaKt {
 }
 
 public final class io/github/youndie/kvadrant/components/KvadrantPivotKt {
-	public static final fun KvadrantPivot (Ljava/util/List;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/foundation/pager/PagerState;Landroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KvadrantPivot (Ljava/util/List;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/foundation/pager/PagerState;ZLandroidx/compose/ui/text/font/FontFamily;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun KvadrantPivotHeaders (Ljava/util/List;Landroidx/compose/foundation/pager/PagerState;Landroidx/compose/ui/text/font/FontFamily;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 	public static final fun rememberKvadrantPivotState (ILandroidx/compose/runtime/Composer;I)Landroidx/compose/foundation/pager/PagerState;
 }
@@ -171,6 +175,8 @@ public final class io/github/youndie/kvadrant/components/KvadrantSelectionKt {
 public final class io/github/youndie/kvadrant/components/KvadrantTextBoxDefaults {
 	public static final field $stable I
 	public static final field INSTANCE Lio/github/youndie/kvadrant/components/KvadrantTextBoxDefaults;
+	public final fun getActionIconSize-D9Ej5fM ()F
+	public final fun getActionIconTarget-MYxV2XQ ()J
 	public final fun getContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
 	public final fun getPasswordContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
 }

@@ -63,6 +63,10 @@ internal fun PreviewButton(): Unit = mount("button")
 @Composable
 internal fun PreviewTextBox(): Unit = mount("text-box")
 
+@ViddikScreenshot(name = "auto-complete-box", group = "preview", width = 360, height = 260)
+@Composable
+internal fun PreviewAutoCompleteBox(): Unit = mount("auto-complete-box")
+
 @ViddikScreenshot(name = "password-box", group = "preview", width = 360, height = 160)
 @Composable
 internal fun PreviewPasswordBox(): Unit = mount("password-box")

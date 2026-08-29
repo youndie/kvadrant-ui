@@ -75,6 +75,7 @@ nicer than Windows Phone is a defect rather than a feature.
 | `KvadrantPasswordBox` | `password-box` | [Controls.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/Controls.kt) | A password field that shows the character you just typed, then hides it |
 | `KvadrantAppBar` | `app-bar` | [KvadrantAppBar.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantAppBar.kt) | The bar along the bottom of a Windows Phone page: at most four circular buttons and an overflow menu, 72 px tall |
 | `KvadrantAppBarButton` | `app-bar-button` | [KvadrantAppBar.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantAppBar.kt) | One circular button: 48×48 px with a 1.5 px ring, and a 26×26 px space in the middle for a glyph |
+| `KvadrantAutoCompleteBox` | `auto-complete-box` | [KvadrantAutoCompleteBox.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantAutoCompleteBox.kt) | A text box that offers what it thinks you are typing, from the Toolkit's `AutoCompleteBox` |
 | `KvadrantContextMenuHost` | `context-menu` | [KvadrantContextMenu.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantContextMenu.kt) | The menu a long press opens, and the page pushed away behind it |
 | `KvadrantDatePicker` | `date-picker` | [KvadrantDateTimePicker.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantDateTimePicker.kt) | The date picker the phone navigated to: a page of tall square columns, one per component of the date, tipping in from -50° |
 | `KvadrantTimePicker` | `time-picker` | [KvadrantDateTimePicker.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/components/KvadrantDateTimePicker.kt) | The same page with an hour and a minute on it, and a meridiem column when the cycle is twelve |
@@ -117,7 +118,7 @@ nicer than Windows Phone is a defect rather than a feature.
 | `KvadrantText` | `text` | [KvadrantText.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/foundation/KvadrantText.kt) | Text in the current theme's colour and style |
 | `KvadrantTheme` | — | [KvadrantTheme.kt](../kvadrant-core/src/commonMain/kotlin/io/github/youndie/kvadrant/theme/KvadrantTheme.kt) | Wraps `content` in a Metro theme, and replaces the press indication with `TiltIndication` — the plane leaning towards the finger is Metro's ripple, and it is the default rather than something a caller remembers to apply |
 
-50 public composables, 50 previews, 5 composables with no preview of their own.
+51 public composables, 51 previews, 5 composables with no preview of their own.
 
 <!-- END CATALOG -->
 
@@ -131,12 +132,18 @@ is present reads as a complete one. Full reasoning in
 
 | Missing | Where it came from | Status |
 |---|---|---|
-| `DatePicker`, `TimePicker` | platform | Both halves exist — `KvadrantLoopingSelector` and `KvadrantPickerPage` — and the assembly does not (B-42) |
-| `AutoCompleteBox` | Toolkit | Its type slot is already transcribed in `KvadrantTypography.mediumLarge` (B-43) |
-| Text box with an action icon | Toolkit `PhoneTextBox` | `KvadrantTextBox` is the plain half of a control that had two (B-43) |
-| `ExpanderView`, `HubTile`, `MultiselectList` | Toolkit | Never inventoried (B-43) |
-| `HyperlinkButton` | platform | Not a variant of `KvadrantButton` — that button *is* its border |
-| `Hub`, `SemanticZoom`, Win8 page header | Windows 8 | Deferred whole ([B-22](backlog/B-22-win8-branch.md)) |
+| `ExpanderView` | Toolkit | **Accepted, not built.** An item that opens to show its children, as the Mail app's threads did. Nothing in the library expands in place, so this is a component rather than a parameter, and its template is in the Toolkit's `Generic.xaml` when somebody wants it |
+| `HubTile` | Toolkit | **Accepted, not built.** An animated tile with a title, a message and a notification — *not* `KvadrantFlipTile`, which only turns over. It is the tile with something to say |
+| `MultiselectList` | Toolkit | **Accepted, not built.** A list with a selection mode and a check box per row. It is where `KvadrantCheckBox` was meant to be used and nothing uses it today, which is the argument for building it and also the reason nobody has missed it |
+| `LockablePivot` | Toolkit | **Rejected as a component; shipped as a parameter.** `KvadrantPivot(swipeEnabled = …)`. The Toolkit needed a subclass because Silverlight had no way to turn a `Pivot`'s manipulation off from outside; a pager takes a boolean |
+| `WrapPanel` | Toolkit | **Rejected.** Compose's `FlowRow` is the same layout and is not ours to re-ship |
+| `HyperlinkButton` | platform | **Rejected as a variant.** Not a `KvadrantButton` with the border removed — that button *is* its border, so a hyperlink is a text style and a click, which a caller already has |
+| `Hub`, `SemanticZoom`, Win8 page header | Windows 8 | **Deferred whole** ([B-22](backlog/B-22-win8-branch.md)): the desktop lineage, which is a second design profile rather than a gap in this one |
+
+Built since this table was written, and left here because a list of what was missing is worth
+reading against what closed it: `KvadrantDatePicker` and `KvadrantTimePicker`
+([B-42](backlog/B-42-date-and-time-pickers.md)), `KvadrantAutoCompleteBox` and the text box's action
+icon ([B-43](backlog/B-43-the-toolkit-was-never-inventoried.md)).
 
 **And three behaviours rather than components**, which is where the larger gaps turned out to be —
 all three now closed: overscroll compression
