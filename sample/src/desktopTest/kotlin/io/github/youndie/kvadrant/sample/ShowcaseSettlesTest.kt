@@ -3,7 +3,7 @@ package io.github.youndie.kvadrant.sample
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import io.github.youndie.kvadrant.foundation.kvadrantCyrillic
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import kotlin.test.Test
