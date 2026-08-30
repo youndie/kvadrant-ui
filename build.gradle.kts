@@ -58,7 +58,7 @@ val publishableModules = setOf("kvadrant-core", "kvadrant-material-adapter")
 // coordinate that will not move under anybody, and it lives there because that is where this
 // project may write — which is also how the neighbours on this host use it: `io.github.youndie:
 // form-core` has ninety fixed versions in the same tree and not one `-SNAPSHOT` among them.
-val REPOSITORY = "https://reposilite.kotlin.website/snapshots"
+val reposiliteUrl = "https://reposilite.kotlin.website/snapshots"
 
 val kvadrantVersion: String = providers.gradleProperty("kvadrant.version").get()
 
@@ -79,7 +79,7 @@ subprojects {
         repositories {
             maven {
                 name = "reposilite"
-                url = uri(REPOSITORY)
+                url = uri(reposiliteUrl)
                 credentials {
                     // Never in the tree. A property for a workstation, an environment variable for
                     // anything automated, and a publish that finds neither fails **at
@@ -165,7 +165,7 @@ subprojects {
                 if (repository.name != "reposilite") return@doFirst
                 val artefact = publication.artifactId
                 val coordinates = "io/github/youndie/$artefact/$kvadrantVersion/$artefact-$kvadrantVersion.pom"
-                val url = java.net.URI("$REPOSITORY/$coordinates").toURL()
+                val url = java.net.URI("$reposiliteUrl/$coordinates").toURL()
                 val connection = (url.openConnection() as java.net.HttpURLConnection).apply { requestMethod = "GET" }
                 val code = runCatching { connection.responseCode }.getOrDefault(-1)
                 connection.disconnect()
