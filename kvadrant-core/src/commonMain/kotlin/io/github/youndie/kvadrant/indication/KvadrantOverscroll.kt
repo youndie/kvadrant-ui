@@ -46,7 +46,9 @@ import kotlin.math.sign
  * @param maxCompression how much of its own length the content gives up at the limit, as a fraction.
  *   **Ours.** 0.06 is a twentieth, which reads as give rather than as a bounce.
  * @param resistance how much finger travel it takes to reach that limit, as a multiple of the
- *   viewport. **Ours.** Below 1 the effect is reached before the finger has crossed the screen.
+ *   viewport. **Ours**, and the strongest lever on how the effect feels — see
+ *   [KvadrantOverscroll.DEFAULT_RESISTANCE], which was raised fourfold once a diagram showed a flick
+ *   spending the whole spring in two frames.
  * @param flingReference the speed, in viewports per second, at which a fling arriving at the end
  *   spends about two thirds of [maxCompression]. **Ours**, and the shape around it is a choice too:
  *   see [absorb].
@@ -165,7 +167,22 @@ public class KvadrantOverscroll(
         val axis = if (horizontal) leftover.x else leftover.y
         if (axis == 0f) return
         val speed = abs(axis) / viewport
-        setCompression(compression + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
+        // **The square, and the flatness it fixes was reported.** `1 − e^(−v ⁄ r)` is steepest at
+        // zero, so a barely-thrown list got most of what a hard one did: at a reference of eight,
+        // one viewport a second spent 12 % of the spring and three spent 31 %, a factor of 2.6 for a
+        // factor of three in speed. Squaring the argument suppresses the low end and leaves the top
+        // where it was — 4 % against 31 %, a factor of seven and a half — which is the separation a
+        // hand expects between a nudge and a throw.
+        val thrown = maxCompression * (1f - exp(-(speed / flingReference) * (speed / flingReference)))
+        // **The deeper of the two, not the sum, and this was a jump.** A gesture that drags past the
+        // end and lets go arrives here with the finger's own displacement already in `compression`
+        // and the finger's own velocity as the leftover — so adding them squeezed further at the
+        // instant of release, which is the moment a spring should start coming back. Reported as a
+        // small throw jumping.
+        //
+        // The quantity is how far past the boundary the content is. A throw carries it as far as its
+        // momentum would; if the finger already carried it further, the momentum adds nothing.
+        setCompression(maxOf(abs(compression), thrown) * sign(axis))
     }
 
     private suspend fun performRelease() {
@@ -224,23 +241,47 @@ public class KvadrantOverscroll(
         /** **Ours.** A twentieth of the viewport, which reads as give rather than as a bounce. */
         public const val DEFAULT_MAX_COMPRESSION: Float = 0.06f
 
-        /** **Ours.** A full viewport of travel to reach the limit. */
-        public const val DEFAULT_RESISTANCE: Float = 1f
+        /**
+         * **Ours**, and the number that decides how strong the whole effect feels — which took a
+         * space-time diagram to find, after two other knobs had been turned for it.
+         *
+         * It is how much finger travel past the end spends the spring, as a multiple of the
+         * viewport. At **1** the limit is `maxCompression` of a viewport of over-travel — 132 px on
+         * a phone — and a finger moving at six thousand pixels a second covers 96 of those **in one
+         * frame**. So any flick that ended past the boundary was at the limit within two frames,
+         * and every report that the effect was too strong was about this, not about the throw: the
+         * fling's own curve is only consulted for whatever the drag has not already spent, and the
+         * drag had spent all of it.
+         *
+         * `OverscrollFlingTimelineTest` is what showed it. The boundary sat at 18 px of a possible
+         * 18 for the whole time the finger was past the stop, at both of the speeds being compared.
+         *
+         * At 4 the same 132 px of over-travel spends a quarter of the spring and the limit needs
+         * about 530, which is a deliberate push rather than the tail of a flick.
+         */
+        public const val DEFAULT_RESISTANCE: Float = 4f
 
         /**
-         * **Ours**, and set from the range flings actually arrive in rather than from taste.
+         * **Ours**, and the one number in this class that was set by somebody looking at a phone.
          *
-         * A thumb produces roughly 3 000 to 12 000 px/s on a phone, which over a viewport of about
-         * 2 200 px is **1.4 to 5.5 viewports per second**. A reference in the middle of that spreads
-         * an ordinary flick across the spring — a gentle one spends about a third of it, a hard one
-         * about three quarters — where the first value, a viewport and a half, put everything above
-         * a lazy flick at the limit. That is what "it starts at maximum" was: not the timing, the
-         * saturation.
+         * What it does is decide how much of the spring a given arrival speed spends, through
+         * `1 − e^(−(v ⁄ reference)²)`. The *range* it has to cover is measured: a thumb produces
+         * roughly 3 000 to 12 000 px/s, which over a viewport of about 2 200 px is **1.4 to 5.5
+         * viewports per second**. What the range cannot decide is the amplitude, and two reports
+         * from a device did: at 4 with no square a throw was too deep at every speed; at 8 the hard
+         * end was right and a small throw still jumped, which is a curve too flat to tell a nudge
+         * from a throw. The square is that separation and 5 keeps the hard end where it was.
+         *
+         * **It is deliberately the fling's own number rather than [maxCompression].** That one is
+         * shared with the drag, which nobody has complained about; lowering it to fix a throw would
+         * change a gesture that was already right. When a report says a throw is too strong at every
+         * speed, this is the knob — and if a *drag* held past the end is ever too deep, that is the
+         * other one.
          *
          * The curve is `1 − e^(−v ⁄ reference)`, so nothing ever spends *all* of the spring and no
          * clamp is ever reached from below.
          */
-        public const val DEFAULT_FLING_REFERENCE: Float = 4f
+        public const val DEFAULT_FLING_REFERENCE: Float = 5f
 
         /** **Ours.** The phone's ordinary settle, as the panorama's is. */
         public const val RELEASE_MILLIS: Int = 300

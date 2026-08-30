@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -49,41 +50,42 @@ class OverscrollFlingTest {
     @Test
     fun a_list_flung_into_its_end_compresses() {
         val series = flungAtTheStop(velocity = HARD)
-        val smallest = series.minOrNull() ?: -1
-        val settled = series.lastOrNull() ?: -1
+        val deepest = series.max()
+        val settled = series.last()
 
-        // The control. Once the spring has finished, the last band is its whole self again — so the
-        // measurement means what it is claimed to mean, and a smaller number below is a squeeze
-        // rather than the harness looking at the wrong rows.
+        // The control, and it does **not** assume which row a settled list puts the boundary on:
+        // the first sample already carries the compression, because a throw's squeeze is instant.
+        // What it asserts is that the series reaches a steady state at all — without that, "the
+        // maximum is larger than the last value" is a statement about two arbitrary frames.
         assertTrue(
-            settled == BAND,
-            "after the spring finished the last band is $settled px of $BAND — the measurement is " +
-                "not of a settled list at its stop, and nothing below it means anything",
+            series.takeLast(SETTLED_FRAMES).all { it == settled },
+            "the boundary never came to rest: the last $SETTLED_FRAMES samples are " +
+                "${series.takeLast(SETTLED_FRAMES)}, so nothing below this means anything",
         )
 
         assertTrue(
-            smallest < BAND,
-            "the last band never went below its full $BAND px while the list sat at its stop, so a " +
-                "list thrown into its end did not compress at all — the fling's leftover velocity " +
-                "is going nowhere",
+            deepest > settled,
+            "the boundary never moved from $settled while the list sat at its stop, so a list " +
+                "thrown into its end did not compress at all — the fling's leftover velocity is " +
+                "going nowhere",
         )
     }
 
     @Test
     fun a_harder_throw_compresses_further() {
-        val gentle = flungAtTheStop(velocity = GENTLE).min()
-        val hard = flungAtTheStop(velocity = HARD).min()
+        val gentle = flungAtTheStop(velocity = GENTLE).let { it.max() - it.last() }
+        val hard = flungAtTheStop(velocity = HARD).let { it.max() - it.last() }
 
         assertTrue(
-            gentle < BAND && hard < BAND,
-            "one of the two throws did not compress at all ($gentle and $hard of $BAND px), so this " +
-                "is comparing a squeeze with nothing rather than two squeezes",
+            gentle > 0 && hard > 0,
+            "one of the two throws did not compress at all ($gentle and $hard px), so this is " +
+                "comparing a squeeze with nothing rather than two squeezes",
         )
         assertTrue(
-            hard < gentle,
-            "a throw at $HARD px/s squeezed the last band to $hard px and one at $GENTLE px/s to " +
-                "$gentle — the depth does not follow the speed, so it is a constant wearing a " +
-                "velocity's clothes and one test at one speed would have missed it",
+            hard > gentle,
+            "a throw at $HARD px/s moved the boundary $hard px and one at $GENTLE px/s $gentle — " +
+                "the depth does not follow the speed, so it is a constant wearing a velocity's " +
+                "clothes and one test at one speed would have missed it",
         )
     }
 
@@ -95,20 +97,25 @@ class OverscrollFlingTest {
         // crosses that in a frame whatever model runs it, so the shape was never the thing to fix.
         // What was wrong is that every ordinary flick reached the limit, which is a depth that has
         // stopped answering how hard the list was thrown.
-        val gentle = flungAtTheStop(velocity = GENTLE).min()
-        val hard = flungAtTheStop(velocity = HARD).min()
-        val limit = BAND - (BAND * MAX_COMPRESSION).toInt()
+        //
+        // The limit is **measured** rather than computed: a throw far past anything a thumb produces
+        // saturates the curve, and that is what the two ordinary ones have to stay under. An
+        // arithmetic bound would be my own multiplication of the same constants the effect uses.
+        val saturated = flungAtTheStop(velocity = SATURATING).let { it.max() - it.last() }
+        val gentle = flungAtTheStop(velocity = GENTLE).let { it.max() - it.last() }
+        val hard = flungAtTheStop(velocity = HARD).let { it.max() - it.last() }
 
+        assertTrue(saturated > 0, "the saturating throw did not compress, so there is no limit to compare against")
         assertTrue(
-            gentle > limit,
-            "a $GENTLE px/s throw squeezed the last band to $gentle px, which is the limit at " +
-                "$limit — an ordinary flick is spending the whole spring and the depth no longer " +
-                "says how hard anything was thrown",
+            hard < saturated,
+            "a $HARD px/s throw moved the boundary $hard px against $saturated at saturation — an " +
+                "ordinary flick is spending the whole spring and the depth no longer says how hard " +
+                "anything was thrown",
         )
         assertTrue(
-            hard > limit,
-            "a $HARD px/s throw reached the limit at $limit px. The curve is chosen so that " +
-                "nothing ever spends all of the spring; if this fails the reference has moved",
+            gentle < hard,
+            "a $GENTLE px/s throw moved the boundary as far as a $HARD px/s one ($gentle against " +
+                "$hard), which is the same complaint one step lower",
         )
     }
 
@@ -177,28 +184,91 @@ class OverscrollFlingTest {
             repeat(FRAMES) {
                 mainClock.advanceTimeByFrame()
                 if (scroll.value != scroll.maxValue) return@repeat
-                series += lastBandHeight()
+                series += firstBoundary()
             }
         }
         return series
     }
 
-    /** How many rows of the bottom band are visible: the run of blue upwards from the last row. */
-    private fun ComposeUiTest.lastBandHeight(): Int {
+    @Test
+    fun letting_go_past_the_end_does_not_squeeze_further() {
+        // Drag past the stop, hold, and let go. The finger's displacement is already in the effect
+        // and the finger's own velocity arrives as the fling's leftover, so **adding** them
+        // deepened the squeeze at the instant of release — the moment a spring should be coming
+        // back. Reported as a small throw jumping.
+        val held = mutableListOf<Int>()
+        val afterRelease = mutableListOf<Int>()
+        runComposeUiTest {
+            mainClock.autoAdvance = false
+            list()
+            repeat(SETTLED_FRAMES) { mainClock.advanceTimeByFrame() }
+            onNodeWithTag(TAG).performTouchInput {
+                down(Offset(WIDTH / 2f, VIEWPORT - 1f))
+                moveBy(Offset(0f, -PAST_THE_END))
+                moveBy(Offset(0f, -PAST_THE_END))
+            }
+            mainClock.advanceTimeByFrame()
+            held += firstBoundary()
+            onNodeWithTag(TAG).performTouchInput { up() }
+            repeat(RELEASE_FRAMES) {
+                mainClock.advanceTimeByFrame()
+                afterRelease += firstBoundary()
+            }
+        }
+
+        assertTrue(held.first() > 0, "the finger did not compress anything: ${held.first()}")
+        assertTrue(
+            afterRelease.max() <= held.first(),
+            "the finger squeezed to ${held.first()} px and letting go took it to " +
+                "${afterRelease.max()} — a release deepened the squeeze instead of starting the " +
+                "return: $afterRelease",
+        )
+    }
+
+    /** The list at its stop, held there by a drag rather than reached by a throw. */
+    private fun ComposeUiTest.list() {
+        setContent {
+            KvadrantTheme(colors = KvadrantColors.dark()) {
+                val scroll = rememberScrollState()
+                LaunchedEffect(Unit) { scroll.scrollTo(scroll.maxValue) }
+                Box(
+                    Modifier
+                        .size(WIDTH.dp, VIEWPORT.dp)
+                        .background(Color.Black)
+                        .testTag(TAG)
+                        .verticalScroll(scroll),
+                ) {
+                    Column {
+                        repeat(BANDS) { index ->
+                            Box(
+                                Modifier
+                                    .size(WIDTH.dp, BAND.dp)
+                                    .background(if (index % 2 == 0) Color.White else Color.Blue),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * The first blue row from the top of the viewport, which moves **down** under compression.
+     *
+     * **Not the last band's height, which is what this measured first.** Compression pivots on the
+     * bottom edge, so a point's displacement is proportional to its distance from that edge — and
+     * the last band's top is one band above it, a lever arm of a hundred pixels. A compression of
+     * one per cent moved it by one pixel, and two throws that differ by a factor of three both
+     * rounded to the same row. The topmost boundary has the whole viewport as its arm, so the same
+     * one per cent moves it three pixels here and thirty on a phone.
+     */
+    private fun ComposeUiTest.firstBoundary(): Int {
         val image = onNodeWithTag(TAG).captureToImage()
         val pixels = IntArray(image.width * image.height).also(image::readPixels)
-
-        fun blue(y: Int): Boolean {
+        return (0 until image.height).firstOrNull { y ->
             val pixel = pixels[y * image.width + image.width / 2]
-            return (pixel and 0xFF) > 0x80 && (pixel shr 16 and 0xFF) < 0x40
-        }
-        var run = 0
-        var y = image.height - 1
-        while (y >= 0 && blue(y)) {
-            run++
-            y--
-        }
-        return run
+            (pixel and 0xFF) > 0x80 && (pixel shr 16 and 0xFF) < 0x40
+        } ?: -1
     }
 
     private companion object {
@@ -229,14 +299,30 @@ class OverscrollFlingTest {
          * whether ordinary ones do.
          *
          * A thumb produces about 1.4 to 5.5 viewports per second (`DEFAULT_FLING_REFERENCE`), so
-         * these are 1.5 and 5 of them — either side of the reference, both inside the range, and far
-         * enough apart that the curve between them is plainly climbing.
+         * these are 2.5 and 5 of them — both inside the range and far enough apart that the curve
+         * between them is plainly climbing.
+         *
+         * The gentler one was 1.5 until the curve gained its square, which is what suppressing the
+         * low end means: at one and a half viewports a second the spring now gives a pixel and a
+         * half in a 300 px frame, and a test cannot tell a pixel and a half from rounding. That is
+         * the effect working, not a regression — but it moves what this fixture can measure, and a
+         * speed too small to resolve would have made the comparison hold for a constant.
          */
-        const val GENTLE = 450f
+        const val GENTLE = 750f
         const val HARD = 1500f
 
-        /** `KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, repeated so the limit can be computed. */
-        const val MAX_COMPRESSION = 0.06f
+        /**
+         * Far past anything a thumb produces — twenty viewports a second — so the curve is at its
+         * limit and the two ordinary speeds have something measured to stay under.
+         */
+        const val SATURATING = 6000f
+
+        /** Long enough after the release to be sure it is over, at sixty a second. */
+        const val SETTLED_FRAMES = 8
+
+        /** Half the viewport of finger travel past the stop, which reaches the limit comfortably. */
+        const val PAST_THE_END = 150f
+        const val RELEASE_FRAMES = 10
 
         /** A second at sixty a frame: the fling, the peak and most of the 300 ms return. */
         const val FRAMES = 60
