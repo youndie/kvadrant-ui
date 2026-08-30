@@ -31,12 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "25"
-
-      - uses: gradle/actions/setup-gradle@v4
+      # Java and Gradle in one step and at one version for the portfolio: the action installs 21
+      # and 25 and leaves 25 the default, which is what `sborka.jvmToolchain` asks for.
+      - uses: youndie/sborka/.github/actions/setup-kotlin@main
 
       - uses: actions/setup-python@v5
         with:

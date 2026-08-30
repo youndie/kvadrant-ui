@@ -5,11 +5,11 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.viddik)
+    id("ru.workinprogress.sborka.kmp")
+    id("ru.workinprogress.sborka.lint")
 }
 
 kotlin {
-    jvmToolchain(25)
-
     // Two targets and no Android one, which is the opposite of every other module here and is
     // deliberate. This module exists to be *looked at*: the desktop target is where a test can
     // render a preview and say whether it composes, and wasm is what the documentation site serves.

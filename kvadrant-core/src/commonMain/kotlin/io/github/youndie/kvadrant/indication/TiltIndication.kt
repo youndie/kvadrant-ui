@@ -245,9 +245,7 @@ private class TiltNode(
                             }
                     }
 
-                    else -> {
-                        Unit
-                    }
+                    else -> {}
                 }
             }
         }
