@@ -327,7 +327,7 @@ public final class io/github/youndie/kvadrant/indication/KvadrantOverscroll : an
 	public static final field $stable I
 	public static final field Companion Lio/github/youndie/kvadrant/indication/KvadrantOverscroll$Companion;
 	public static final field DEFAULT_FLING_REFERENCE F
-	public static final field DEFAULT_MAX_COMPRESSION F
+	public static final field DEFAULT_MAX_OFFSET F
 	public static final field DEFAULT_RESISTANCE F
 	public static final field RELEASE_MILLIS I
 	public fun <init> (Lkotlinx/coroutines/CoroutineScope;FFF)V
