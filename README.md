@@ -100,7 +100,7 @@ and not an edit. See [B-46](docs/backlog/B-46-the-first-release.md).
 | Desktop (JVM) | Built and tested. The screenshot suite runs here and nowhere else. |
 | Android | Built. **A green `check` says nothing about it** — viddik's capture engine is JVM-only, so its guard is a number instead: `:kvadrant-core:connectedAndroidDeviceTest` solves the tilt's camera out of a trapezoid rendered on a real device. It needs a phone and is not in `check`. |
 | wasm | Built, and the documentation site is what runs on it. `wasmJsBrowserTest` is *skipped*, which in a green build reads exactly like a pass. |
-| iOS | Built, and **the only target whose check is inside the gate**: `IosFontStackTest` runs on a simulator Gradle boots, so it needs neither hardware nor somebody remembering. There are no goldens — viddik's capture engine is JVM-only — and the demo runs through [`scripts/ios-sample-app.sh`](scripts/ios-sample-app.sh). |
+| iOS | Built, and **the only target whose check is inside the gate**: `IosFontStackTest` runs on a simulator Gradle boots, so it needs neither hardware nor somebody remembering. **The core only** — the Material adapter has no iOS variant. There are no goldens — viddik's capture engine is JVM-only — and the demo runs through [`scripts/ios-sample-app.sh`](scripts/ios-sample-app.sh). |
 
 Two known defects, both open and both written down: the screenshot suite renders Cyrillic
 differently under FreeType than under macOS ([B-35](docs/backlog/B-35-cyrillic-renders-differently-on-linux.md)),

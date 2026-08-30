@@ -13,7 +13,11 @@ Fifty-one public composables in two artefacts:
 | `io.github.youndie:kvadrant-core` | The theme, the tilt every surface inherits, the Pivot and the Panorama, the Start-screen tiles including the live ones, ten base controls, the pickers, the date and time pickers, the application bar, the page transitions, the overscroll, and forty drawn icons. |
 | `io.github.youndie:kvadrant-material-adapter` | Optional. Lets the library sit beside `androidx.compose.material3` in both directions. |
 
-Targets: desktop (JVM), Android, wasm, `iosArm64` and `iosSimulatorArm64`.
+Targets, and **the two artefacts do not carry the same set**: `kvadrant-core` publishes desktop
+(JVM), Android, wasm, `iosArm64` and `iosSimulatorArm64`; `kvadrant-material-adapter` publishes the
+first three and **has no iOS variant**. Read out of `~/.m2` after a publish rather than off the build
+files — an application on iOS that reaches for the adapter gets a resolution failure, and it should
+find that here rather than in its own build log.
 
 Where the numbers come from: colours, the type ramp, tile metrics and motion curves are generated
 from a vendored dump of Microsoft's theme resources. Eight metrics have no public source, the
