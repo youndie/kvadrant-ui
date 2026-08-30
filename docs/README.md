@@ -91,13 +91,19 @@ The list below is **checked** against the files on disk: a document missing here
 no file behind it, fails `coverage_map.py`. The grouping and the descriptions are written by a
 person — the machine only guards the membership.
 
-### Research (2)
+### Research (4)
 
 - [x] [research-architecture](research/research-architecture.md) — what was verified and against
   what, the twelve decisions and what each rejected, the six risks and their machinery
 - [x] [research-component-coverage](research/research-component-coverage.md) — what the set is still
   missing, against the brief's catalogue, the Toolkit's controls and the behaviours a Metro surface
   had; the largest gaps turn out not to be components
+- [x] [research-desktop-lineage](research/research-desktop-lineage.md) — whether a Windows 8.1
+  profile earns its keep: the specification is in better shape than recorded, the code reuse is
+  worse, and the press does not cross the lineage
+- [x] [research-remastered-lane](research/research-remastered-lane.md) — whether there is an
+  enhanced version behind `remastered`: three requests, three mechanisms, and one candidate that
+  survives all of them
 
 ### Reference (1)
 
