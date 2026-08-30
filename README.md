@@ -53,7 +53,7 @@ Source Sans 3 is bundled as the companion and `KvadrantText` routes per characte
 
 ```kotlin
 repositories {
-    maven("https://reposilite.kotlin.website/releases") {
+    maven("https://reposilite.kotlin.website/snapshots") {
         // Filtered, like every third-party repository should be: an unfiltered one takes part in
         // resolving everything, and the day its host is unreachable Gradle fails artefacts that
         // live elsewhere.

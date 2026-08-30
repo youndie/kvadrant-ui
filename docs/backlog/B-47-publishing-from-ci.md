@@ -27,9 +27,18 @@ stop being true.
   that landed — the task can be up to date, the host can accept and drop it — and a green job is what
   people read instead of the repository. This is the same defect B-46 found by hand: publishing was
   "verified" for months through `publishToMavenLocal`, which cannot see the host at all.
-- **No republish guard here**, deliberately. The build already refuses a release version the host
+- **No republish guard here**, deliberately. The build already refuses a fixed version the host
   already holds, and a guard in the workflow would cover only the path through the workflow —
   while the path that matters is `./gradlew publish` wherever anybody runs it.
+
+  *And the build's guard did not work.* It was attached to
+  `publishAllPublicationsToReposiliteRepository`, which **`./gradlew publish` never runs**: Gradle's
+  `publish` depends on the individual `publish<Pub>PublicationTo<Repo>Repository` tasks, and the
+  `All` task is a separate aggregate nothing in that path reaches. `./gradlew publish --dry-run`
+  lists ten tasks and that was not one of them. So the one protection against overwriting a
+  published coordinate had never executed — including on the run that reached the host — and it read
+  as present in every review of the file. Found by listing the graph rather than by reading the
+  code, which is the only way this kind of absence is ever found.
 - Not covered: signing, and Maven Central. B-21's answer stands.
 
 - AC: a GitHub release publishes both artefacts, and the job goes red if the host does not have them

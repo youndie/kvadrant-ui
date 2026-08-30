@@ -43,16 +43,27 @@ subprojects {
 // consumer ends up with a demo on their classpath.
 val publishableModules = setOf("kvadrant-core", "kvadrant-material-adapter")
 
-// **The version decides the repository, rather than a check comparing them** ([B-46](
-// docs/backlog/B-46-the-first-release.md)). Reposilite keeps releases and snapshots apart, so the
-// two have to agree, and there were three ways to make them: trust the person running the command,
-// check and fail, or derive. This derives. A guard that fails late is still a wrong destination
-// typed correctly; a destination that cannot be typed has nothing to fail.
+// **One repository, `/snapshots`, whatever the version says** — and the first version of this
+// derived the destination from the version instead, which was a good argument built on an
+// assumption nobody had tested ([B-46](docs/backlog/B-46-the-first-release.md)).
 //
-// It replaces exactly such a guard — a `doFirst` on the snapshots task that refused a release
-// version — and the guard was never wrong, it was just answering a question that no longer gets
-// asked.
+// The assumption was that this identity may write to both trees. It may not: the first publish that
+// ever reached the host was refused with **403** on a PUT under `/releases/`, and 403 is a token
+// that authenticated and was turned away, because Reposilite answers 401 for credentials that are
+// missing or wrong — measured, both of them. The destination was therefore never a function of the
+// version. It is a function of what the token is allowed to do, and that is one path:
+// `/snapshots/io/github/youndie`.
+//
+// **The name of that path is the host's, not a claim about these artefacts.** `0.1.0` is a fixed
+// coordinate that will not move under anybody, and it lives there because that is where this
+// project may write — which is also how the neighbours on this host use it: `io.github.youndie:
+// form-core` has ninety fixed versions in the same tree and not one `-SNAPSHOT` among them.
+val REPOSITORY = "https://reposilite.kotlin.website/snapshots"
+
 val kvadrantVersion: String = providers.gradleProperty("kvadrant.version").get()
+
+// Only for the guard below. A `-SNAPSHOT` is *meant* to be overwritten; a fixed version is not,
+// wherever it happens to live.
 val isSnapshot: Boolean = kvadrantVersion.endsWith("-SNAPSHOT")
 
 subprojects {
@@ -67,8 +78,8 @@ subprojects {
     extensions.configure<PublishingExtension> {
         repositories {
             maven {
-                name = if (isSnapshot) "reposiliteSnapshots" else "reposiliteReleases"
-                url = uri("https://reposilite.kotlin.website/" + if (isSnapshot) "snapshots" else "releases")
+                name = "reposilite"
+                url = uri(REPOSITORY)
                 credentials {
                     // Never in the tree. A property for a workstation, an environment variable for
                     // anything automated, and a publish that finds neither fails **at
@@ -124,31 +135,42 @@ subprojects {
         }
     }
 
-    // **A release version is published once, and this refuses the second time.** Derivation above
-    // settles which repository a version goes to; it says nothing about a version that is already
-    // *in* it, and that is the mistake with no undo — a snapshot is meant to be overwritten, a
-    // release that changes underneath the people who resolved it is the reason coordinates are
-    // treated as immutable in the first place.
+    // **A fixed version is published once, and this refuses the second time** — which now matters
+    // *more* than it did, not less. The repository is called snapshots and holds fixed versions, so
+    // the one thing that used to prevent an accidental overwrite — the host refusing a redeploy to
+    // its releases tree — is not in play. Nothing between here and the disk says `0.1.0` is
+    // immutable except this.
     //
     // A GET rather than a HEAD, deliberately: a HEAD carries no body, so a server that answers one
     // by inventing a status tells you nothing you can check, and this asks for the POM itself.
-    // Snapshots are exempt, which is the whole of what a snapshot is.
+    // A `-SNAPSHOT` is exempt, which is the whole of what a snapshot is.
     if (!isSnapshot) {
         // The module's own name, captured here: inside `configureEach` the receiver is the task and
         // `name` would be the task's.
         val artefact = name
-        tasks.matching { it.name == "publishAllPublicationsToReposiliteReleasesRepository" }.configureEach {
+        // **On the multiplatform publication's own task, and the first version of this hung it on
+        // `publishAllPublicationsToReposiliteRepository` — which `./gradlew publish` never runs.**
+        // Gradle's `publish` depends on the individual `publish<Pub>PublicationTo<Repo>Repository`
+        // tasks directly; the `All` task is a separate aggregate that nothing in the publish path
+        // reaches. `./gradlew publish --dry-run` lists ten tasks and that is not one of them, so the
+        // guard had never executed once, including on the run that reached the host.
+        //
+        // This one and not all ten, because the check has to be about something **only this task
+        // writes**. The root POM is exactly that — the per-target publications write
+        // `-android`, `-desktop` and the rest — so no sibling can trip it inside the same run by
+        // uploading first, which is what checking one shared address from ten tasks would do.
+        tasks.matching { it.name == "publishKotlinMultiplatformPublicationToReposiliteRepository" }.configureEach {
             // The root module of the KMP publication. Its per-target siblings — `-jvm`, `-android`
             // — go up in the same publish, so one of them existing means all of them do.
             val coordinates = "io/github/youndie/$artefact/$kvadrantVersion/$artefact-$kvadrantVersion.pom"
             doFirst {
-                val url = java.net.URI("https://reposilite.kotlin.website/releases/$coordinates").toURL()
+                val url = java.net.URI("$REPOSITORY/$coordinates").toURL()
                 val connection = (url.openConnection() as java.net.HttpURLConnection).apply { requestMethod = "GET" }
                 val code = runCatching { connection.responseCode }.getOrDefault(-1)
                 connection.disconnect()
                 check(code != 200) {
-                    "$artefact $kvadrantVersion is already published — $coordinates answers 200. A release " +
-                        "is not republished: raise `kvadrant.version` in gradle.properties"
+                    "$artefact $kvadrantVersion is already published — $coordinates answers 200. A fixed " +
+                        "version is not republished: raise `kvadrant.version` in gradle.properties"
                 }
             }
         }

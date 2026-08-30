@@ -23,16 +23,22 @@ nothing about it either way.
   find is not how an API gets used. The rule is recorded as traded away rather than deleted; what it
   was protecting is real and is now the known cost: a published coordinate cannot be renamed, only
   deprecated, so an API that turns out wrong is a `0.2.0` and not an edit.
-- **The version decides the repository, instead of a check comparing them.** Reposilite keeps
-  releases and snapshots in separate trees, so the two have to agree. `build.gradle.kts` now derives
-  the destination from `kvadrant.version`; the `doFirst` guard that used to refuse a release version
-  to the snapshots repository is gone, not because it was wrong but because a destination that
-  cannot be typed has nothing left to check. **Rejected:** two repositories declared side by side and
-  a guard on each — that is the arrangement where `publish` sends the artefact to both.
-- **What derivation cannot catch is a second publish of the same release**, and that is the mistake
-  with no undo. The releases publish task asks the host for the POM first and refuses on a 200. A
-  GET, not a HEAD: a HEAD carries no body, so its status is one nobody had to produce a document to
-  justify. This asks for the POM itself. Snapshots are exempt, which is what a snapshot is.
+- **One repository, `/snapshots`, whatever the version says** — *and the first answer here was
+  wrong in an instructive way.* It derived the destination from the version, on the argument that
+  Reposilite keeps two trees so the two must agree and a destination that cannot be typed has
+  nothing left to check. The argument is fine and it rested on an assumption nobody had tested: that
+  this identity may write to both trees. **It may not** — see the AC below. The destination was
+  never a function of the version; it is a function of what the token permits, and that is one path.
+  The name of that path is the host's and not a claim about the artefacts: `0.1.0` is fixed and
+  immutable and lives under `/snapshots`, which is how the neighbours use the same host —
+  `io.github.youndie:form-core` has ninety fixed versions in that tree and no `-SNAPSHOT` at all.
+- **A second publish of the same fixed version is the mistake with no undo**, and it now matters
+  *more* rather than less. The tree is called snapshots and holds fixed versions, so the thing that
+  would otherwise prevent an overwrite — a host refusing a redeploy into its releases tree — is not
+  in play. Nothing between the command and the disk says `0.1.0` is immutable except the publish
+  task, which asks the host for the POM first and refuses on a 200. A GET, not a HEAD: a HEAD
+  carries no body, so its status is one nobody had to produce a document to justify. A `-SNAPSHOT`
+  version is exempt, which is what a snapshot is.
 - **The version moved to `gradle.properties`** because it is written in more places than one: the
   README quotes it twice and names the repository tree that holds it, and a release that moves the
   build and not the README hands a reader a coordinate that 404s. `scripts/version_guard.py` compares
@@ -47,6 +53,29 @@ nothing about it either way.
 - AC: `./gradlew publish` sends both modules to `/releases`, and
   `https://reposilite.kotlin.website/releases/io/github/youndie/kvadrant-core/0.1.0/kvadrant-core-0.1.0.pom`
   answers 200 afterwards — **the first time any of this has been checked over the network**.
+  **NOT MET, and the reason is the point of the item.** The first publish — run from CI through
+  [B-47](B-47-publishing-from-ci.md) with the credentials in the repository's secrets — was refused:
+  `Could not PUT …/kvadrant-core-android/0.1.0/kvadrant-core-android-0.1.0.aar. Received status code
+  403`. The token is **not wrong, it is not permitted**, and that is measured rather than inferred:
+  Reposilite answers `401 Missing authorization credentials` with no credentials and `401 Invalid
+  authorization credentials` with a made-up pair, so a 403 is a token that authenticated and was
+  turned away on the route. The `releases` repository itself takes deployments — another group's
+  artefacts are in it. So the token's write route covers `/snapshots/…` and nothing under
+  `/releases/…`, which is exactly the shape you get when every previous publish from this identity
+  was a snapshot. Settled by `GET /api/auth/me` with the token, which lists its routes.
+
+  Nothing landed: all seven coordinates of `0.1.0` answer 404, so there is no half-published version
+  to clean up. That is luck rather than design — `publish` sends one publication at a time, and the
+  refusal happened to come on the first PUT.
+
+  **Resolved by moving, not by asking for the permission.** The token keeps the one route it has and
+  the build publishes to `/snapshots/io/github/youndie`, where the rest of this host's `io.github.youndie`
+  artefacts already live. What that costs is stated above: the host's own refusal to redeploy a
+  release is not protecting these coordinates, and the build's guard is the whole of what does.
+
+  **What this proves is the item's own argument.** Publishing had been "verified" through
+  `publishToMavenLocal` for months; the first thing that actually talked to the host failed on the
+  first request. A local publish cannot fail this way, which is why it could never have found it.
 - AC: a `v0.1.0` tag and a GitHub release naming what is in it and what is knowingly not.
 - Anchors: `build.gradle.kts`, `gradle.properties`, `scripts/version_guard.py`, `README.md`,
   `CHANGELOG.md`.
