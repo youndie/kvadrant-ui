@@ -291,16 +291,34 @@ val expectedLicences = 2
 
 val androidArtefactCarriesItsFonts by tasks.registering {
     description = "Fail if the AAR has lost the bundled fonts."
-    val aar = layout.buildDirectory.file("outputs/aar/kvadrant-core.aar")
+    // THE DIRECTORY, NOT A FILE NAME. This asked for `outputs/aar/kvadrant-core.aar` until the build
+    // went onto the shared conventions, which name an aar after its module AND its version — an aar
+    // otherwise leaves the build called `kvadrant-core.aar` with no version in it at all, so two
+    // releases put identically named files on a consumer's classpath. Naming the file here again
+    // would be the same number in two places, and the failure is this task refusing to configure at
+    // all, on a machine where the old name still happens to be lying in `build/`.
+    val aarDir = layout.buildDirectory.dir("outputs/aar")
     // Copied into locals: a `doLast` that reads a script-level property captures the script object,
     // which the configuration cache refuses to serialise and says so only when it tries.
     val wantedFonts = expectedFonts
     val wantedLicences = expectedLicences
     dependsOn("assemble")
-    inputs.file(aar)
+    inputs.dir(aarDir)
     doLast {
+        val aars =
+            aarDir
+                .get()
+                .asFile
+                .listFiles { file -> file.name.endsWith(".aar") }
+                .orEmpty()
+        // Exactly one, and a second is worth failing on rather than picking between: this check is
+        // about what a consumer receives, and two aars in one directory means the question "which
+        // one" has an answer nobody wrote down.
+        check(aars.size == 1) {
+            "expected one .aar in $aarDir, found ${aars.size}: ${aars.map { it.name }}"
+        }
         val entries =
-            ZipFile(aar.get().asFile).use { zip ->
+            ZipFile(aars.single()).use { zip ->
                 zip
                     .entries()
                     .asSequence()
