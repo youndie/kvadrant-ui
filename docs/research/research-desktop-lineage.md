@@ -50,9 +50,11 @@ aesthetic one, not a technical one.
 
 ### 1.2 The colour half of the specification is public, complete, and nobody had looked
 
-This is the finding that most changes the picture. [B-22](../backlog/B-22-win8-branch.md) records
-that the Win8 branch "has no numeric source of its own yet" apart from the WinJS and UWP metrics
-picked up by accident. That is out of date.
+This is the finding that most changes the picture. The sentence it refutes is in
+[research-architecture §1.11](research-architecture.md) — "that branch has no numeric source of its
+own yet" — and [B-22](../backlog/B-22-win8-branch.md) carries the same understatement in its own
+words, crediting the branch with one source picked up by accident. Both are out of date, and both
+are amended.
 
 | Fact | Where verified |
 |---|---|
@@ -182,8 +184,9 @@ one order of magnitude more expensively.
 1. **The specification question is closed and the answer is favourable.** A Windows 8.1 profile has
    a public colour dictionary (353 brushes, three themes), a vendored metric block (28 numbers), a
    corroborated type ramp (six styles), and MIT-licensed motion. What remains unread is one SDK
-   extraction with a named path. **[B-22](../backlog/B-22-win8-branch.md)'s "no numeric source of
-   its own" should be amended** — it is now the better-sourced of the two lineages.
+   extraction with a named path. **[§1.11](research-architecture.md) and
+   [B-22](../backlog/B-22-win8-branch.md) are amended accordingly** — this is now the better-sourced
+   of the two lineages.
 2. **The code question is closed and the answer is unfavourable.** About 15 % of the core transfers
    unchanged, and the 55 % that is components transfers at approximately zero. This is a second
    library, not a profile — which is the conclusion B-22 reached on design grounds, now measured.

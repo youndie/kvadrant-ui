@@ -934,7 +934,18 @@ theme's own size.
 
 **So these numbers are refiled rather than discarded.** They are evidence about the **Windows 8
 profile** — the optional branch of [B-22](../backlog/B-22-win8-branch.md) — and they are good
-evidence there, because that branch has no numeric source of its own yet. What they are not is a
+evidence there, because that branch has no numeric source of its own yet.
+
+*Amendment, 2026-08-30 — the last clause was true only because nobody had looked.* "No numeric
+source of its own" was written from the inside of a phone spike, and it survived into
+[B-22](../backlog/B-22-win8-branch.md) as the reason that branch would be expensive to start.
+It is wrong: Microsoft's archived XAML theme resources reference enumerates **353 `*ThemeBrush`
+keys** in three themes, publicly, and it corroborates the vendored Win8 type ramp exactly.
+The desktop lineage is now the **better**-sourced of the two, and the argument for keeping it
+separate has moved from the specification to the code — the tilt does not cross it (§1.3 of
+[research-desktop-lineage](research-desktop-lineage.md)). What stays true above is everything
+about the phone: WinJS and UWP are one family, they corroborate each other and not the phone,
+and that is why these numbers were refiled in the first place. What they are not is a
 reference for the phone's Pivot.
 
 **And the drift has a direction.** The UWP template draws a `SelectedPipe`: a 2 px accent rectangle
