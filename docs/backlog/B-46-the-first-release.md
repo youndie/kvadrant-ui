@@ -47,6 +47,24 @@ nothing about it either way.
 - AC: `./gradlew publish` sends both modules to `/releases`, and
   `https://reposilite.kotlin.website/releases/io/github/youndie/kvadrant-core/0.1.0/kvadrant-core-0.1.0.pom`
   answers 200 afterwards — **the first time any of this has been checked over the network**.
+  **NOT MET, and the reason is the point of the item.** The first publish — run from CI through
+  [B-47](B-47-publishing-from-ci.md) with the credentials in the repository's secrets — was refused:
+  `Could not PUT …/kvadrant-core-android/0.1.0/kvadrant-core-android-0.1.0.aar. Received status code
+  403`. The token is **not wrong, it is not permitted**, and that is measured rather than inferred:
+  Reposilite answers `401 Missing authorization credentials` with no credentials and `401 Invalid
+  authorization credentials` with a made-up pair, so a 403 is a token that authenticated and was
+  turned away on the route. The `releases` repository itself takes deployments — another group's
+  artefacts are in it. So the token's write route covers `/snapshots/…` and nothing under
+  `/releases/…`, which is exactly the shape you get when every previous publish from this identity
+  was a snapshot. Settled by `GET /api/auth/me` with the token, which lists its routes.
+
+  Nothing landed: all seven coordinates of `0.1.0` answer 404, so there is no half-published version
+  to clean up. That is luck rather than design — `publish` sends one publication at a time, and the
+  refusal happened to come on the first PUT.
+
+  **What this proves is the item's own argument.** Publishing had been "verified" through
+  `publishToMavenLocal` for months; the first thing that actually talked to the host failed on the
+  first request. A local publish cannot fail this way, which is why it could never have found it.
 - AC: a `v0.1.0` tag and a GitHub release naming what is in it and what is knowingly not.
 - Anchors: `build.gradle.kts`, `gradle.properties`, `scripts/version_guard.py`, `README.md`,
   `CHANGELOG.md`.
