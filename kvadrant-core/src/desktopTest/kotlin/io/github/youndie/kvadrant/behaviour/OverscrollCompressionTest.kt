@@ -23,23 +23,38 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * A list held past its end **compresses**, which is how a Windows Phone list ended.
+ * A list held past its end **slides away from it**, showing the page behind, which is how a Windows
+ * Phone list ended.
  *
  * [B-38](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-38-the-theme-leaves-the-platform-overscroll.md):
- * `KvadrantTheme` replaced the ripple and left the platform's overscroll, so on Android a Metro
- * list finished with Android's stretch. Compression is Microsoft's own word for what it did instead
- * — Windows Phone 7.1 added `HorizontalCompression` and `VerticalCompression` visual states so an
- * application could react to it.
+ * `KvadrantTheme` replaced the ripple and left the platform's overscroll, so on Android a Metro list
+ * finished with Android's stretch.
  *
- * **Measured rather than photographed**, because the two candidate behaviours look similar in a
- * still and are opposites in a gesture. A *translation* — iOS's rubber band, and what a naive
- * implementation produces — slides the content away from the edge and leaves a gap, so the boundary
- * moves and the far edge retreats. A *compression* keeps the boundary where it is and squeezes what
- * is behind it. So the assertion is about which edge moved: at the bottom of a list, the content's
- * **top** comes down and its bottom stays put.
+ * **This file used to assert the opposite, and the file name is the last of it.** The effect was
+ * built as a *squeeze* — the boundary held still and the content behind it compressed — on the
+ * strength of Microsoft's name for the visual states, `HorizontalCompression` and
+ * `VerticalCompression`. The design guidelines describe the behaviour and say the reverse: "when the
+ * end of the list is reached, it will then **scroll up to display the empty section** and rubber
+ * band back to rest in place" (`jj735577`). An empty section is precisely what a squeeze cannot
+ * produce, and "compression" turns out to name the damping of the *manipulation* rather than
+ * anything about pixels — which is also why those visual states carry no storyboard.
+ *
+ * So the assertion here is inverted from what it was, and it was **written to exclude the correct
+ * behaviour**: it failed a run in which "the content is sliding away from the boundary rather than
+ * squeezing towards it — that is a rubber band". A guard is only as good as the reading it was
+ * written from.
+ *
+ * **Measured rather than photographed**, because the two candidates look similar in a still and are
+ * opposites in a gesture: a slide moves the far edge and opens a gap, a squeeze holds the far edge
+ * and moves everything behind it. At the bottom of a list the content's **bottom** comes up and the
+ * page shows beneath it.
  */
 @OptIn(ExperimentalTestApi::class)
 class OverscrollCompressionTest {
+    /** The frame the last [contentEdges] call read, so a second measurement need not re-render it. */
+    private var lastPixels: IntArray = IntArray(0)
+    private var lastWidth: Int = 0
+
     /**
      * The first and last rows carrying content, in pixels from the top of the viewport.
      *
@@ -111,13 +126,15 @@ class OverscrollCompressionTest {
                 (0 until image.height).lastOrNull { y ->
                     pixels[y * image.width + image.width / 2] and 0xFFFFFF != 0
                 } ?: -1
+            lastPixels = pixels
+            lastWidth = image.width
             edges = firstBlue to lastLit
         }
         return edges
     }
 
     @Test
-    fun a_list_held_past_its_end_squeezes_towards_that_end() {
+    fun a_list_held_past_its_end_slides_away_from_it() {
         val (restTop, restBottom) = contentEdges(hold = false)
         val (heldTop, heldBottom) = contentEdges(hold = true)
 
@@ -131,18 +148,44 @@ class OverscrollCompressionTest {
         )
 
         assertTrue(
-            heldTop > restTop,
-            "the band boundary did not move while the finger pushed past the end " +
-                "($heldTop against $restTop), so nothing compressed and the theme is still handing " +
-                "out the platform's overscroll",
+            heldBottom < restBottom - 1,
+            "the content still reaches $heldBottom of $restBottom while the finger pushed past the " +
+                "end, so no gap opened and the theme is still handing out the platform's overscroll",
         )
-        // And the edge being pushed against stays where it is: that is what makes this a
-        // compression rather than the translation an easier implementation would produce.
+        // **And the content did not change size**, which is what separates a slide from a squeeze
+        // and is measured on the last band: under a slide the whole band travels and keeps its
+        // hundred pixels, under a squeeze it loses some of them.
+        //
+        // Not on the boundary nearest the top, which is where this looked first: at rest that
+        // boundary is already row zero, so it has nowhere to move and the comparison holds for
+        // anything.
+        val restBand = lastBandHeight(hold = false)
+        val heldBand = lastBandHeight(hold = true)
         assertTrue(
-            heldBottom >= restBottom - 1,
-            "the bottom edge retreated from $restBottom to $heldBottom, so the content is sliding " +
-                "away from the boundary rather than squeezing towards it — that is a rubber band",
+            heldBand in (restBand - 1)..(restBand + 1),
+            "the last band is $heldBand px while the finger pushes past the end and $restBand at " +
+                "rest, so the content is being squeezed rather than moved",
         )
+    }
+
+    /** How many rows of the last band are visible: the run of one colour up from the content's end. */
+    private fun lastBandHeight(hold: Boolean): Int {
+        val (_, bottom) = contentEdges(hold)
+        val pixels = lastPixels
+        val width = lastWidth
+
+        fun blue(y: Int): Boolean {
+            val pixel = pixels[y * width + width / 2]
+            return (pixel and 0xFF) > 0x80 && (pixel shr 16 and 0xFF) < 0x40
+        }
+        val bottomIsBlue = blue(bottom)
+        var run = 0
+        var y = bottom
+        while (y >= 0 && blue(y) == bottomIsBlue) {
+            run++
+            y--
+        }
+        return run
     }
 
     private companion object {

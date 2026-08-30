@@ -53,7 +53,7 @@ checking whether the fling was handled finds a sentence saying it was.
   compression back into itself. Whatever replaces it has to say which side effects are the end of a
   fling and which are the overscroll talking to itself.
 - **The number is ours.** Windows Phone published no fling-into-the-end depth, so whatever this
-  becomes is named in KDoc as this project's, next to `maxCompression` and `resistance` — research
+  becomes is named in KDoc as this project's, next to `maxOffset` and `resistance` — research
   §1.10.
 
 ## Amendment 2 — the shape was never the thing to fix, and a template said so
@@ -122,7 +122,7 @@ function of the frame rate. What was missing is that the leftover at the stop is
 
 **The conversion is a saturating curve, and the obvious alternative is named rather than dropped.**
 Multiplying the velocity by a time to reuse the drag's distance arithmetic has no defensible time
-constant: short enough to keep a hard fling inside `maxCompression` and every ordinary fling produces
+constant: short enough to keep a hard fling inside `maxOffset` and every ordinary fling produces
 almost nothing; long enough for an ordinary fling to show and everything above it clamps to the same
 depth, so the effect stops answering how hard the list was thrown. Both versions pass a test written
 at one speed. `maxCompression · (1 − e^(−v ⁄ reference))` is bounded by construction and keeps

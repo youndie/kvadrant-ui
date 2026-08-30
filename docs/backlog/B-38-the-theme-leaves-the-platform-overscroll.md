@@ -61,7 +61,7 @@ of a list the band boundary comes down by 18 px of a 300 px viewport — exactly
 says — while the bottom edge stays at 299. Removing the factory from the theme fails it; that was
 checked.
 
-Three numbers are this project's own and none is a constant: `DEFAULT_MAX_COMPRESSION`,
+Three numbers are this project's own and none is a constant: `DEFAULT_MAX_OFFSET`,
 `DEFAULT_RESISTANCE` and `RELEASE_MILLIS`, each a parameter with KDoc naming it as ours. Microsoft
 published the visual state groups and none of their storyboards. They are on research §1.10's list
 now, beside the panorama's peek.
@@ -85,6 +85,28 @@ away from the boundary it was resting on, which is precisely backwards.
 taller than the viewport, where whatever is squeezed away at the far edge is replaced by more of the
 same colour. It reported no change from an effect that was working. Bands fixed it, and the reason is
 written in the test.
+
+## Amendment — it was a squeeze, and the phone slid
+
+Asked directly, months later: *are you sure the content compressed rather than moved?* It did not.
+The whole implementation rested on Microsoft's name for the visual states —
+`HorizontalCompression`, `VerticalCompression` — and the design guidelines describe the behaviour:
+
+> When the end of the list is reached, it will then **scroll up to display the empty section** and
+> "rubber band" back to rest in place. Flicking at the end of the list causes it to rubber band
+> back; the list won't wrap to the beginning. — `jj735577`
+
+An empty section is exactly what a squeeze cannot produce. "Compression" names the damping of the
+**manipulation**, which is also why those visual states carry no storyboard: they exist so an
+application can notice it, not draw it.
+
+The effect is a damped translation now. The class keeps its name because this item, B-45 and research
+all cite it; the parameters do not — `maxOffset` setting a translation distance is a claim in a
+signature — so it is `maxOffset`.
+
+**This item's own test was written to exclude the right answer**, in as many words: it failed a run
+where "the content is sliding away from the boundary rather than squeezing towards it — that is a
+rubber band". A guard is only as good as the reading behind it, and that reading was a name.
 
 ## Acceptance
 

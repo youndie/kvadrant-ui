@@ -1275,13 +1275,40 @@ Consequence for §1.13's conclusion: the AGP 9 Kotlin Multiplatform plugin is *u
 that bundles resources, which was in doubt for as long as the fonts were missing. What it is not is
 usable by default.
 
+**The overscroll is a translation, and it was built as a squeeze from the name of a visual state.**
+This is the correction the section below is now read against, and it was asked for rather than
+noticed: *"ты уверен, что контент сжимался, а не расширялся?"* The evidence for the squeeze was
+`HorizontalCompression` / `VerticalCompression` and nothing else — a name, treated as a description
+of pixels. The design guidelines describe the behaviour:
+
+| Fact | Where verified |
+|---|---|
+| "When the end of the list is reached, it will then **scroll up to display the empty section** and 'rubber band' back to rest in place. Flicking at the end of the list causes it to rubber band back" | `LongListSelector` design guidelines, `jj735577`, verbatim |
+| The UI Design and Interaction Guide's Scroller, Pan and Flick sections say **nothing** about the boundary | the 101-page PDF, searched for compress/squeeze/stretch/bounce |
+| The `ScrollViewer` template's three compression states carry **no storyboard** | a real WP template; §1.11's `PivotItem` states have the same shape |
+
+An empty section is what a squeeze cannot produce: a squeeze is *defined* by the boundary not moving.
+So "compression" names the damping of the **manipulation**, which is also why the states are empty —
+they are there so an application can notice the damping, not draw it.
+
+*Consequence — a guard was written to exclude the correct behaviour.* `OverscrollCompressionTest`
+failed any implementation that "slides away from the boundary rather than squeezing towards it —
+that is a rubber band". It now asserts the reverse, and the discriminating measurement is the last
+band's **height**: a slide moves the whole band and keeps its hundred pixels, a squeeze takes some
+of them.
+
+*Consequence — three rounds of tuning were spent on the wrong effect.* The depth, the shape and the
+timing of the squeeze were each changed on a report from a device, and each change was defended with
+arithmetic. A scale moves every pixel of the content at once, which is why it read as "too strong"
+at any setting.
+
 **Overscroll compression, and four more numbers that are ours**
 ([B-38](../backlog/B-38-the-theme-leaves-the-platform-overscroll.md),
 [B-45](../backlog/B-45-overscroll-ignores-the-fling.md)). Windows Phone 7.1 added
 `HorizontalCompression` and `VerticalCompression` visual state groups to `ScrollViewer`, so *that*
 lists compressed at their ends is published. **How far, against what resistance, how deep a fling
 into the end goes, and how they return is not** — Microsoft published the states and none of their
-storyboards. So `KvadrantOverscroll.DEFAULT_MAX_COMPRESSION`, `DEFAULT_RESISTANCE`,
+storyboards. So `KvadrantOverscroll.DEFAULT_MAX_OFFSET`, `DEFAULT_RESISTANCE`,
 `DEFAULT_FLING_REFERENCE` and `RELEASE_MILLIS` join the panorama's peek and its settle on §1.10's
 list: this project's own, parameters rather than constants, named as ours in KDoc.
 
