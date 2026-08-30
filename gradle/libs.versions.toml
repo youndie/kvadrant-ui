@@ -1,4 +1,7 @@
 [versions]
+# The shared build conventions: the coordinate, the version, the toolchain, the jvm floor, the style
+# and the publication. Bumping this changes how every module is built.
+sborka = "0.1.0.18"
 kotlin = "2.4.10"
 # The current release, and it stays there. A test-only tool does not get to choose the Compose line
 # the library publishes against - when viddik could not run on 1.12.0 the answer was to wait for
@@ -86,3 +89,6 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
+sborkaKmp = { id = "ru.workinprogress.sborka.kmp", version.ref = "sborka" }
+sborkaLint = { id = "ru.workinprogress.sborka.lint", version.ref = "sborka" }
+sborkaPublish = { id = "ru.workinprogress.sborka.publish", version.ref = "sborka" }

@@ -15,7 +15,7 @@ import java.io.File
  * The bodies cannot cross, and do not need to: the site mounts them out of the wasm bundle, which
  * is built from this same registry.
  */
-fun main(args: Array<String>) {
+public fun main(args: Array<String>) {
     val destination = File(args.firstOrNull() ?: error("usage: PreviewIndexKt <output.json>"))
     destination.parentFile?.mkdirs()
 

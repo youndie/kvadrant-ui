@@ -6,10 +6,12 @@ plugins {
     alias(libs.plugins.viddik)
     alias(libs.plugins.dokka)
     alias(libs.plugins.androidKmpLibrary)
+    id("ru.workinprogress.sborka.kmp")
+    id("ru.workinprogress.sborka.lint")
+    id("ru.workinprogress.sborka.publish")
 }
 
 kotlin {
-    jvmToolchain(25)
     jvm("desktop")
 
     // The adapter follows the core onto wasm: an island of Metro inside a Material application

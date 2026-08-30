@@ -12,31 +12,25 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        // The viddik Gradle plugin is not on the plugin portal.
+        // The viddik Gradle plugin is not on the plugin portal, and neither are the build
+        // conventions. This has to be spelled out by hand: `pluginManagement` is evaluated before
+        // any settings plugin is applied — including the sborka one, which is fetched through it.
         maven("https://reposilite.kotlin.website/snapshots") {
             content { includeGroupAndSubgroups("ru.workinprogress") }
         }
     }
 }
 
-dependencyResolutionManagement {
-    repositories {
-        // Compose Multiplatform pulls androidx artefacts published only to Google's repository.
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
-        mavenCentral()
-        // Screenshot testing — https://github.com/youndie/viddik. Filtered, like every third-party
-        // repository here: an unfiltered one takes part in resolving *every* dependency, so the day
-        // its host is unreachable Gradle disables it and fails artefacts that live elsewhere.
-        maven("https://reposilite.kotlin.website/snapshots") {
-            mavenContent { includeGroupAndSubgroups("ru.workinprogress") }
-        }
-    }
+plugins {
+    // Where dependencies are looked for, and it is the same list this file used to spell out:
+    // google() and mavenCentral() with their group filters, and the Reposilite viddik and the
+    // toolkits are published to — filtered there too, because an unfiltered repository takes part in
+    // resolving *every* dependency, so the day its host is unreachable Gradle disables it and fails
+    // artefacts that live elsewhere.
+    //
+    // It also brings the shared `.editorconfig` check, which is the other half of pinning the
+    // formatter's version.
+    id("ru.workinprogress.sborka.settings") version "0.1.0.18"
 }
 
 rootProject.name = "kvadrant-ui"

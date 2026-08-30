@@ -5,7 +5,7 @@ one, and they name the repository that will actually hold it.
 
     python3 scripts/version_guard.py
 
-WHY THIS EXISTS. `kvadrant.version` lives in `gradle.properties` and is written down again in the
+WHY THIS EXISTS. `version` lives in `gradle.properties` and is written down again in the
 README's dependency snippet — three times, counting the two artefacts and the repository URL. That
 is the shape a number drifts in: bumping the build is one edit, and the file a reader copies from is
 another. The failure is silent in the worst possible way, because the README keeps looking like
@@ -41,9 +41,9 @@ REPOSITORY = re.compile(re.escape(HOST) + r"/(releases|snapshots)")
 def declared():
     """The one place the version is written for the build."""
     for line in (ROOT / "gradle.properties").read_text().splitlines():
-        if line.startswith("kvadrant.version="):
+        if line.startswith("version="):
             return line.split("=", 1)[1].strip()
-    sys.exit("gradle.properties declares no kvadrant.version")
+    sys.exit("gradle.properties declares no version")
 
 
 def main():

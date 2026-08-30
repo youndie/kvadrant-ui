@@ -3,6 +3,8 @@ plugins {
     // No `org.jetbrains.kotlin.android`: since AGP 9 the Android plugin brings Kotlin itself, and
     // applying the old one is a hard error rather than a warning.
     alias(libs.plugins.composeCompiler)
+    id("ru.workinprogress.sborka.base")
+    id("ru.workinprogress.sborka.lint")
 }
 
 android {

@@ -33,7 +33,7 @@ import platform.UIKit.UIWindow
  * demo hosts, on the third renderer, so that a person can look at it.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-fun main() {
+public fun main() {
     memScoped {
         val args = arrayOf("KvadrantSample")
         UIApplicationMain(
@@ -49,7 +49,7 @@ fun main() {
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-class KvadrantSampleDelegate :
+public class KvadrantSampleDelegate :
     UIResponder,
     UIApplicationDelegateProtocol {
     /**
@@ -59,9 +59,9 @@ class KvadrantSampleDelegate :
      * report it and the only trace is in the device log.
      */
     @OverrideInit
-    constructor() : super()
+    public constructor() : super()
 
-    companion object : UIResponderMeta(), UIApplicationDelegateProtocolMeta
+    public companion object : UIResponderMeta(), UIApplicationDelegateProtocolMeta
 
     // Backed by a field of another name: `window` is the protocol's property, so a private one
     // spelled the same way hides it instead of implementing it.

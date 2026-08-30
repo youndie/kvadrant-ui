@@ -5,11 +5,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKmpLibrary)
+    id("ru.workinprogress.sborka.kmp")
+    id("ru.workinprogress.sborka.lint")
 }
 
 kotlin {
-    jvmToolchain(25)
-
     jvm("desktop")
 
     // The demo in a browser, which is what B-34's documentation site is built out of. `binaries

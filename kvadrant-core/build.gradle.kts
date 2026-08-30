@@ -8,11 +8,12 @@ plugins {
     alias(libs.plugins.viddik)
     alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.dokka)
+    id("ru.workinprogress.sborka.kmp")
+    id("ru.workinprogress.sborka.lint")
+    id("ru.workinprogress.sborka.publish")
 }
 
 kotlin {
-    jvmToolchain(25)
-
     // Desktop first, Android second, and the order was the point: the whole library was built and
     // looked at on one renderer before a second one was allowed to have an opinion. Android is here
     // now because a suite that only ever ran on skiko says nothing about the renderer most of this
@@ -320,3 +321,28 @@ val androidArtefactCarriesItsFonts by tasks.registering {
 }
 
 tasks.named("check") { dependsOn(androidArtefactCarriesItsFonts) }
+
+// THE SECOND LICENCE, which the shared publish convention does not know about and should not.
+//
+// B-07's remaining criterion. The fonts bundled in `kvadrant-core` are under a different licence
+// from the code, and a consumer's licence tooling reads the POM rather than the jar. Declaring one
+// licence for an artefact that ships two is the kind of omission nobody notices until it is
+// somebody's legal problem.
+//
+// Appended rather than replacing: `sborka.publish` writes the code's licence from `sborka.licence`,
+// and a `licenses { }` block adds to what is there.
+publishing.publications.withType<MavenPublication>().configureEach {
+    pom {
+        licenses {
+            license {
+                name.set("SIL Open Font License 1.1")
+                url.set("https://openfontlicense.org/documents/OFL.txt")
+                comments.set(
+                    "Covers the bundled Selawik and Source Sans 3 faces, not the code. " +
+                        "The full text ships in the artefact as Selawik-OFL.txt and " +
+                        "SourceSans3-OFL.txt.",
+                )
+            }
+        }
+    }
+}

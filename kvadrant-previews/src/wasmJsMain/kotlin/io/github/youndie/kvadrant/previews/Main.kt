@@ -19,7 +19,7 @@ import org.w3c.dom.Element
  * several megabytes, and twenty of them on one page is a page nobody waits for.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-fun main() {
+public fun main() {
     val nodes = document.querySelectorAll("[data-kvadrant-preview]")
     for (index in 0 until nodes.length) {
         val element = nodes.item(index) as? Element ?: continue

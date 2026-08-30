@@ -17,6 +17,6 @@ import kotlinx.browser.document
  * klib and looks — nineteen mentions of one, none of the other.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-fun main() {
+public fun main() {
     ComposeViewport(document.body!!) { KvadrantSampleApp() }
 }
