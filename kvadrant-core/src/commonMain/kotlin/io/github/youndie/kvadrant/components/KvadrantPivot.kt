@@ -231,7 +231,14 @@ public fun KvadrantPivotHeaders(
                 val copy = index / n
                 // A strip that does not loop places its middle copy only; the other two exist so
                 // the measurement above can be taken and are simply not drawn.
-                if (loops || copy == 1) p.place(starts[index] - shift, 0)
+                // **`placeRelative` and not `place`**, which is the whole of what this strip needed
+                // for right-to-left ([B-41](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-41-rtl-is-canon-and-untested.md)).
+                // `place` is absolute: under `LayoutDirection.Rtl` the headers went on running left
+                // to right while the page around them mirrored, and the selected one — which belongs
+                // at the margin — was pushed off the far edge instead. The arithmetic above is
+                // unchanged and needs to be: it is a strip with a start and an end, and which side
+                // those are on is the layout's business rather than its own.
+                if (loops || copy == 1) p.placeRelative(starts[index] - shift, 0)
             }
         }
     }

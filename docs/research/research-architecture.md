@@ -1262,6 +1262,20 @@ record exists, and `CameraProbeTest` holds the same solver on the desktop, so wh
 uncovered is narrowed to hwui disagreeing with skiko — which is what
 [B-25](../backlog/B-25-tilt-camera-is-in-inches.md) was.
 
+**Right-to-left is nearly free, and the exception is a custom layout**
+([B-41](../backlog/B-41-rtl-is-canon-and-untested.md)). Windows Phone took `FlowDirection` from the
+phone's culture, so Arabic and Hebrew are canon rather than an enhancement. Measured: the library
+uses `padding(start`/`end` and `horizontal =` throughout with no `left`, `right` or `absolute`
+variant anywhere, and Compose mirrors all of that on its own. Of the three layouts that compute an x
+by hand, two do it through `Modifier.offset`, which also mirrors; the pivot's header strip called
+`Placeable.place`, which is absolute, so the titles ran left to right inside a page that ran the
+other way and the selected header was pushed off the far edge. `placeRelative` is the whole fix.
+
+*Consequence — a mirrored golden shows a position and not a direction.* "The strip travels the
+correct way" cannot be photographed, so it is a test that compares the **sign** of what moved between
+the two directions and asserts nothing about the distance: the distance is the same arithmetic either
+way, and which way is the only thing mirroring can get wrong.
+
 **Android resources are off by default under AGP's Kotlin Multiplatform plugin**
 ([B-37](../backlog/B-37-the-android-artefact-ships-without-its-fonts.md)). `androidResources { enable
 = true }` inside the `android { }` block is what creates the variant's assets container; without it
