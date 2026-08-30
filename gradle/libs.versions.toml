@@ -40,7 +40,15 @@ agp = "9.3.2"
 # anything current anyway.
 android-compileSdk = "37"
 android-minSdk = "24"
-activityCompose = "1.11.0"
+# **1.13.0 rather than 1.11.0, and the reason is a crash rather than a preference.**
+# `NavigationBackHandler` — the replacement for the deprecated `BackHandler` — reads a dispatcher out
+# of `LocalNavigationEventDispatcherOwner`, and on Android it is `androidx.activity` that puts one
+# there. At 1.11.0 nothing does: the demo died on its first composition with
+# `IllegalStateException: No NavigationEventDispatcher was provided`, which names neither the
+# activity nor its version. Providing an owner from the sample would have compiled and run and left
+# the back gesture wired to a dispatcher the system never feeds — a silent version of the same bug.
+# `:sample-android` is the only module that declares this, so nothing published moves.
+activityCompose = "1.13.0"
 # The one place a Material version is allowed to be written down (research §1.2, consequence 4).
 #
 # `org.jetbrains.compose.material3:material3:1.12.0-alpha03` resolves to **Jetpack
@@ -53,6 +61,11 @@ activityCompose = "1.11.0"
 # Alpha, so **expect this to need re-checking** rather than to hold: Jetpack M3 1.5 has been in
 # alpha long enough to reach alpha26, and the ripple corner is exactly what is being reshaped.
 composeMaterial3 = "1.12.0-alpha03"
+# The back gesture's new home. `androidx.compose.ui.backhandler.BackHandler` is deprecated in favour
+# of `NavigationEventHandler`, which lives here rather than in Compose - so the sample declares this
+# instead of `ui-backhandler`, and the version is its own rather than the Compose line's. It is the
+# version CMP 1.12.0 already resolves transitively, read out of the graph rather than chosen.
+navigationEvent = "1.1.0"
 # Test-only, to read the vendored token dump. Matches the core already on the Compose graph.
 kotlinxSerialization = "1.7.3"
 
@@ -73,6 +86,7 @@ androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", vers
 # missing dependency. Pinned to the AndroidX line CMP 1.12.0 ships against.
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "1.12.0" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
+navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigationEvent" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
 [plugins]

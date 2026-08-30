@@ -65,10 +65,17 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
-            // The system back gesture. `androidx.compose.ui.backhandler.BackHandler` ships in its
-            // own artefact rather than in `compose.ui`, and it is multiplatform: the gesture on
-            // Android, inert on the desktop, so the shared screen needs no per-platform branch.
-            implementation("org.jetbrains.compose.ui:ui-backhandler:${libs.versions.compose.multiplatform.get()}")
+            // The system back gesture. It is multiplatform - the gesture on Android, inert on the
+            // desktop - so the shared screen needs no per-platform branch, and it ships in its own
+            // artefact rather than in `compose.ui`.
+            //
+            // **This is `navigationevent-compose` and not `ui-backhandler`, and the swap is the
+            // deprecation rather than a preference.** `androidx.compose.ui.backhandler.BackHandler`
+            // is deprecated in favour of `NavigationEventHandler`, which lives in this artefact;
+            // `ui-backhandler` was on the graph only to carry the deprecated function, and depended
+            // on this one to do it. Declaring the replacement directly and dropping the wrapper is
+            // one dependency where there were two.
+            implementation(libs.navigationevent.compose)
         }
         val desktopTest by getting
         desktopTest.dependencies {

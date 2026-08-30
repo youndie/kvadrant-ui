@@ -5,7 +5,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import kotlin.test.Test

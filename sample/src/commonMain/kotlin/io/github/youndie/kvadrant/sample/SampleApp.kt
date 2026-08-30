@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import io.github.youndie.kvadrant.components.KVADRANT_TURNSTILE_OUT_MILLIS
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
@@ -135,13 +137,30 @@ public fun KvadrantSampleApp() {
     // that as the single most reliable way to make an application feel foreign on Android — it was
     // written there as a reason to avoid an overlay, and then this demo grew one anyway.
     //
-    // `androidx.compose.ui.backhandler.BackHandler` is multiplatform: it is the gesture on Android
-    // and inert on the desktop, so the shared screen needs no per-platform branch.
-    BackHandler(enabled = openTile != null) { openTile = null }
+    // `NavigationBackHandler` is multiplatform: it is the gesture on Android and inert on the
+    // desktop, so the shared screen needs no per-platform branch. It replaced
+    // `androidx.compose.ui.backhandler.BackHandler`, which is deprecated, and the replacement is
+    // not a rename — the handler is driven by a hoisted `NavigationEventState` rather than by a
+    // boolean alone, so each destination carries its own state rather than sharing one.
+    //
+    // **This screen has nothing to say about where back would go**, only that it should be caught,
+    // so both states carry `NavigationEventInfo.None`. The predictive-back preview a real
+    // application would populate is exactly what the info list is for, and a demo with two
+    // overlays has none to give.
+    val tileBack = rememberNavigationEventState(NavigationEventInfo.None)
+    NavigationBackHandler(tileBack, isBackEnabled = openTile != null) { openTile = null }
 
     // The picker page is a *destination*, not an overlay, which is the whole of B-30's argument —
-    // so the back gesture dismisses it, and it takes precedence over the tile page beneath.
-    BackHandler(enabled = zonePage) { zonePage = false }
+    // so the back gesture dismisses it too.
+    //
+    // **It does not take precedence over the tile page beneath, and the comment here used to say it
+    // did.** Measured on a Pixel 6a: opened over the tile page, one back closes *both* and lands on
+    // the Start screen. The dispatcher runs every enabled handler rather than letting the innermost
+    // one consume the event — and the deprecated `BackHandler` did exactly the same, because it was
+    // built over this dispatcher too. So this is the behaviour the demo has always had, written down
+    // now that somebody has looked; it is not something the migration changed.
+    val zoneBack = rememberNavigationEventState(NavigationEventInfo.None)
+    NavigationBackHandler(zoneBack, isBackEnabled = zonePage) { zonePage = false }
 
     val base = if (dark) KvadrantColors.dark(accent) else KvadrantColors.light(accent)
     val colors = if (accessible) base.accessible() else base
