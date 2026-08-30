@@ -224,6 +224,46 @@ def orphan_previews(items, index):
     )
 
 
+# The README states the count in words, and it was wrong by three the day this was added — the
+# catalogue below it is generated and checked, and the sentence a reader meets first was not. A
+# number that lives in two places drifts in the one nobody generates.
+NUMERALS = {
+    40: "forty", 41: "forty-one", 42: "forty-two", 43: "forty-three", 44: "forty-four",
+    45: "forty-five", 46: "forty-six", 47: "forty-seven", 48: "forty-eight", 49: "forty-nine",
+    50: "fifty", 51: "fifty-one", 52: "fifty-two", 53: "fifty-three", 54: "fifty-four",
+    55: "fifty-five", 56: "fifty-six", 57: "fifty-seven", 58: "fifty-eight", 59: "fifty-nine",
+    60: "sixty", 61: "sixty-one", 62: "sixty-two", 63: "sixty-three", 64: "sixty-four",
+    65: "sixty-five", 66: "sixty-six", 67: "sixty-seven", 68: "sixty-eight", 69: "sixty-nine",
+    70: "seventy",
+}
+COUNT_SENTENCE = re.compile(r"([A-Za-z-]+) public composables")
+
+
+def readme_count(total):
+    """The README's spelled-out count, against the one just scanned. A message, or None."""
+    readme = ROOT / "README.md"
+    text = readme.read_text()
+    found = COUNT_SENTENCE.search(text)
+    if not found:
+        return (
+            "README.md no longer says how many public composables there are, so this check "
+            "verified nothing. Restore the sentence or delete this check deliberately"
+        )
+    expected = NUMERALS.get(total)
+    if expected is None:
+        return (
+            f"{total} composables, and this check cannot spell it. Extend NUMERALS in "
+            "scripts/component_catalog.py"
+        )
+    written = found.group(1).lower()
+    if written != expected:
+        return (
+            f"README.md says {written} public composables and the scan finds {total} "
+            f"({expected}). The catalogue is generated; that sentence is not"
+        )
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -255,6 +295,9 @@ def main():
             sys.exit(
                 f"{CATALOG.relative_to(ROOT)} is out of date. Run: python3 scripts/component_catalog.py"
             )
+        readme_problem = readme_count(len(items))
+        if readme_problem:
+            sys.exit(readme_problem)
         verified = "sources and previews" if index else "sources only (no preview index built)"
         print(f"catalogue is current: {len(items)} composables, verified against {verified}")
         return

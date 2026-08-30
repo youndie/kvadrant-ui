@@ -3,3 +3,4 @@ __pycache__/
 build/
 .gradle/
 local.properties
+.kotlin/

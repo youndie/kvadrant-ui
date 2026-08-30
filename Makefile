@@ -26,6 +26,7 @@ gate:
 	$(PY) scripts/doc_images.py
 	$(PY) scripts/doc_links.py
 	$(PY) scripts/android_guard.py --check
+	$(PY) scripts/version_guard.py
 
 # Non-blocking, on purpose. bdd_report counts scenarios, and there are none while there is no
 # behaviour to describe. code_anchors will report the research anchors as absent for as long as the

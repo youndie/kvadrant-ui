@@ -22,7 +22,7 @@ page, compiled to WebAssembly from these sources, in both palettes at once — b
 [the API reference](https://youndie.github.io/kvadrant-ui/api/index.html) generated from the same
 KDoc that says where each number came from.
 
-Forty-eight public composables: the tilt every surface inherits, the Pivot and the Panorama, the
+Fifty-one public composables: the tilt every surface inherits, the Pivot and the Panorama, the
 Start-screen tiles including the live ones, ten base controls, the pickers, the application bar, the
 page transitions, and forty drawn icons. Colours, type ramp, tile metrics and motion curves are
 generated from a vendored dump of Microsoft's own theme resources rather than typed in.
@@ -53,7 +53,7 @@ Source Sans 3 is bundled as the companion and `KvadrantText` routes per characte
 
 ```kotlin
 repositories {
-    maven("https://reposilite.kotlin.website/snapshots") {
+    maven("https://reposilite.kotlin.website/releases") {
         // Filtered, like every third-party repository should be: an unfiltered one takes part in
         // resolving everything, and the day its host is unreachable Gradle fails artefacts that
         // live elsewhere.
@@ -62,9 +62,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.youndie:kvadrant-core:0.1.0-SNAPSHOT")
+    implementation("io.github.youndie:kvadrant-core:0.1.0")
     // Only if the application also uses Material 3.
-    implementation("io.github.youndie:kvadrant-material-adapter:0.1.0-SNAPSHOT")
+    implementation("io.github.youndie:kvadrant-material-adapter:0.1.0")
 }
 ```
 
@@ -85,16 +85,22 @@ with the tilt, so anything clickable underneath it leans towards the finger with
 
 ## Status, honestly
 
-**Snapshots, and nobody depends on this yet.** A published coordinate cannot be renamed, only
-deprecated, so the version stays `0.1.0-SNAPSHOT` until the API has been used by somebody other than
-its author.
+**`0.1.0`, and it is the first version of this that exists anywhere.** Nothing had been published
+before it — not even a snapshot, which was checked rather than assumed: `io/github/youndie/kvadrant-core`
+was absent from both trees on the host, so the install snippet above had never resolved for anybody.
+
+This section used to state the opposite rule — that the version stays a snapshot "until the API has
+been used by somebody other than its author" — and the rule was traded away on purpose, because a
+snapshot nobody can find is not how an API gets used. What it costs is that the number is spent: a
+published coordinate cannot be renamed, only deprecated, so an API that turns out wrong is a `0.2.0`
+and not an edit. See [B-46](docs/backlog/B-46-the-first-release.md).
 
 | | |
 |---|---|
 | Desktop (JVM) | Built and tested. The screenshot suite runs here and nowhere else. |
 | Android | Built. **A green `check` says nothing about it** — viddik's capture engine is JVM-only, so its guard is a number instead: `:kvadrant-core:connectedAndroidDeviceTest` solves the tilt's camera out of a trapezoid rendered on a real device. It needs a phone and is not in `check`. |
 | wasm | Built, and the documentation site is what runs on it. `wasmJsBrowserTest` is *skipped*, which in a green build reads exactly like a pass. |
-| iOS | Not yet. It arrives when something runs on it. |
+| iOS | Built, and **the only target whose check is inside the gate**: `IosFontStackTest` runs on a simulator Gradle boots, so it needs neither hardware nor somebody remembering. **The core only** — the Material adapter has no iOS variant. There are no goldens — viddik's capture engine is JVM-only — and the demo runs through [`scripts/ios-sample-app.sh`](scripts/ios-sample-app.sh). |
 
 Two known defects, both open and both written down: the screenshot suite renders Cyrillic
 differently under FreeType than under macOS ([B-35](docs/backlog/B-35-cyrillic-renders-differently-on-linux.md)),
