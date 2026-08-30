@@ -132,47 +132,32 @@ public class KvadrantOverscroll(
     }
 
     /**
-     * The velocity left at the stop, turned into a depth **and into the time it takes to reach it**.
+     * The velocity left at the stop, turned into a depth — **at once**.
      *
-     * **A saturating curve rather than a proportion, and the alternative is worth naming.** The drag
-     * path converts a *distance* — leftover pixels over a viewport — and the obvious symmetry is to
-     * do the same to a velocity by multiplying it by some time. That time has no defensible value:
-     * short enough that a hard fling stays inside [maxCompression] and every ordinary fling produces
-     * almost nothing; long enough for an ordinary fling to be visible and everything above it is
-     * clamped to the same depth, so the effect stops answering how hard the list was thrown. Both
-     * versions pass a test written at one speed.
+     * **The visual states are empty, and that is what settles the shape.** A Windows Phone
+     * `ScrollViewer` template declares `NoVerticalCompression`, `CompressionTop` and
+     * `CompressionBottom` and gives all three *no storyboard at all* — the same shape `PivotItem`'s
+     * `Left`/`Center`/`Right` have, which research §1.11 records as markers the code reads rather
+     * than animations. The compression was never a template animation: it is the scroll engine's own
+     * displacement, and the states exist so an application can **notice** it, which is what the
+     * pull-to-refresh recipes of the day used them for.
      *
-     * `1 − e^(−v)` has neither problem: it is bounded by construction, so nothing is ever clipped,
-     * and it keeps varying across the whole range of speeds a thumb produces. The one number in it
-     * is [flingReference] and it is **ours** — Microsoft published nothing here, as it published
-     * nothing for the other three.
+     * So there is nothing to play after the list stops. The squeeze belongs to the arrival, and the
+     * arrival is over: the spring's whole range is a few per cent of a viewport, and a fling carries
+     * enough momentum to cross it in a frame or two whatever model runs it. Two versions tried
+     * otherwise and both were reported: one animated the depth in over the release's own 300 ms,
+     * which put the growth *after* the stop and read as a bounce; the other ran the leftover
+     * velocity through a decay, which is the honest physics and lands at the limit in one frame at
+     * any real speed, because the distance a throw would carry a list is hundreds of pixels and the
+     * spring is worth tens.
      *
-     * Speed is measured in **viewports per second** rather than pixels, which is the same
-     * normalisation the drag path uses and is what keeps this density-independent without the effect
-     * having to know a density.
-     *
-     * **The depth was right and it arrived in one frame, which is a different defect.** Reported
-     * from a device: a list flung into its end appeared already fully compressed and then recovered,
-     * where a finger dragged into it squeezes gradually. The first fix computed the right number and
-     * *set* it, so the effect began at its limit — and the guard that was written for it sampled the
-     * peak, which a snap and a squeeze both reach.
-     *
-     * **The duration is the release's, and the derivation that looked better was measured and
-     * dropped.** The physical model is that the content arrives at the stop with a speed and travels
-     * the compression distance before stopping, which under uniform deceleration takes `2d / v` —
-     * attractive because both terms are already here and no number is invented. It produces times
-     * below the threshold at which anything is visible: the compression distance is six per cent of
-     * a viewport by construction, so a 4 000 px/s fling into a 300 px viewport comes out at **9 ms**
-     * and a 6 000 px/s fling on a phone at **39 ms**. Two frames is the step this exists to replace,
-     * wearing an equation.
-     *
-     * So the squeeze takes as long as the return, and the argument for that is the one
-     * [io.github.youndie.kvadrant.indication.TiltIndication] already makes about a press: a movement
-     * and its reverse costing the same is the only relationship between two unpublished numbers that
-     * does not invent a second one. The curve is the settle's own `ExponentialOut6` — fast at first,
-     * decelerating into the limit, which is what arriving at a stop looks like.
+     * **What is left to get right is therefore the depth, not the timing** — and the depth was
+     * pinned. [flingReference] decides how much force spends the whole spring, and at a viewport and
+     * a half per second every ordinary flick saturated it, which is what "it starts at maximum"
+     * means. Its value is now set from the range flings actually arrive in; see
+     * [DEFAULT_FLING_REFERENCE].
      */
-    private suspend fun absorb(leftover: Velocity) {
+    private fun absorb(leftover: Velocity) {
         if (viewport <= 0f) return
         // The axis is the one the drag that threw this list was on, not the velocity's own. A fling
         // is the end of a gesture, so the two agree; deriving it here instead would let a stray
@@ -180,16 +165,7 @@ public class KvadrantOverscroll(
         val axis = if (horizontal) leftover.x else leftover.y
         if (axis == 0f) return
         val speed = abs(axis) / viewport
-        val from = compression
-        val to =
-            (from + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
-                .coerceIn(-maxCompression, maxCompression)
-        if (to == from) return
-        animate(
-            from,
-            to,
-            animationSpec = tween(RELEASE_MILLIS, easing = KvadrantEasing.ExponentialOut6),
-        ) { value, _ -> setCompression(value) }
+        setCompression(compression + maxCompression * (1f - exp(-speed / flingReference)) * sign(axis))
     }
 
     private suspend fun performRelease() {
@@ -252,11 +228,19 @@ public class KvadrantOverscroll(
         public const val DEFAULT_RESISTANCE: Float = 1f
 
         /**
-         * **Ours.** A fling arriving at a viewport and a half per second spends about two thirds of
-         * the available compression; nothing ever spends all of it, which is what a saturating curve
-         * buys.
+         * **Ours**, and set from the range flings actually arrive in rather than from taste.
+         *
+         * A thumb produces roughly 3 000 to 12 000 px/s on a phone, which over a viewport of about
+         * 2 200 px is **1.4 to 5.5 viewports per second**. A reference in the middle of that spreads
+         * an ordinary flick across the spring — a gentle one spends about a third of it, a hard one
+         * about three quarters — where the first value, a viewport and a half, put everything above
+         * a lazy flick at the limit. That is what "it starts at maximum" was: not the timing, the
+         * saturation.
+         *
+         * The curve is `1 − e^(−v ⁄ reference)`, so nothing ever spends *all* of the spring and no
+         * clamp is ever reached from below.
          */
-        public const val DEFAULT_FLING_REFERENCE: Float = 1.5f
+        public const val DEFAULT_FLING_REFERENCE: Float = 4f
 
         /** **Ours.** The phone's ordinary settle, as the panorama's is. */
         public const val RELEASE_MILLIS: Int = 300
