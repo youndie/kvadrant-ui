@@ -39,9 +39,10 @@ nothing about it either way.
   them and is in `make check`. It bit on the real drift the moment it was written, before the README
   was touched — the three lines it named were the three that were wrong.
 - Not covered: **Maven Central**. B-21's answer stands — when the Portal happens this gains a second
-  repository rather than losing this one. Also not covered: publishing from CI. The credentials are
-  a workstation's, `gh secret list` is empty, and a release that one machine can cut is the honest
-  description of where this is.
+  repository rather than losing this one. Also not covered: publishing from CI — the credentials were
+  a workstation's and `gh secret list` was empty, so a release that one machine could cut was the
+  honest description of where this stood. **Closed straight after, by
+  [B-47](B-47-publishing-from-ci.md).**
 
 - AC: `./gradlew publish` sends both modules to `/releases`, and
   `https://reposilite.kotlin.website/releases/io/github/youndie/kvadrant-core/0.1.0/kvadrant-core-0.1.0.pom`
