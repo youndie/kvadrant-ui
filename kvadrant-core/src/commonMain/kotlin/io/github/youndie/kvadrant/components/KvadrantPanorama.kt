@@ -76,6 +76,14 @@ import kotlin.math.roundToInt
  * — not a coefficient anybody gets to pick. Each layer is drawn twice and offset modulo its period,
  * and the fold then lands on a seam that is identical to where it started.
  *
+ * **Right-to-left costs this component nothing either, and the reason is `Modifier.offset`**
+ * ([B-41](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-41-rtl-is-canon-and-untested.md)).
+ * Every layer here is placed by that modifier rather than by a hand-written `place`, and it mirrors
+ * its x on its own — so a mirrored page pans the layers the other way with no code for it, which
+ * `MirroredTravelTest` measures as a sign rather than trusting. The pivot's header strip is the one
+ * that needed a change, because it places its children itself. Said here so that the next person
+ * asking about right-to-left re-checks one layout instead of three.
+ *
  * **The title is the one layer that is not a cylinder**, because the original says so: it "does not
  * repeat itself when you pan past the edges of the content", and instead leaves and re-enters at the
  * selection change that crosses the edge. So it is drawn once, travels its own overflow exactly once
