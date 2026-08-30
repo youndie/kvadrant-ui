@@ -32,13 +32,17 @@ nothing about it either way.
   The name of that path is the host's and not a claim about the artefacts: `0.1.0` is fixed and
   immutable and lives under `/snapshots`, which is how the neighbours use the same host —
   `io.github.youndie:form-core` has ninety fixed versions in that tree and no `-SNAPSHOT` at all.
-- **A second publish of the same fixed version is the mistake with no undo**, and it now matters
-  *more* rather than less. The tree is called snapshots and holds fixed versions, so the thing that
-  would otherwise prevent an overwrite — a host refusing a redeploy into its releases tree — is not
-  in play. Nothing between the command and the disk says `0.1.0` is immutable except the publish
-  task, which asks the host for the POM first and refuses on a 200. A GET, not a HEAD: a HEAD
-  carries no body, so its status is one nobody had to produce a document to justify. A `-SNAPSHOT`
-  version is exempt, which is what a snapshot is.
+- **The host refuses a republish, and the build's check only says so in better words.** This is
+  the reverse of what the item claimed for a day. The claim was that a tree called `snapshots`
+  cannot be protecting a fixed version, so the build's check was the only thing standing between
+  `0.1.0` and an overwrite. Publishing `0.1.0` a second time settled it: Reposilite answered
+  **409 Conflict**, in that tree, on that version. The tree's name does not decide immutability;
+  the version's shape does, and the host reads it the same way we do.
+
+  The check stays, demoted honestly: it turns a 409 into a sentence naming the artefact, the
+  version and what to do. A GET, not a HEAD — a HEAD carries no body, so its status is one nobody
+  had to produce a document to justify. A `-SNAPSHOT` version is exempt, which is what a snapshot
+  is.
 - **The version moved to `gradle.properties`** because it is written in more places than one: the
   README quotes it twice and names the repository tree that holds it, and a release that moves the
   build and not the README hands a reader a coordinate that 404s. `scripts/version_guard.py` compares
