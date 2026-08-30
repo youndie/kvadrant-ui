@@ -39,6 +39,14 @@ stop being true.
   published coordinate had never executed — including on the run that reached the host — and it read
   as present in every review of the file. Found by listing the graph rather than by reading the
   code, which is the only way this kind of absence is ever found.
+
+  *And moving it to a task that runs was not enough.* It went onto the multiplatform publication's
+  task, on the argument that only that task writes the root POM — true, and beside the point.
+  Gradle runs the ten publication tasks in whatever order it likes, and on the deliberate second
+  publish the `android` task reached the host first and died on 409 before the guarded task
+  started. Twice attached somewhere that does not execute, which is an argument against **choosing**
+  the place: it now sits on every `PublishToMavenRepository`, each asking about its own artefact,
+  read off the task at execution time so there is no name to match and no id to reconstruct.
 - Not covered: signing, and Maven Central. B-21's answer stands.
 
 - AC: a GitHub release publishes both artefacts, and the job goes red if the host does not have them

@@ -135,42 +135,43 @@ subprojects {
         }
     }
 
-    // **A fixed version is published once, and this refuses the second time** — which now matters
-    // *more* than it did, not less. The repository is called snapshots and holds fixed versions, so
-    // the one thing that used to prevent an accidental overwrite — the host refusing a redeploy to
-    // its releases tree — is not in play. Nothing between here and the disk says `0.1.0` is
-    // immutable except this.
+    // **The host refuses a republish; this only says so in words a person can act on.**
     //
-    // A GET rather than a HEAD, deliberately: a HEAD carries no body, so a server that answers one
-    // by inventing a status tells you nothing you can check, and this asks for the POM itself.
-    // A `-SNAPSHOT` is exempt, which is the whole of what a snapshot is.
+    // That ordering is the opposite of what this comment claimed a day ago, and the claim was
+    // tested rather than reasoned away. Publishing `0.1.0` a second time was refused by Reposilite
+    // with **409 Conflict** — in the `snapshots` tree, on a fixed version — so the assertion that
+    // "nothing between here and the disk says 0.1.0 is immutable except this" was simply false.
+    // The tree's name does not decide that; the version's shape does, and the host knows the
+    // difference between `0.1.0` and `0.1.0-SNAPSHOT` as well as we do.
+    //
+    // **And that run is also how this check was caught not running.** It sat on the multiplatform
+    // publication's task alone, on the argument that only that task writes the root POM. True, and
+    // beside the point: Gradle runs the ten publication tasks in whatever order it likes, and the
+    // `android` one reached the host first and died on 409 before the guarded task started. Twice
+    // now this has been attached somewhere that does not execute — first an aggregate task
+    // `publish` never reaches, then a task that loses a race — which is an argument against
+    // *choosing* the place at all.
+    //
+    // So: every publication task, each asking about **its own** artefact. `PublishToMavenRepository`
+    // carries the publication and the repository it is about, read at execution time, so there is
+    // no task name to match and no artefact id to reconstruct. Whichever task starts first is the
+    // one that speaks, and it speaks about the thing it was about to overwrite.
+    //
+    // A GET rather than a HEAD: a HEAD carries no body, so its status is one nobody had to produce
+    // a document to justify. A `-SNAPSHOT` is exempt, which is the whole of what a snapshot is.
     if (!isSnapshot) {
-        // The module's own name, captured here: inside `configureEach` the receiver is the task and
-        // `name` would be the task's.
-        val artefact = name
-        // **On the multiplatform publication's own task, and the first version of this hung it on
-        // `publishAllPublicationsToReposiliteRepository` — which `./gradlew publish` never runs.**
-        // Gradle's `publish` depends on the individual `publish<Pub>PublicationTo<Repo>Repository`
-        // tasks directly; the `All` task is a separate aggregate that nothing in the publish path
-        // reaches. `./gradlew publish --dry-run` lists ten tasks and that is not one of them, so the
-        // guard had never executed once, including on the run that reached the host.
-        //
-        // This one and not all ten, because the check has to be about something **only this task
-        // writes**. The root POM is exactly that — the per-target publications write
-        // `-android`, `-desktop` and the rest — so no sibling can trip it inside the same run by
-        // uploading first, which is what checking one shared address from ten tasks would do.
-        tasks.matching { it.name == "publishKotlinMultiplatformPublicationToReposiliteRepository" }.configureEach {
-            // The root module of the KMP publication. Its per-target siblings — `-jvm`, `-android`
-            // — go up in the same publish, so one of them existing means all of them do.
-            val coordinates = "io/github/youndie/$artefact/$kvadrantVersion/$artefact-$kvadrantVersion.pom"
+        tasks.withType<PublishToMavenRepository>().configureEach {
             doFirst {
+                if (repository.name != "reposilite") return@doFirst
+                val artefact = publication.artifactId
+                val coordinates = "io/github/youndie/$artefact/$kvadrantVersion/$artefact-$kvadrantVersion.pom"
                 val url = java.net.URI("$REPOSITORY/$coordinates").toURL()
                 val connection = (url.openConnection() as java.net.HttpURLConnection).apply { requestMethod = "GET" }
                 val code = runCatching { connection.responseCode }.getOrDefault(-1)
                 connection.disconnect()
                 check(code != 200) {
-                    "$artefact $kvadrantVersion is already published — $coordinates answers 200. A fixed " +
-                        "version is not republished: raise `kvadrant.version` in gradle.properties"
+                    "$artefact $kvadrantVersion is already published — $coordinates answers 200, and the " +
+                        "host would refuse the upload with 409. Raise `kvadrant.version` in gradle.properties"
                 }
             }
         }
