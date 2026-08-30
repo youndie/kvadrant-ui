@@ -6,7 +6,7 @@
 # `workflow_dispatch` is there for the one case the release event cannot serve: a publish that failed
 # halfway and has to be re-run without inventing a second release.
 #
-# NOTHING HERE GUARDS AGAINST PUBLISHING TWICE, because the build already does: the releases task
+# NOTHING HERE GUARDS AGAINST PUBLISHING TWICE, because the build already does: the publish task
 # asks the host for the POM and refuses on a 200. A guard in a workflow would only cover the path
 # through the workflow, and the path that matters is `./gradlew publish` wherever it runs.
 name: publish
@@ -58,7 +58,7 @@ jobs:
         run: |
           version=$(sed -n 's/^kvadrant\.version=//p' gradle.properties)
           for artefact in kvadrant-core kvadrant-material-adapter; do
-            url="https://reposilite.kotlin.website/releases/io/github/youndie/$artefact/$version/$artefact-$version.pom"
+            url="https://reposilite.kotlin.website/snapshots/io/github/youndie/$artefact/$version/$artefact-$version.pom"
             code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
             echo "$artefact $version -> $code"
             [ "$code" = "200" ] || { echo "$url is not there after a successful publish" >&2; exit 1; }

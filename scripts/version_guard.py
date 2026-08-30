@@ -11,10 +11,14 @@ is the shape a number drifts in: bumping the build is one edit, and the file a r
 another. The failure is silent in the worst possible way, because the README keeps looking like
 instructions and the coordinate it gives simply does not resolve.
 
-AND THE REPOSITORY IS PART OF THE VERSION. Reposilite keeps releases and snapshots in separate trees,
-so `0.1.0` under `/snapshots` is a 404 and so is `0.1.0-SNAPSHOT` under `/releases`. `build.gradle.kts`
-derives its destination from the version for that reason; the README cannot derive anything, so it is
-checked instead.
+AND THE REPOSITORY IS PART OF THE COORDINATE. Reposilite keeps two trees and this project may write to
+exactly one of them — `/snapshots` — because that is what its token permits, which was found by having
+a publish refused with 403 under `/releases` (B-46). A reader pointed at the other tree gets a 404 and
+no explanation, so the URL is held to the one the build actually publishes to.
+
+THE NAME OF THAT TREE IS THE HOST'S, NOT A CLAIM ABOUT THE ARTEFACTS. `0.1.0` is fixed and lives under
+`/snapshots`; the check below deliberately does **not** require a `-SNAPSHOT` version there, because
+requiring it would encode an inference about the host that the host does not make.
 
 WHAT IS NOT CHECKED: whether the version has actually been published. That needs the network, and a
 gate that needs the network is a gate people re-run instead of reading — the same rule `doc_images.py`
@@ -44,7 +48,7 @@ def declared():
 
 def main():
     version = declared()
-    expected = "snapshots" if version.endswith("-SNAPSHOT") else "releases"
+    expected = "snapshots"
     readme = ROOT / "README.md"
     text = readme.read_text()
     problems = []
@@ -68,7 +72,8 @@ def main():
     for named in repositories:
         if named != expected:
             problems.append(
-                f"README.md points at {HOST}/{named}, and {version} is published to /{expected}"
+                f"README.md points at {HOST}/{named}, and this project publishes to /{expected} — "
+                "the only tree its token may write to"
             )
 
     if problems:
