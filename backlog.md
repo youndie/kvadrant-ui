@@ -42,7 +42,7 @@ item must never move its file.
 
 No open tasks.
 
-## Closed (45)
+## Closed (46)
 
 **Three answers that decide the architecture**
 
@@ -87,6 +87,7 @@ No open tasks.
 - [B-39](docs/backlog/B-39-semantics-beyond-touch-targets.md) `[x]` - A screen reader gets a clickable box where a toggle switch is
 - [B-40](docs/backlog/B-40-keyboard-and-focus-on-desktop-and-wasm.md) `[x]` - Nothing is focusable, on the two targets where a keyboard is the input
 - [B-45](docs/backlog/B-45-overscroll-ignores-the-fling.md) `[x]` - The overscroll compresses under a finger and not under a fling, which is how a list usually ends
+- [B-46](docs/backlog/B-46-the-first-release.md) `[x]` - Cut 0.1.0 — the first version of this that exists anywhere
 
 **Everything a design system is expected to have**
 

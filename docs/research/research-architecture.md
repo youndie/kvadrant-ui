@@ -1300,6 +1300,18 @@ of pixels. The design guidelines describe the behaviour:
 | "When the end of the list is reached, it will then **scroll up to display the empty section** and 'rubber band' back to rest in place. Flicking at the end of the list causes it to rubber band back" | `LongListSelector` design guidelines, `jj735577`, verbatim |
 | The UI Design and Interaction Guide's Scroller, Pan and Flick sections say **nothing** about the boundary | the 101-page PDF, searched for compress/squeeze/stretch/bounce |
 | The `ScrollViewer` template's three compression states carry **no storyboard** | a real WP template; §1.11's `PivotItem` states have the same shape |
+| `LongListSelector`'s own control template is a **`ViewportControl`** and a scrollbar, and that control's entire panning surface is `Bounds`, `Viewport`, `SetViewportOrigin` and **`BounceViewportToBounds`** | the WP8 `Microsoft.Phone.dll`, template and metadata |
+| No scale takes part in manipulation anywhere in that assembly — `ScaleFactor` is display density, `ZoomLevel` is the map control | the same, searched for scale/zoom/stretch |
+
+The second row is the one that settles the shape rather than merely agreeing with the guidelines: a
+rectangle over the content plus an origin **cannot express a deformation**, so the control the
+guidelines' sentence is about bounces by moving an origin and nothing else. Asked directly — "просто
+оттяжка без растяжения размера — это норм?" — and this is the answer, checked rather than recalled.
+It is evidence from the `LongListSelector` path; `ScrollViewer`'s own compression lives in
+`System.Windows.dll`, which was not to hand.
+
+`OverscrollCompressionTest` already asserts the consequence, on the **height of the last band**: it
+fails an implementation that changes the content's size in either direction.
 
 An empty section is what a squeeze cannot produce: a squeeze is *defined* by the boundary not moving.
 So "compression" names the damping of the **manipulation**, which is also why the states are empty —
@@ -1922,6 +1934,29 @@ pixel.* Windows 8's unit is 1/96 inch where the phone's is a canvas unit, so §1
 assumes one factor throughout would otherwise re-derive it wrongly and be sure of it.
 
 ---
+
+### D20. `0.1.0` is cut before anybody has used the API
+
+Brief and README both said the opposite: hold at a snapshot until somebody other than the author has
+used it. **Decision: publish `0.1.0` anyway** ([B-46](../backlog/B-46-the-first-release.md)).
+
+Why: the rule could not be satisfied from where the project stood. Nothing had ever been published —
+not a release, and *not a snapshot either*, checked over the network rather than assumed, so the
+install snippet in the README had never resolved for a single reader. A snapshot nobody can find is
+not the route by which an API gets used, and the criterion was therefore waiting on an event it
+prevented.
+
+What it costs, stated rather than waved at: a published coordinate cannot be renamed, only
+deprecated and republished. `0.1.0` is spent, and an API that turns out wrong is a `0.2.0`.
+
+The rejected alternative is the one that looks safest — publish `0.1.0-alpha01` and keep the number
+in reserve. It buys nothing here: the constraint that makes a coordinate permanent applies to the
+alpha as well, and the thing being protected is not the number but the API, which no version string
+protects.
+
+*Consequence for the build:* the destination is derived from the version rather than checked against
+it, and the release publish refuses a version already on the host. Both are in B-46, with what each
+replaced.
 
 ## 3. Risks and open questions
 
