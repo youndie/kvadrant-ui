@@ -1,0 +1,65 @@
+# Publishing, which until now was something one machine could do (B-46).
+#
+# THE TRIGGER IS A PUBLISHED RELEASE, NOT A PUSHED TAG, and that is not the same event. A tag can be
+# pushed by anything, including by a mistake being corrected; a release is a deliberate act with a
+# person behind it, and it is the artefact this repository already treats as the record of a version.
+# `workflow_dispatch` is there for the one case the release event cannot serve: a publish that failed
+# halfway and has to be re-run without inventing a second release.
+#
+# NOTHING HERE GUARDS AGAINST PUBLISHING TWICE, because the build already does: the releases task
+# asks the host for the POM and refuses on a 200. A guard in a workflow would only cover the path
+# through the workflow, and the path that matters is `./gradlew publish` wherever it runs.
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      # THE TAG AND THE VERSION ARE TWO PLACES THE SAME NUMBER IS WRITTEN, and a release event hands
+      # this job the tag while the build reads the property. They disagree the moment somebody tags a
+      # commit whose `kvadrant.version` was never raised — and the publish that follows succeeds,
+      # under the version nobody named, because the build has no idea a tag was involved.
+      #
+      # Skipped on `workflow_dispatch`, which has no tag to compare against by construction.
+      - name: the tag names the version being published
+        if: github.event_name == 'release'
+        run: |
+          declared=$(sed -n 's/^kvadrant\.version=//p' gradle.properties)
+          tagged="${GITHUB_REF_NAME#v}"
+          if [ "$declared" != "$tagged" ]; then
+            echo "tag $GITHUB_REF_NAME names $tagged and gradle.properties declares $declared" >&2
+            exit 1
+          fi
+          echo "publishing $declared, named by $GITHUB_REF_NAME"
+
+      - name: publish
+        env:
+          REPOSILITE_USER: ${{ secrets.REPOSILITE_USER }}
+          REPOSILITE_SECRET: ${{ secrets.REPOSILITE_SECRET }}
+        run: ./gradlew publish
+
+      # A PUBLISH THAT REPORTS SUCCESS IS NOT A PUBLISH THAT LANDED. The task can be up to date, the
+      # host can accept and drop, and a green job is what everybody reads instead of the repository.
+      # This asks the host for the POM and fails if it is not there — see the memory this project
+      # keeps running into: deployed is not exercised.
+      - name: the artefact is actually on the host
+        run: |
+          version=$(sed -n 's/^kvadrant\.version=//p' gradle.properties)
+          for artefact in kvadrant-core kvadrant-material-adapter; do
+            url="https://reposilite.kotlin.website/releases/io/github/youndie/$artefact/$version/$artefact-$version.pom"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            echo "$artefact $version -> $code"
+            [ "$code" = "200" ] || { echo "$url is not there after a successful publish" >&2; exit 1; }
+          done
