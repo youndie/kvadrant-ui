@@ -62,9 +62,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.youndie:kvadrant-core:0.1.0")
+    implementation("io.github.youndie:kvadrant-core:0.2.0")
     // Only if the application also uses Material 3.
-    implementation("io.github.youndie:kvadrant-material-adapter:0.1.0")
+    implementation("io.github.youndie:kvadrant-material-adapter:0.2.0")
 }
 ```
 
@@ -85,7 +85,11 @@ with the tilt, so anything clickable underneath it leans towards the finger with
 
 ## Status, honestly
 
-**`0.1.0`, and it is the first version of this that exists anywhere.** Nothing had been published
+**`0.2.0`, and the minor moved because two signatures did.** `KvadrantColors` gained a parameter
+and `KvadrantMetrics` gained five, so a consumer compiled against `0.1.0` does not link against this
+one — which is the case the paragraph below already names, and a patch number would have hidden it.
+
+**`0.1.0` was the first version of this that exists anywhere.** Nothing had been published
 before it — not even a snapshot, which was checked rather than assumed: `io/github/youndie/kvadrant-core`
 was absent from both trees on the host, so the install snippet above had never resolved for anybody.
 
