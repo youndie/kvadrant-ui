@@ -36,7 +36,7 @@ The numbers for the two accents most likely to meet this, against a filled surfa
 | Accent | luminance | `contrastOn` returns | the other ink |
 |---|---|---|---|
 | `Cyan` `#1BA1E2` | 0.312 | white, 2.90:1 | black, 7.24:1 |
-| `Amber` `#F0A30A` | 0.447 | white, 2.11:1 | black, 9.94:1 |
+| `Amber` `#F0A30A` | 0.447 | white, 2.11:1 | black, 9.95:1 |
 
 Contrast is symmetric, so these ratios are also the accent's contrast against a white page — a
 different problem with the same arithmetic, and the one `accessible()` is built for. This item is
