@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+**Two breaking changes, both making a theme able to state something it could not.** Neither moves a
+pixel by default: every golden but one is byte-identical, and the one that moves does so because the
+app bar now scales.
+
+- `KvadrantColors.onAccent` is a constructor parameter instead of a derivation
+  ([B-48](docs/backlog/B-48-the-ink-on-an-accent-cannot-be-chosen.md)). The default is unchanged —
+  `contrastOn(accent)`, white on cyan, the transcription — so a caller who does not pass it sees
+  nothing new. What it adds is the lever an application with a fixed brand hex needs: `accessible()`
+  reaches WCAG AA by moving the *accent*, which is no use when the accent is the thing that cannot
+  move. The data class gains a parameter, so its component functions renumber and `copy()`'s
+  signature changes.
+- `KvadrantMetrics` gains the application bar's five measurements
+  ([B-49](docs/backlog/B-49-the-app-bar-is-the-one-surface-a-theme-cannot-reach.md)), which lived in
+  the component and therefore did not follow `scaled()` — a scaled window grew everything around a
+  bar that stayed 54 dp. `KvadrantAppBarGlyphSize` is deprecated in favour of
+  `KvadrantTheme.metrics.appBarGlyph`.
+
+The bar's ring is the one number here that is **not** Microsoft's, and its KDoc says so: the WP8
+SDK's design assembly holds ten control templates and the ApplicationBar is not one of them, because
+on the phone it was drawn by the shell rather than from a template.
+
 ## 0.1.0 — 2026-08-30
 
 **The first version of this that exists anywhere.** Nothing had been published before it, not even a
