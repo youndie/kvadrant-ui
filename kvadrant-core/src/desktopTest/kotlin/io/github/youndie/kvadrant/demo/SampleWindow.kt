@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
-import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
 import io.github.youndie.kvadrant.components.KvadrantPivot
 import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.KvadrantTileBadge
@@ -102,7 +101,18 @@ internal fun SampleWindow() {
                     listOf(KvadrantAccents.Cyan, KvadrantAccents.Emerald, KvadrantAccents.Amber)
                         .forEach { colour ->
                             KvadrantAppBarButton(onClick = {}) {
-                                KvadrantTile(TileSize.Small, Modifier.fillMaxWidth(), colour) {}
+                                // Sized to the glyph box and clipped round, which is what
+                                // `KvadrantSampleApp` draws. A `Small` tile filling the button
+                                // covers the ring the button is made of — the sample says so in a
+                                // comment and this fixture had the version the comment warns
+                                // about, so the golden of "what a person sees when they run it"
+                                // showed something the demo does not.
+                                Box(
+                                    Modifier
+                                        .size(KvadrantTheme.metrics.appBarGlyph)
+                                        .clip(CircleShape)
+                                        .background(colour),
+                                )
                             }
                         }
                 }

@@ -35,7 +35,6 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import io.github.youndie.kvadrant.components.KVADRANT_TURNSTILE_OUT_MILLIS
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
-import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
 import io.github.youndie.kvadrant.components.KvadrantButton
 import io.github.youndie.kvadrant.components.KvadrantCheckBox
 import io.github.youndie.kvadrant.components.KvadrantCycleTile
@@ -258,12 +257,12 @@ public fun KvadrantSampleApp() {
                                 .forEach { colour ->
                                     KvadrantAppBarButton(onClick = {}) {
                                         // A stand-in until there is an icon set (B-18), and it has to be sized
-                                        // to `KvadrantAppBarGlyphSize` — the ring is 36 dp and a Small tile is
-                                        // 74.25, so a tile here draws a square straight through the circle the
-                                        // button is made of.
+                                        // to `KvadrantTheme.metrics.appBarGlyph` — the button is 36 dp and a
+                                        // Small tile is 74.25, so a tile here draws a square straight through
+                                        // the circle the button is made of.
                                         Box(
                                             Modifier
-                                                .size(KvadrantAppBarGlyphSize)
+                                                .size(KvadrantTheme.metrics.appBarGlyph)
                                                 .clip(CircleShape)
                                                 .background(colour),
                                         )

@@ -1,7 +1,7 @@
 ---
 id: B-48
 title: "The ink on an accent surface is computed and cannot be chosen, so the contrast policy has only one lever"
-status: open
+status: done
 priority: P1
 size: XS
 stage: stage-3-completeness
@@ -59,6 +59,15 @@ pass it.
 - The price: `KvadrantColors` is a `data class` and `abiValidation` is on, so this is a
   binary-incompatible change and arrives as a diff somebody approves. That is the mechanism doing its
   job; two public signatures have moved here unnoticed before, which is why it exists.
+
+## Done
+
+`onAccent` is a constructor parameter defaulting to `contrastOn(accent)`, carried through `dark()`,
+`light()` and `copy()`. Every golden is byte-identical, and two tests hold the shape: the default is
+still the transcription for all twenty accents, and the accessibility walk never flips the ink — the
+question `copy()` carrying a stored value raises, answered by measurement rather than by argument,
+because `accessibleAccent` moves the accent *away* from the text on it and so cannot cross the
+threshold. The ABI dump moved, which is the mechanism doing what this item said it would.
 
 ## Acceptance
 

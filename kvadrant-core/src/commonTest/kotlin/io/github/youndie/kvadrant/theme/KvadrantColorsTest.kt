@@ -81,4 +81,60 @@ class KvadrantColorsTest {
         assertEquals("yellow", ratios.maxByOrNull { it.value }!!.key)
         assertTrue(ratios.getValue("yellow") > 12f, "yellow was ${ratios.getValue("yellow")}")
     }
+
+    /**
+     * `onAccent` is a parameter now, and its default is still the transcription.
+     *
+     * This is the test for the edit somebody makes to be helpful: raising the default to the
+     * higher-contrast ink would fix nine accents' WCAG numbers and would stop this library
+     * reproducing Metro, which is the trade D7 and B-11 both refuse. The parameter exists so that
+     * a caller who needs the other ink asks for it.
+     */
+    @Test
+    fun the_default_ink_on_an_accent_is_still_the_one_metro_used() {
+        KvadrantAccents.All.forEach { (name, accent) ->
+            assertEquals(
+                contrastOn(accent),
+                KvadrantColors.dark(accent).onAccent,
+                "the dark theme's default ink on $name is no longer contrastOn()",
+            )
+            assertEquals(
+                contrastOn(accent),
+                KvadrantColors.light(accent).onAccent,
+                "the light theme's default ink on $name is no longer contrastOn()",
+            )
+        }
+    }
+
+    /** And a chosen ink survives, which is the whole point of it being a parameter. */
+    @Test
+    fun a_chosen_ink_is_kept() {
+        assertEquals(Color.Black, KvadrantColors.dark(onAccent = Color.Black).onAccent)
+        assertEquals(Color.Black, KvadrantColors.light(onAccent = Color.Black).onAccent)
+        assertEquals(Color.Black, KvadrantColors.dark().copy(onAccent = Color.Black).onAccent)
+    }
+
+    /**
+     * **`copy()` carrying the ink is safe, and this is why.**
+     *
+     * Storing `onAccent` rather than deriving it means `accessible()` — which rebuilds the palette
+     * through `copy(accent = …)` — hands the walked accent an ink computed from the original. That
+     * would be a defect if the walk could cross the luminance threshold, and it cannot:
+     * `accessibleAccent` moves the accent *away* from the text on it, darker under white text and
+     * lighter under black. Asserted rather than argued, for all twenty.
+     */
+    @Test
+    fun the_accessibility_walk_never_flips_the_ink() {
+        KvadrantAccents.All.forEach { (name, accent) ->
+            assertEquals(
+                contrastOn(accent),
+                contrastOn(accessibleAccent(accent)),
+                "the accessible walk flipped $name's ink, so accessible() now carries a stale one",
+            )
+        }
+        // The positive control: the walk has to actually move something, or the assertion above is
+        // satisfied by a function that returns its argument.
+        val moved = KvadrantAccents.All.count { (_, c) -> accessibleAccent(c) != c }
+        assertEquals(9, moved, "the walk moved $moved accents where nine fall below AA")
+    }
 }

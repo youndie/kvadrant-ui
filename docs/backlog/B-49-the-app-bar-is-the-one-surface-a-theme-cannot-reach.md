@@ -1,7 +1,7 @@
 ---
 id: B-49
 title: "The app bar's dimensions live in the component, so a theme cannot state them and scaled() leaves the bar behind"
-status: open
+status: done
 priority: P1
 size: S
 stage: stage-3-completeness
@@ -87,6 +87,27 @@ prevent.
 `KvadrantMetrics().scaled(1.6f)`, and it contains a `KvadrantAppBar`. At 1.6 the bar becomes
 86.4 dp, the button 57.6, the ring 1.8 and the glyph 31.2. Every other golden is at scale 1f and must
 come out byte-identical.
+
+## Done
+
+The five measurements are fields of `KvadrantMetrics` and scale with it; `MetricsScaleTest` already
+covered the shape and now covers them, checked by leaving one out and watching it name the field.
+`KvadrantAppBarGlyphSize` is deprecated rather than deleted, and `-Werror` found all three call sites
+the moment it was.
+
+**The open question is closed, by looking.** The WP8 SDK's design assembly carries ten control
+templates — Panorama, PanoramaItem, Pivot, PivotItem, LongListSelector, PhoneApplicationFrame,
+PanningLayer, PivotHeaderItem, PivotHeadersControl, Frame — and the ApplicationBar is not among them,
+because on the phone it was a shell control rather than a XAML one. The theme dictionary has no key
+containing "appbar", and neither file holds 1.5 in any stroke or thickness. So the ring is this
+project's number and its KDoc says so. The bar's other four came from the design guidelines, which is
+why they are in the token dump and no template exists to check them against.
+
+`app_sample_window` was the only golden to move, as predicted. One thing was not predicted: the
+fixture's stand-in glyphs were `Small` tiles filling the button, which covered the ring — a defect
+that pre-dated this item and that a bigger button made obvious. `KvadrantSampleApp` warns about
+exactly that in a comment and does the right thing; the fixture claiming to photograph it did not.
+Now it does.
 
 ## Acceptance
 
