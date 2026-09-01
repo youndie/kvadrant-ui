@@ -97,6 +97,36 @@ public data class KvadrantMetrics(
     val tileMedium: Dp = 157.5.dp,
     val tileWide: Dp = 324.dp,
     val tileGap: Dp = 9.dp,
+    /**
+     * The application bar: 72 px tall, 30 px in its mini form, with 48×48 px circular buttons
+     * carrying a 26×26 px glyph.
+     *
+     * These lived in `KvadrantAppBar.kt` as file-private constants until B-49, which is why they
+     * are last in this class rather than beside the other chrome. The consequence of being outside
+     * the set was the one the set exists to prevent: [scaled] grew the page, the ramp, the tiles
+     * and the pivot around a bar that stayed 54 dp.
+     */
+    val appBarHeight: Dp = 54.dp,
+    val appBarMiniHeight: Dp = 22.5.dp,
+    val appBarButton: Dp = 36.dp,
+    val appBarGlyph: Dp = 19.5.dp,
+    /**
+     * The ring around a bar button, and **this one is not Microsoft's**.
+     *
+     * The other four are in the token dump — `appBarHeightPx` 72, `appBarMiniHeightPx` 30,
+     * `appBarIconPx` 48, `appBarGlyphPx` 26 — and came from the design guidelines. This one is
+     * nowhere, and that was established by looking rather than by not finding it in the obvious
+     * place: the WP8 SDK's design assembly carries ten control templates — Panorama, PanoramaItem,
+     * Pivot, PivotItem, LongListSelector, PhoneApplicationFrame, PanningLayer, PivotHeaderItem,
+     * PivotHeadersControl, Frame — and **the ApplicationBar is not among them**, because on
+     * Windows Phone it was a shell control rather than a XAML one. Its theme dictionary has no key
+     * containing "appbar", and neither file contains 1.5 in any stroke or thickness at all.
+     *
+     * So there is no template to transcribe and this is this project's number, marked here the way
+     * the panorama's parallax coefficient is. 1.5 px is what a 48 px circle needs to read as an
+     * outline rather than a disc at this size; it has no better justification than that.
+     */
+    val appBarRing: Dp = 1.125.dp,
 )
 
 /**
@@ -153,6 +183,11 @@ public fun KvadrantMetrics.scaled(factor: Float): KvadrantMetrics =
         tileMedium = tileMedium * factor,
         tileWide = tileWide * factor,
         tileGap = tileGap * factor,
+        appBarHeight = appBarHeight * factor,
+        appBarMiniHeight = appBarMiniHeight * factor,
+        appBarButton = appBarButton * factor,
+        appBarGlyph = appBarGlyph * factor,
+        appBarRing = appBarRing * factor,
     )
 
 /**

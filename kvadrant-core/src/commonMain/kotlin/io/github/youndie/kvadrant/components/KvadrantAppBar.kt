@@ -54,6 +54,7 @@ public fun KvadrantAppBar(
     buttons: @Composable () -> Unit = {},
 ) {
     val colors = KvadrantTheme.colors
+    val metrics = KvadrantTheme.metrics
 
     // Background to the very bottom, content above the navigation bar. The order of those two
     // modifiers is the whole of edge-to-edge: padding *before* the background insets the paint and
@@ -88,7 +89,7 @@ public fun KvadrantAppBar(
         }
 
         Row(
-            Modifier.fillMaxWidth().height(if (mini) MINI_HEIGHT else HEIGHT),
+            Modifier.fillMaxWidth().height(if (mini) metrics.appBarMiniHeight else metrics.appBarHeight),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -126,28 +127,35 @@ public fun KvadrantAppBarButton(
             Modifier.semantics { contentDescription = label }
         }
     val colors = KvadrantTheme.colors
+    val metrics = KvadrantTheme.metrics
     val interaction = remember { MutableInteractionSource() }
     val tint = if (enabled) colors.foreground else colors.disabled
 
     Box(
         modifier
             .then(described)
-            .size(BUTTON)
+            .size(metrics.appBarButton)
             .clickable(
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 enabled = enabled,
                 onClick = onClick,
-            ).border(RING, tint, CircleShape),
+            ).border(metrics.appBarRing, tint, CircleShape),
         contentAlignment = Alignment.Center,
         content = content,
     )
 }
 
-private val HEIGHT: Dp = 54.dp // 72 px
-private val MINI_HEIGHT: Dp = 22.5.dp // 30 px
-private val BUTTON: Dp = 36.dp // 48 px
-private val RING: Dp = 1.125.dp // 1.5 px
-
-/** The glyph box inside a bar button: 26×26 px. Exposed so a caller can size its own icon to it. */
+/**
+ * The glyph box inside a bar button: 26×26 px.
+ *
+ * **Superseded by `KvadrantTheme.metrics.appBarGlyph`**, which is the same number inside the metric
+ * set and therefore the one that follows `scaled()`. This constant cannot: it is a top-level `val`
+ * with no theme to read, so a scaled-up bar sized its glyphs from an unscaled figure. Kept as a
+ * deprecation rather than deleted because it is public API in 0.1.0 and somebody may be reading it.
+ */
+@Deprecated(
+    "Read KvadrantTheme.metrics.appBarGlyph, which scales with the rest of the set.",
+    ReplaceWith("KvadrantTheme.metrics.appBarGlyph", "io.github.youndie.kvadrant.theme.KvadrantTheme"),
+)
 public val KvadrantAppBarGlyphSize: Dp = 19.5.dp

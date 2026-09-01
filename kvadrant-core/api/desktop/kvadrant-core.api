@@ -531,8 +531,8 @@ public final class io/github/youndie/kvadrant/theme/KvadrantFontSizes {
 
 public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public static final field $stable I
-	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFFFFFFFFFFFFFFFFFFFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()F
 	public final fun component10-D9Ej5fM ()F
 	public final fun component11-D9Ej5fM ()F
@@ -546,6 +546,11 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun component19-D9Ej5fM ()F
 	public final fun component2-D9Ej5fM ()F
 	public final fun component20-D9Ej5fM ()F
+	public final fun component21-D9Ej5fM ()F
+	public final fun component22-D9Ej5fM ()F
+	public final fun component23-D9Ej5fM ()F
+	public final fun component24-D9Ej5fM ()F
+	public final fun component25-D9Ej5fM ()F
 	public final fun component3-D9Ej5fM ()F
 	public final fun component4-D9Ej5fM ()F
 	public final fun component5-D9Ej5fM ()F
@@ -553,9 +558,14 @@ public final class io/github/youndie/kvadrant/theme/KvadrantMetrics {
 	public final fun component7-D9Ej5fM ()F
 	public final fun component8-D9Ej5fM ()F
 	public final fun component9-D9Ej5fM ()F
-	public final fun copy-LxLpNbc (FFFFFFFFFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
-	public static synthetic fun copy-LxLpNbc$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public final fun copy-G8Taswc (FFFFFFFFFFFFFFFFFFFFFFFFF)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
+	public static synthetic fun copy-G8Taswc$default (Lio/github/youndie/kvadrant/theme/KvadrantMetrics;FFFFFFFFFFFFFFFFFFFFFFFFFILjava/lang/Object;)Lio/github/youndie/kvadrant/theme/KvadrantMetrics;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAppBarButton-D9Ej5fM ()F
+	public final fun getAppBarGlyph-D9Ej5fM ()F
+	public final fun getAppBarHeight-D9Ej5fM ()F
+	public final fun getAppBarMiniHeight-D9Ej5fM ()F
+	public final fun getAppBarRing-D9Ej5fM ()F
 	public final fun getBorderThickness-D9Ej5fM ()F
 	public final fun getButtonPaddingBottom-D9Ej5fM ()F
 	public final fun getButtonPaddingHorizontal-D9Ej5fM ()F

@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.github.youndie.kvadrant.components.KvadrantAppBar
 import io.github.youndie.kvadrant.components.KvadrantAppBarButton
-import io.github.youndie.kvadrant.components.KvadrantAppBarGlyphSize
 import io.github.youndie.kvadrant.components.KvadrantPage
 import io.github.youndie.kvadrant.components.KvadrantTile
 import io.github.youndie.kvadrant.components.KvadrantTileGrid
@@ -77,7 +76,7 @@ private fun StartWithBar(
                             KvadrantAppBarButton(onClick = {}) {
                                 Box(
                                     Modifier
-                                        .size(KvadrantAppBarGlyphSize)
+                                        .size(KvadrantTheme.metrics.appBarGlyph)
                                         .clip(CircleShape)
                                         .background(colour),
                                 )
