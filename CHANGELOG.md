@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-09-01
 
 **Two breaking changes, both making a theme able to state something it could not.** Neither moves a
 pixel by default: every golden but one is byte-identical, and the one that moves does so because the

@@ -18,6 +18,18 @@ environment variable anywhere automated, and a publish that finds neither fails 
 `credentials.username`, before it has built or sent anything — measured by running it without
 them, which is the only part of the pipeline that could not be verified here.
 
+*Amendment, 2026-09-01 — "or an environment variable anywhere automated" stopped being true at the
+move to the shared conventions, and the publish it broke is how anybody found out.* That clause
+described **this repository's own** `credentials` block, which read the Gradle property and fell
+back to `System.getenv`. The conventions' block does not: it is
+`providers.gradleProperty("REPOSILITE_USER")` and nothing else, and a bare environment variable is
+not a Gradle property — only an `ORG_GRADLE_PROJECT_`-prefixed one is. So the workflow, unchanged,
+went from supplying credentials to supplying nothing, and the failure named `credentials.username`
+without a word about an environment variable or its spelling. The workflow now exports the prefixed
+names, which is what the conventions' own comment documents. What survives from the paragraph above
+is its more useful half: a publish with no credentials still fails at validation, before it has
+built or sent anything.
+
 Two modules publish — `kvadrant-core` and `kvadrant-material-adapter` — and the two samples do not,
 checked rather than assumed: publishing a sample is how a consumer ends up with a demo on their
 classpath. Verified through `publishToMavenLocal`, which needs no credentials and proves the part

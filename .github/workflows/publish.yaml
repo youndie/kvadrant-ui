@@ -43,10 +43,20 @@ jobs:
           fi
           echo "publishing $declared, named by $GITHUB_REF_NAME"
 
+      # THE PREFIX IS THE WHOLE OF THIS STEP. The shared conventions read the credentials with
+      # `providers.gradleProperty("REPOSILITE_USER")` and nothing else, and a bare environment
+      # variable is not a Gradle property — only `ORG_GRADLE_PROJECT_`-prefixed ones are. Before the
+      # move to those conventions this repository's own `credentials` block fell back to
+      # `System.getenv`, so the unprefixed names worked and nobody had to know the difference;
+      # afterwards they resolve to nothing and the publish dies at task validation naming
+      # `credentials.username`, which says nothing about an environment variable or its spelling.
+      #
+      # Measured both ways with a dummy value rather than reasoned about: unprefixed reproduces
+      # "Value not set" exactly as CI had it, prefixed gets past validation and on to the upload.
       - name: publish
         env:
-          REPOSILITE_USER: ${{ secrets.REPOSILITE_USER }}
-          REPOSILITE_SECRET: ${{ secrets.REPOSILITE_SECRET }}
+          ORG_GRADLE_PROJECT_REPOSILITE_USER: ${{ secrets.REPOSILITE_USER }}
+          ORG_GRADLE_PROJECT_REPOSILITE_SECRET: ${{ secrets.REPOSILITE_SECRET }}
         run: ./gradlew publish
 
       # A PUBLISH THAT REPORTS SUCCESS IS NOT A PUBLISH THAT LANDED. The task can be up to date, the
