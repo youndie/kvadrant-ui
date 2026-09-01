@@ -14,6 +14,24 @@ import androidx.compose.ui.graphics.luminance
 @Immutable
 public data class KvadrantColors(
     val accent: Color,
+    /**
+     * Black or white, whichever stays legible on [accent] — and a parameter rather than a
+     * derivation, because a caller may not be free to move the accent.
+     *
+     * The default is [contrastOn], which is what Windows Phone did and stays what this library
+     * does; white on a cyan tile is the authentic answer at 2.90:1 and it is not changed here.
+     * What the parameter adds is the second lever [B-11](https://github.com/youndie/kvadrant-ui/blob/main/docs/backlog/B-11-accessibility-policy.md)'s
+     * policy needs and did not have: `accessible()` reaches AA by walking the *accent* towards
+     * black or white, which is the right move for a caller whose accent is negotiable and the
+     * wrong one for an application arriving with a brand's fixed hex. For that caller the accent
+     * stays and the ink is what has to move.
+     *
+     * **Carried by `copy()` rather than recomputed, and that is safe rather than lucky.**
+     * `accessible()` walks the accent *away* from the text colour on it — darker when the text is
+     * white, lighter when it is black — so the walk cannot carry an accent across the 0.5
+     * luminance threshold that would flip the ink. Checked for all twenty: none flips.
+     */
+    val onAccent: Color = contrastOn(accent),
     val foreground: Color,
     val background: Color,
     val contrastForeground: Color,
@@ -50,13 +68,14 @@ public data class KvadrantColors(
     val checkBoxPressedBorder: Color,
     val isDark: Boolean,
 ) {
-    /** Black or white, whichever stays legible on [accent]. */
-    val onAccent: Color get() = contrastOn(accent)
-
     public companion object {
-        public fun dark(accent: Color = KvadrantAccents.Cyan): KvadrantColors =
+        public fun dark(
+            accent: Color = KvadrantAccents.Cyan,
+            onAccent: Color = contrastOn(accent),
+        ): KvadrantColors =
             KvadrantColors(
                 accent = accent,
+                onAccent = onAccent,
                 foreground = KvadrantTokens.Dark.foreground,
                 background = KvadrantTokens.Dark.background,
                 contrastForeground = KvadrantTokens.Dark.contrastForeground,
@@ -75,9 +94,13 @@ public data class KvadrantColors(
                 isDark = true,
             )
 
-        public fun light(accent: Color = KvadrantAccents.Cyan): KvadrantColors =
+        public fun light(
+            accent: Color = KvadrantAccents.Cyan,
+            onAccent: Color = contrastOn(accent),
+        ): KvadrantColors =
             KvadrantColors(
                 accent = accent,
+                onAccent = onAccent,
                 foreground = KvadrantTokens.Light.foreground,
                 background = KvadrantTokens.Light.background,
                 contrastForeground = KvadrantTokens.Light.contrastForeground,
