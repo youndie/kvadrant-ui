@@ -23,7 +23,7 @@ ksp = "2.3.10"
 # source set — but `viddik-testing-core` publishes JVM variants only at every published version,
 # `viddik-testing-core-android` is a 404, and the 0.3.0.15 Gradle plugin contains no Android
 # handling at all. B-29's premise is unchanged and Android still has no goldens.
-viddik = "0.3.0.15"
+viddik = "0.3.3.19"
 # The Gradle plugin and the ktlint it runs are separate versions on purpose: the plugin is a
 # launcher, the CLI is what decides how the code looks.
 # The API reference the documentation site publishes beside the component pages (B-34). 2.x is a
