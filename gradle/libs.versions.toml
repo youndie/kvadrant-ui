@@ -1,7 +1,7 @@
 [versions]
 # The shared build conventions: the coordinate, the version, the toolchain, the jvm floor, the style
 # and the publication. Bumping this changes how every module is built.
-sborka = "0.1.0.18"
+sborka = "0.1.0.23"
 kotlin = "2.4.10"
 # The current release, and it stays there. A test-only tool does not get to choose the Compose line
 # the library publishes against - when viddik could not run on 1.12.0 the answer was to wait for
