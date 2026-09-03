@@ -8,7 +8,7 @@ kotlin = "2.4.10"
 # viddik, not to ship against 1.11.1. See B-23, closed.
 compose-multiplatform = "1.12.0"
 # KSP is versioned independently of the Kotlin compiler since KSP2; viddik's processor runs on it.
-ksp = "2.3.10"
+ksp = "2.3.11"
 # viddik ships the plugin, the annotations and the capture engine under one version, which is what
 # keeps the processor and the renderer in step.
 #
