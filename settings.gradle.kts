@@ -30,7 +30,7 @@ plugins {
     //
     // It also brings the shared `.editorconfig` check, which is the other half of pinning the
     // formatter's version.
-    id("ru.workinprogress.sborka.settings") version "0.1.0.18"
+    id("ru.workinprogress.sborka.settings") version "0.1.0.23"
 }
 
 rootProject.name = "kvadrant-ui"
