@@ -17,11 +17,12 @@ pluginManagement {
         // any settings plugin is applied — including the sborka one, which is fetched through it.
         maven("https://reposilite.kotlin.website/snapshots") {
             content {
-                // Both groups on purpose. sborka is under `io.github.youndie` since the
-                // plugin ids moved; the old group is held by everything published before
-                // that move, viddik up to 0.3.3 included.
+                // One group, and it is the only one left: the portfolio's move to
+                // `io.github.youndie` is finished. viddik was the reason the old group was
+                // listed and this repository is on 0.4.0, which is published under the new
+                // one — a filter for a group nothing here asks about reads as a dependency
+                // that is still there.
                 includeGroupAndSubgroups("io.github.youndie")
-                includeGroupAndSubgroups("ru.workinprogress")
             }
         }
     }
