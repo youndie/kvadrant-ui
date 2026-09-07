@@ -6,9 +6,9 @@ plugins {
     alias(libs.plugins.viddik)
     alias(libs.plugins.dokka)
     alias(libs.plugins.androidKmpLibrary)
-    id("ru.workinprogress.sborka.kmp")
-    id("ru.workinprogress.sborka.lint")
-    id("ru.workinprogress.sborka.publish")
+    id("io.github.youndie.sborka.kmp")
+    id("io.github.youndie.sborka.lint")
+    id("io.github.youndie.sborka.publish")
 }
 
 kotlin {
