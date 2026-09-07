@@ -1,7 +1,7 @@
 package io.github.youndie.kvadrant.previews
 
 import androidx.compose.runtime.Composable
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * One fixture per preview, and every one of them renders the registry rather than a copy of it.

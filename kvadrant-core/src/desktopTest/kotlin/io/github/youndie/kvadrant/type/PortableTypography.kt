@@ -3,7 +3,7 @@ package io.github.youndie.kvadrant.type
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import io.github.youndie.kvadrant.theme.KvadrantTypography
-import ru.workinprogress.viddik.core.ViddikPlatformTextStyle
+import io.github.youndie.viddik.core.ViddikPlatformTextStyle
 
 /**
  * The ramp with hinting and smoothing pinned, so a golden means the same thing on two operating

@@ -25,7 +25,7 @@ import io.github.youndie.kvadrant.resources.selawik_regular
 import io.github.youndie.kvadrant.resources.selawik_semilight
 import io.github.youndie.kvadrant.resources.source_sans_3_variable
 import org.jetbrains.compose.resources.Font
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 // The Metro header weight. Selawik ships a real SemiLight; the fallbacks are asked for W300 and
 // give their Light, which is the closest any of them has.

@@ -24,7 +24,7 @@ import io.github.youndie.kvadrant.theme.accessibleAccent
 import io.github.youndie.kvadrant.theme.contrastOn
 import io.github.youndie.kvadrant.theme.contrastRatio
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * Every accent twice: the authentic value on the left, the opt-in accessible one on the right, each

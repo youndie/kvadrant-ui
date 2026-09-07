@@ -1,6 +1,6 @@
 package io.github.youndie.kvadrant.material
 
-import ru.workinprogress.viddik.generated.GeneratedViddikRegistry
+import io.github.youndie.viddik.generated.GeneratedViddikRegistry
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

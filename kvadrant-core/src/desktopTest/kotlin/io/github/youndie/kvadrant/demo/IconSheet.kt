@@ -21,7 +21,7 @@ import io.github.youndie.kvadrant.icons.KvadrantIcons
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * Every glyph in the set, at the size the application bar draws it.
