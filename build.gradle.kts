@@ -31,7 +31,7 @@ dependencies {
 }
 
 // The group, the version, the ktlint wiring, the test platform and the publication lived here, in
-// two `subprojects { }` blocks. They come from `ru.workinprogress.sborka` now, applied per module,
+// two `subprojects { }` blocks. They come from `io.github.youndie.sborka` now, applied per module,
 // with the numbers one line each in `gradle.properties`.
 //
 // WHAT DID NOT MOVE, and both are about this host rather than about publishing in general.

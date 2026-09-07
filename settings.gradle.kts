@@ -16,7 +16,13 @@ pluginManagement {
         // conventions. This has to be spelled out by hand: `pluginManagement` is evaluated before
         // any settings plugin is applied — including the sborka one, which is fetched through it.
         maven("https://reposilite.kotlin.website/snapshots") {
-            content { includeGroupAndSubgroups("ru.workinprogress") }
+            content {
+                // Both groups on purpose. sborka is under `io.github.youndie` since the
+                // plugin ids moved; the old group is held by everything published before
+                // that move, viddik up to 0.3.3 included.
+                includeGroupAndSubgroups("io.github.youndie")
+                includeGroupAndSubgroups("ru.workinprogress")
+            }
         }
     }
 }
@@ -30,7 +36,7 @@ plugins {
     //
     // It also brings the shared `.editorconfig` check, which is the other half of pinning the
     // formatter's version.
-    id("ru.workinprogress.sborka.settings") version "0.1.0.18"
+    id("io.github.youndie.sborka.settings") version "0.3.0.41"
 }
 
 rootProject.name = "kvadrant-ui"
