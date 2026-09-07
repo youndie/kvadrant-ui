@@ -31,7 +31,7 @@ import io.github.youndie.kvadrant.theme.KvadrantMetrics
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.theme.scaled
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * The sample application's own window, at the size it opens — 360×600 dp, which is the phone's

@@ -14,7 +14,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * The three layouts that compute an x by hand, mirrored.

@@ -1,6 +1,6 @@
 package io.github.youndie.kvadrant.behaviour
 
-import ru.workinprogress.viddik.generated.GeneratedViddikRegistry
+import io.github.youndie.viddik.generated.GeneratedViddikRegistry
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -20,7 +20,7 @@ import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * B-26's question, as two pictures: the same nine tiles, leaning by the same angles, under a camera

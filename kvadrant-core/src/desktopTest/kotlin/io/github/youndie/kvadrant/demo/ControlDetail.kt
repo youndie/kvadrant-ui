@@ -17,7 +17,7 @@ import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /** Large enough to judge. A control this size in a gallery is a control nobody has looked at. */
 @Composable

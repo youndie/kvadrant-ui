@@ -28,7 +28,7 @@ import io.github.youndie.kvadrant.theme.KvadrantAccents
 import io.github.youndie.kvadrant.theme.KvadrantColors
 import io.github.youndie.kvadrant.theme.KvadrantTheme
 import io.github.youndie.kvadrant.type.portableTypography
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * A page as Windows Phone laid one out: a small application title, an oversized page title in the

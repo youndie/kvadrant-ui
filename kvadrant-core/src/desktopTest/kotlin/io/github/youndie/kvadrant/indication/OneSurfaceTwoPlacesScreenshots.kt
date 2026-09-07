@@ -23,7 +23,7 @@ import io.github.youndie.kvadrant.foundation.KvadrantCamera
 import io.github.youndie.kvadrant.foundation.KvadrantHomography
 import io.github.youndie.kvadrant.foundation.kvadrantCameraUnits
 import io.github.youndie.kvadrant.theme.KvadrantAccents
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.annotations.ViddikScreenshot
 
 /**
  * **One** surface, pressed at the same point in its own coordinates, in two places on the screen —

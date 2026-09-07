@@ -22,8 +22,8 @@ import io.github.youndie.kvadrant.components.TileSize
 import io.github.youndie.kvadrant.foundation.KvadrantText
 import io.github.youndie.kvadrant.foundation.kvadrantLatin
 import io.github.youndie.kvadrant.theme.KvadrantTheme
-import ru.workinprogress.viddik.annotations.ViddikScreenshot
-import ru.workinprogress.viddik.core.viddikTypography
+import io.github.youndie.viddik.annotations.ViddikScreenshot
+import io.github.youndie.viddik.core.viddikTypography
 
 /**
  * A Material screen with a Kvadrant island in the middle of it — B-19's acceptance criterion.
