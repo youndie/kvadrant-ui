@@ -1,8 +1,8 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(wip.plugins.androidApplication)
     // No `org.jetbrains.kotlin.android`: since AGP 9 the Android plugin brings Kotlin itself, and
     // applying the old one is a hard error rather than a warning.
-    alias(libs.plugins.composeCompiler)
+    alias(wip.plugins.composeCompiler)
     id("io.github.youndie.sborka.base")
     id("io.github.youndie.sborka.lint")
 }

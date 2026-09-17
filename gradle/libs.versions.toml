@@ -1,14 +1,15 @@
 [versions]
 # The shared build conventions: the coordinate, the version, the toolchain, the jvm floor, the style
 # and the publication. Bumping this changes how every module is built.
-sborka = "0.4.0.43"
-kotlin = "2.4.10"
+sborka = "0.4.0.89"
+# The compiler comes with them: `wip`, the catalog a sborka release publishes, carries kotlin,
+# ksp, agp and composeMultiplatform. The four are one decision — KSP is built against a compiler,
+# the Compose plugin is versioned by it, and a Compose Multiplatform release is built against a
+# plugin range — so none of them has a version in this file to drift from the portfolio.
 # The current release, and it stays there. A test-only tool does not get to choose the Compose line
 # the library publishes against - when viddik could not run on 1.12.0 the answer was to wait for
 # viddik, not to ship against 1.11.1. See B-23, closed.
-compose-multiplatform = "1.12.0"
 # KSP is versioned independently of the Kotlin compiler since KSP2; viddik's processor runs on it.
-ksp = "2.3.10"
 # viddik ships the plugin, the annotations and the capture engine under one version, which is what
 # keeps the processor and the renderer in step.
 #
@@ -32,7 +33,6 @@ viddik = "0.4.0"
 dokka = "2.2.0"
 ktlint = "1.8.0"
 ktlintPlugin = "14.2.0"
-agp = "9.3.2"
 # compileSdk is the API the library is compiled against; minSdk is what it runs on.
 # 37 is not a choice: `androidx.compose.animation:animation-core-android:1.12.0` carries AAR
 # metadata demanding it, and 36 fails the build with eight of those before a line is compiled.
@@ -90,19 +90,11 @@ navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:nav
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
 [plugins]
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 viddik = { id = "io.github.youndie.viddik", version.ref = "viddik" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 # A KMP library takes AGP's multiplatform plugin, not `com.android.library`: the latter wants to own
 # the module's source sets, and in a KMP module Kotlin already does.
-androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-androidApplication = { id = "com.android.application", version.ref = "agp" }
 sborkaKmp = { id = "io.github.youndie.sborka.kmp", version.ref = "sborka" }
 sborkaLint = { id = "io.github.youndie.sborka.lint", version.ref = "sborka" }
 sborkaPublish = { id = "io.github.youndie.sborka.publish", version.ref = "sborka" }

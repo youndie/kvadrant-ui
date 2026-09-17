@@ -1,16 +1,16 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.kotlinJvm) apply false
-    alias(libs.plugins.composeMultiplatform) apply false
-    alias(libs.plugins.composeCompiler) apply false
-    alias(libs.plugins.ksp) apply false
+    alias(wip.plugins.kotlinMultiplatform) apply false
+    alias(wip.plugins.kotlinJvm) apply false
+    alias(wip.plugins.composeMultiplatform) apply false
+    alias(wip.plugins.composeCompiler) apply false
+    alias(wip.plugins.ksp) apply false
     alias(libs.plugins.viddik) apply false
     // Declared here, unapplied, and that is load-bearing rather than tidy: the Compose plugin reads
     // AGP's own extension types to wire up resources, and it can only see them when both plugins
     // land in the same build classloader. Declared in the module alone, Compose fails with
     // NoClassDefFoundError on a class that is demonstrably in AGP's jar.
-    alias(libs.plugins.androidKmpLibrary) apply false
-    alias(libs.plugins.androidApplication) apply false
+    alias(wip.plugins.androidKotlinMultiplatformLibrary) apply false
+    alias(wip.plugins.androidApplication) apply false
     // The build conventions: the coordinate, the version, the toolchain, the jvm floor, the style,
     // the test platform and the publication. Declared here and applied per module, `apply false`
     // like everything else in this block.
