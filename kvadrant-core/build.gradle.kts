@@ -1,12 +1,12 @@
 import org.gradle.api.tasks.PathSensitivity
 import java.util.zip.ZipFile
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.ksp)
+    alias(wip.plugins.kotlinMultiplatform)
+    alias(wip.plugins.composeMultiplatform)
+    alias(wip.plugins.composeCompiler)
+    alias(wip.plugins.ksp)
     alias(libs.plugins.viddik)
-    alias(libs.plugins.androidKmpLibrary)
+    alias(wip.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.dokka)
     id("io.github.youndie.sborka.kmp")
     id("io.github.youndie.sborka.lint")

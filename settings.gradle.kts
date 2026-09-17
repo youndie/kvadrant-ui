@@ -37,7 +37,7 @@ plugins {
     //
     // It also brings the shared `.editorconfig` check, which is the other half of pinning the
     // formatter's version.
-    id("io.github.youndie.sborka.settings") version "0.4.0.43"
+    id("io.github.youndie.sborka.settings") version "0.4.0.89"
 }
 
 rootProject.name = "kvadrant-ui"

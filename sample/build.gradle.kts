@@ -1,10 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.androidKmpLibrary)
+    alias(wip.plugins.kotlinMultiplatform)
+    alias(wip.plugins.composeMultiplatform)
+    alias(wip.plugins.composeCompiler)
+    alias(wip.plugins.androidKotlinMultiplatformLibrary)
     id("io.github.youndie.sborka.kmp")
     id("io.github.youndie.sborka.lint")
 }
