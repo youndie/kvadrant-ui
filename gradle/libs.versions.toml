@@ -1,7 +1,7 @@
 [versions]
 # The shared build conventions: the coordinate, the version, the toolchain, the jvm floor, the style
 # and the publication. Bumping this changes how every module is built.
-sborka = "0.4.0.89"
+sborka = "0.4.0.111"
 # The compiler comes with them: `wip`, the catalog a sborka release publishes, carries kotlin,
 # ksp, agp and composeMultiplatform. The four are one decision — KSP is built against a compiler,
 # the Compose plugin is versioned by it, and a Compose Multiplatform release is built against a
@@ -66,8 +66,8 @@ composeMaterial3 = "1.12.0-alpha03"
 # instead of `ui-backhandler`, and the version is its own rather than the Compose line's. It is the
 # version CMP 1.12.0 already resolves transitively, read out of the graph rather than chosen.
 navigationEvent = "1.1.0"
-# Test-only, to read the vendored token dump. Matches the core already on the Compose graph.
-kotlinxSerialization = "1.7.3"
+# Test-only, to read the vendored token dump. The portfolio's line (the same number `wip` carries).
+kotlinxSerialization = "1.11.0"
 
 [libraries]
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }

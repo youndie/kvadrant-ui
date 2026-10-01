@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # Java and Gradle in one step and at one version for the portfolio. The action installs 21
-      # and 25 and leaves 25 the default, which is what `sborka.jvmToolchain` asks for.
+      # and 25 and leaves 25 the default, which is sborka's default toolchain.
       - uses: youndie/sborka/.github/actions/setup-kotlin@main
 
       # THE TAG AND THE VERSION ARE TWO PLACES THE SAME NUMBER IS WRITTEN, and a release event hands
