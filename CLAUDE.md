@@ -153,7 +153,12 @@ pip install pyyaml
 make check
 ```
 
-`make check` guards the documentation tree, `./gradlew check` guards the code, and both run on CI.
+`make check` guards the documentation tree, `./gradlew check` guards the code, and both run on CI. The
+documentation checks are docs-bootstrap's, at the version the `uses: youndie/docs-bootstrap@…` line
+in `.github/workflows/check.yaml` pins: the first `make check` fetches that version into
+`.docs-bootstrap/` (it ignores itself), and `make fix` regenerates the backlog index. The checks of
+this repository's own — the catalogue, images, links, the Android guard's record, the README's
+version — are the scripts under `scripts/`, run from the `gate` target.
 
 **`./gradlew check` runs on macOS there, and that is B-35's answer rather than a preference.** The
 desktop suite is a rendering suite: it photographs components and it counts ink pixels. macOS and

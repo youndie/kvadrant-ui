@@ -75,6 +75,11 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 ./gradlew check                                  # tests, ktlint, the goldens, the ABI dump
 ```
 
+The documentation checks are [docs-bootstrap](https://github.com/youndie/docs-bootstrap)'s, at the
+version `.github/workflows/check.yaml` pins, fetched into `.docs-bootstrap/` by the first run;
+`make fix` regenerates the backlog index and fills in missing coverage-map lines. The checks of this
+repository's own run under the same `make check`.
+
 Both run on CI, on every push and every pull request. **They do not agree yet:** the screenshot
 suite is red on the Linux runner over the Cyrillic companion — deterministically, not as a flake,
 and [B-35](backlog/B-35-cyrillic-renders-differently-on-linux.md) is open on it. A green run on a
