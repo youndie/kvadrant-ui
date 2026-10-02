@@ -54,11 +54,12 @@ file each in [`backlog/`](backlog/), cited as `[B-12](backlog/B-12-pivot.md)`.
 - **The primary consumer is a coding agent.** Every document carries anchors — paths to what it is
   about. The research anchors are the exception and stay one: they point at the artefacts each fact
   was verified against — a template dictionary from the Windows Phone SDK, a class inside a decompiled
-  assembly, a published maven-metadata — and those live outside this repository. `code_anchors.py`
-  reports thirteen of them as absent for that reason (docs-bootstrap 0.3.5, 2026-10-02), and the
-  report is non-blocking on purpose. A file in another GitHub repository is written as an address,
-  `<owner>/<repo>@<commit>!/<path>`, and reported as one: the check clones this repository alone and
-  looks a bare path up only here.
+  assembly, a published maven-metadata — and those live outside this repository. Each is written so
+  that the check does not look for it here: a file in another GitHub repository as an address,
+  `<owner>/<repo>@<commit>!/<path>`, at the commit it was read at; a file inside an artefact as
+  `<artefact>!/<path>`; a Maven listing with its host in front. With every path outside the
+  repository in one of those forms, `code_anchors.py` blocks (`ANCHORS_ARGS ?= --check` in the
+  Makefile): a path in `docs/` that resolves to nothing fails `make check`.
 - **A number that is not Microsoft's says so.** Where the specification has a gap, this project's
   value ships as a parameter of the public API with a KDoc sentence naming it as ours.
 

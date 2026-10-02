@@ -106,7 +106,7 @@ the risk here. The code is.
 | Fact | Where verified |
 |---|---|
 | "On Windows, the animation slightly shrinks the item to indicate that it is pressed; on Windows Phone, the animation tilts the item slightly around the positive y-axis in a 2.5D effect." | `learn.microsoft.com/.../jj649432(v=win.10)`, *Animating pointer actions (XAML)* — the 8.x-era page, verbatim |
-| The desktop shrink, with its numbers: `scale(0.975, 0.975)`, **167 ms**, `cubic-bezier(0.1, 0.9, 0.2, 1)`; `pointerUp` reverses it over the same duration and curve | `winjs/winjs`, `src/js/WinJS/Animations.js`, `pointerDown` / `pointerUp` — MIT, verified from `License.txt` |
+| The desktop shrink, with its numbers: `scale(0.975, 0.975)`, **167 ms**, `cubic-bezier(0.1, 0.9, 0.2, 1)`; `pointerUp` reverses it over the same duration and curve | `winjs/winjs@b9e0b33f76c57caac941c9b1885bf69443320b1c!/src/js/WinJS/Animations.js`, `pointerDown` / `pointerUp` — MIT, verified from `License.txt` |
 | `ListViewItem` and `GridViewItem` use it for `Pressed` and `PointerOverPressed`; on the phone `Button` used it by default | `jj649432(v=win.10)`, §"Pointer animations in default Windows Runtime control behavior" |
 
 **Consequence — the thing this library is known for does not cross the lineage.** `TiltIndication`,
