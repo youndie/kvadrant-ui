@@ -171,9 +171,12 @@ mac**, and re-recording one anywhere else silently rewrites the reference.
 
 The two gates make deliberately different claims about `docs/components.md`. `make check` builds
 nothing, so it verifies the catalogue against the sources and says the preview column was carried
-over unverified; `:kvadrant-previews:check` builds the registry first and verifies both. `make report` is non-blocking and stays non-green on purpose:
-the research anchors point at artefacts outside this repository, so `code_anchors.py` reports them
-as absent, and there are no BDD scenarios while there is no behaviour to describe.
+over unverified; `:kvadrant-previews:check` builds the registry first and verifies both. `make report` runs two reports and the
+Android guard's age. BDD coverage does not block and stays non-green on purpose: there are no
+scenarios while there is no behaviour to describe. Code anchors do block (`ANCHORS_ARGS ?= --check`
+in the Makefile): the research anchors that point outside this repository are written as addresses
+(`<owner>/<repo>@<commit>!/<path>`, `<artefact>!/<path>`, a Maven listing with its host), so what
+can turn it red is a path of this repository's own that resolves to nothing.
 
 ## Language
 

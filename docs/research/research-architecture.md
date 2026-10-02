@@ -104,13 +104,13 @@ first one. **The first row does not exist.**
 
 | Fact | Where verified |
 |---|---|
-| Compose Multiplatform itself is at **1.12.0 stable** | `org/jetbrains/compose/compose-gradle-plugin/maven-metadata.xml` on Maven Central — `<release>1.12.0</release>`; same for `org/jetbrains/compose/runtime/runtime` |
+| Compose Multiplatform itself is at **1.12.0 stable** | `repo1.maven.org/maven2/org/jetbrains/compose/compose-gradle-plugin/maven-metadata.xml` — `<release>1.12.0</release>`; same for `repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime` |
 | `org.jetbrains.compose.material3:material3` has **no** 1.10.0, 1.11.0 or 1.12.0 — all three POMs are HTTP 404 | direct probes of `.../material3/<v>/material3-<v>.pom` |
-| Its newest **stable** is **1.9.0**; the newest published anything is **1.12.0-alpha03** | `.../material3/material3/maven-metadata.xml`, `lastUpdated 20260630114516` |
+| Its newest **stable** is **1.9.0**; the newest published anything is **1.12.0-alpha03** | `repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/maven-metadata.xml`, `lastUpdated 20260630114516` |
 | `material3:1.9.0` resolves to Jetpack **`androidx.compose.material3:material3:1.4.0`** | `material3-1.9.0.pom`, runtime scope |
 | `material3:1.12.0-alpha03` resolves to Jetpack **1.5.0-alpha22** | `material3-1.12.0-alpha03.pom` (`material3-lint:1.5.0-alpha22`) |
 | The CMP 1.12.0 release pairs itself with `material3*:1.12.0-alpha03` on Jetpack M3 1.5.0-alpha22 | the release page for `v1.12.0` in `JetBrains/compose-multiplatform` |
-| Jetpack M3 stable is **1.4.0** and nothing later; the 1.5.0 line is still alpha, up to **1.5.0-alpha26** | `androidx/compose/material3/material3/maven-metadata.xml` on Google's Maven |
+| Jetpack M3 stable is **1.4.0** and nothing later; the 1.5.0 line is still alpha, up to **1.5.0-alpha26** | `dl.google.com/android/maven2/androidx/compose/material3/material3/maven-metadata.xml` (Google's Maven) |
 
 **Consequence 1 — the brief's pinning snippet does the opposite of what it says.** It proposes
 `api(compose.material3) { version { strictly("[1.12.0, 1.13.0)") } }` in order to *avoid* the 1.5
@@ -307,7 +307,7 @@ existed. Sinking is therefore a uniform scale, computed from the same camera the
 
 | Fact | Where verified |
 |---|---|
-| `xAngleContribution = xMagnitude / (xMagnitude + yMagnitude)`, 0 when the denominator is 0 | `src/Callisto/Effects/TiltEffect.cs` — the RTM shell algorithm, `ApplyTiltEffect` |
+| `xAngleContribution = xMagnitude / (xMagnitude + yMagnitude)`, 0 when the denominator is 0 | `timheuer/callisto@e92ca884d4d160e05efff196d4affc5f97a28f96!/src/Callisto/Effects/TiltEffect.cs` — the RTM shell algorithm, `ApplyTiltEffect` |
 | `cameraDistance` is turned into `cameraDistance * 72` pixels of depth | `Matrices.skiko.kt` in `ui-graphics` |
 | Perspective is applied only when a rotation is non-zero | same file, same function |
 | A centre press renders as a uniform shrink of 116/120 = **0.967**, against 0.9685 computed | `kvadrant-core/src/desktopTest/snapshots/tilt_centre.png`, measured |
@@ -883,11 +883,11 @@ transcription of what this library reproduces:
 
 | Fact | Where verified |
 |---|---|
-| Header strip 48 px; each header 30 px tall with `margin: 12px 12px 0 12px` | `src/less/styles-pivot.less` — `@headersHeight`, `.win-pivot-header` |
+| Header strip 48 px; each header 30 px tall with `margin: 12px 12px 0 12px` | `winjs/winjs@b9e0b33f76c57caac941c9b1885bf69443320b1c!/src/less/styles-pivot.less` — `@headersHeight`, `.win-pivot-header` |
 | Header type is the ramp's `title` step; unselected headers are `baseMid`, selected `baseHigh`, crossfading over **167 ms** linear | same file, `colors-pivot.less` |
 | Pivot title: Segoe UI **bold 15 px**, `margin: 14px 0 13px 24px` | `styles-pivot.less` — `.win-pivot-title` |
 | Content padding `0 24px`; the surface is **300 %** of the control's width with the item centred at 100 % | same file |
-| Switching a page: outgoing opacity → 0 over **67 ms** linear; incoming opacity over **333 ms** and `translateX(±20px)` → 0 over **767 ms**, both `cubic-bezier(0.1, 0.9, 0.2, 1)` | `src/js/WinJS/Controls/Pivot/_Pivot.ts` |
+| Switching a page: outgoing opacity → 0 over **67 ms** linear; incoming opacity over **333 ms** and `translateX(±20px)` → 0 over **767 ms**, both `cubic-bezier(0.1, 0.9, 0.2, 1)` | `winjs/winjs@b9e0b33f76c57caac941c9b1885bf69443320b1c!/src/js/WinJS/Controls/Pivot/_Pivot.ts` |
 | The header strip slides over **250 ms**; the newly revealed last header fades in over **167 ms** | same file — `_headerSlideAnimationDuration`, `lastHeaderFadeInDuration` |
 
 **Continuum, in full, for the desktop branch.** The phone's version is unrecoverable (§1.10), and
@@ -901,7 +901,7 @@ one movement — which is why it reads as an object continuing rather than a pag
 | backward in | page `scale(1.25)` → `1.0` over **200 ms**; item `rotateX(80°) translate(0, -100px)` → 0 over **250 ms** on `(0.2975, 0.7325, 0.4725, 0.99)` |
 | backward out | page `scale(1.0)` → `0.5` over **167 ms** on the exit curve |
 
-`src/js/WinJS/Animations.js`. Two of those overshoot deliberately — the `1.15` and `1.1575` control
+`winjs/winjs@b9e0b33f76c57caac941c9b1885bf69443320b1c!/src/js/WinJS/Animations.js`. Two of those overshoot deliberately — the `1.15` and `1.1575` control
 points in the forward-in translate, and the negative one in the exit curve — so the item passes its
 resting place and comes back. A monotonic approximation of this is the version that looks
 mechanical.
@@ -1059,7 +1059,7 @@ phone's templates were in the same cabinet, in a **XAML file rather than an asse
 | Fact | Where verified |
 |---|---|
 | `WPDT_DESIGN_SYSTEM_WINDOWS_XAML`, 55 KB, holds the phone's `CheckBox`, `RadioButton`, `Slider`, `ProgressBar` and `TextBox` templates with 22 `Phone*` resource references | `WPSDK_en.cab` |
-| `ToggleSwitch` is not there at all — it is the **Toolkit's**, in `Microsoft.Phone.Controls.Toolkit.WP8/Themes/Generic.xaml` | the Windows Phone Toolkit repository |
+| `ToggleSwitch` is not there at all — it is the **Toolkit's**, in `microsoftarchive/WindowsPhoneToolkit@4e4fd5d36c769c004f7ccc7daf78a5ffb8ef18df!/Microsoft.Phone.Controls.Toolkit.WP8/Themes/Generic.xaml` | the Windows Phone Toolkit repository |
 
 **What the reconstructions got wrong**, each of which the template settles:
 
@@ -1177,7 +1177,7 @@ after the second identical failure the stack trace was the cheaper question.
 ([B-07](../backlog/B-07-font-stack.md)) meant `Font("fonts/selawk.ttf")` — a JVM classpath idea —
 had to become `Font(Res.font.selawik_regular)`. Fifteen of the sixteen font goldens came back
 byte-identical. The sixteenth, `font_stack_per_run_source_sans_compensated`, changed completely: its
-fixture asked for `fonts/SourceSans3-Light.ttf`, a file that has never existed in this repository, so
+fixture asked for `"fonts/SourceSans3-Light.ttf"`, a file that has never existed in this repository, so
 it had been drawing a system fallback face under the name of the font it claimed to be comparing.
 The golden recorded that fallback and guarded it faithfully for as long as it existed.
 
@@ -1602,7 +1602,7 @@ now and costs the consumer one lambda.
 ### D11. Apache-2.0 for code, SIL OFL 1.1 for the resources module, declared separately
 
 Decision: code Apache-2.0; `kvadrant-resources` carries the bundled OFL fonts with
-`META-INF/licenses/OFL.txt` inside the artefact and its own POM licence section. This mirrors what
+an `OFL.txt` under META-INF/licenses inside the artefact and its own POM licence section. This mirrors what
 Metro-Compose (MIT code, OFL font, shipped on Play) and `compose-fluent-ui` (Apache-2.0) already do,
 so the pattern has precedent rather than being an opinion.
 
@@ -1737,7 +1737,7 @@ URL, which works in the source tree, in an IDE, on the site and in Dokka.
 That names a branch, and `scripts/doc_links.py` buys the price back: a URL under that prefix is
 checked by its **path**, against the working copy, with no network. A document renamed without its
 references fails on the branch rather than in a reader's browser three months later. A self-link
-written any other way — another branch, a `tree/` URL, a commit permalink — is reported rather than
+written any other way — another branch, a `/tree/` URL, a commit permalink — is reported rather than
 skipped, because a rule that one spelling escapes is a rule.
 
 ### D18. Finger-tracking is an opt-in modifier, not a change to the indication
