@@ -28,7 +28,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 make site                               # the site + Dokka reference into build/site (a minute; wasm)
 ```
 
-- **Toolchain**: Gradle 9.7.1, Java 25 toolchain, Kotlin 2.4.10, ktlint plugin 14.2.0 running ktlint
+- **Toolchain**: Gradle 9.8.0, Java 25 toolchain, Kotlin 2.4.20, ktlint plugin 14.2.0 running ktlint
   CLI 1.8.0. Versions live in `gradle/libs.versions.toml` and nowhere else.
 - **Compose Multiplatform stays on the current release.** skiko is never declared here — it comes
   transitively with `compose.ui` at the version CMP pins, and forcing it means running a renderer
@@ -44,7 +44,7 @@ make site                               # the site + Dokka reference into build/
   demo on a simulator to look at, and copies the assembled resources into the bundle — without that
   the app dies on its first frame naming a font inside its own `.app`.
   `./gradlew :sample:wasmJsBrowserDevelopmentRun` serves the demo; the on-device Android guard is
-  `connectedAndroidDeviceTest`. Gradle 9.7.1 forces AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
+  `connectedAndroidDeviceTest`. Gradle 9.8.0 forces AGP 9.x, AGP 9 forbids `com.android.library`/`com.android.application` in a KMP module, and AGP
   must be declared in the **root** build file or the Compose plugin cannot see its classes —
   research §1.13 before touching the build.
 - **Screenshots**: `ScreenshotSuiteTest` guards the set — empty registry, fixture without a golden,
