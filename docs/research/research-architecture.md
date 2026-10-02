@@ -68,11 +68,17 @@ for the rule above rather than against the brief.
 
 | Fact | Where verified |
 |---|---|
-| The only Metro library for Compose is `louis993546/Metro-Compose`: **Android only**, `com.android.library` + `kotlin.android`, no Kotlin Multiplatform | `metro/build.gradle.kts` in that repository |
+| The only Metro library for Compose is `louis993546/Metro-Compose`: **Android only**, `com.android.library` + `kotlin.android`, no Kotlin Multiplatform | `louis993546/Metro-Compose@833ca50!/metro/build.gradle.kts` |
 | It is **not published** — the `maven-publish` plugin and the whole `publishing` block are commented out | same file |
-| MIT, ~9 stars, ~730 commits; its public API is one flat dump | `metro/api/metro.api` *(inherited, ✅)* |
-| `compose-fluent-ui` (the Fluent equivalent, 727★, Apache-2.0, full CMP) declares **no** Material dependency: `api(compose.foundation)`, `api(project(":fluent-icons-core"))`, `implementation(compose.uiUtil)`, `implementation(libs.kotlinx.datetime)`, `implementation(libs.haze)` | `fluent/build.gradle.kts` in that repository |
+| MIT, ~9 stars, ~730 commits; its public API is one flat dump | `louis993546/Metro-Compose@833ca50!/metro/api/metro.api` *(inherited, ✅)* |
+| `compose-fluent-ui` (the Fluent equivalent, 727★, Apache-2.0, full CMP) declares **no** Material dependency: `api(compose.foundation)`, `api(project(":fluent-icons-core"))`, `implementation(compose.uiUtil)`, `implementation(libs.kotlinx.datetime)`, `implementation(libs.haze)` | `compose-fluent/compose-fluent-ui@9e863ae!/fluent/build.gradle.kts` |
 | No Windows-flavoured Compose library anywhere has a bridge to Material | *(inherited, ✅ — read from the same build files)* |
+
+The two repositories are cited as addresses (amended 2026-10-02): the commit each one's default branch
+was at when this section was written, re-read there. They first said "`…/build.gradle.kts` in that
+repository", which the anchors check — it clones kvadrant-ui alone — matched against this
+repository's own build file. `compose-fluent-ui` has since moved from `Konyaco` to the
+`compose-fluent` organisation; GitHub redirects the old name.
 
 **Consequence 1.** There is no prior art for the adapter, in either the Metro or the Fluent world.
 The only working precedent for a second design language beside Material in a KMP project is

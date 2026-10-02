@@ -55,7 +55,10 @@ file each in [`backlog/`](backlog/), cited as `[B-12](backlog/B-12-pivot.md)`.
   about. The research anchors are the exception and stay one: they point at the artefacts each fact
   was verified against — a template dictionary from the Windows Phone SDK, a class inside a decompiled
   assembly, a published maven-metadata — and those live outside this repository. `code_anchors.py`
-  reports eleven of them as absent for that reason, and the report is non-blocking on purpose.
+  reports thirteen of them as absent for that reason (docs-bootstrap 0.3.5, 2026-10-02), and the
+  report is non-blocking on purpose. A file in another GitHub repository is written as an address,
+  `<owner>/<repo>@<commit>!/<path>`, and reported as one: the check clones this repository alone and
+  looks a bare path up only here.
 - **A number that is not Microsoft's says so.** Where the specification has a gap, this project's
   value ships as a parameter of the public API with a KDoc sentence naming it as ours.
 
@@ -78,7 +81,9 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 The documentation checks are [docs-bootstrap](https://github.com/youndie/docs-bootstrap)'s, at the
 version `.github/workflows/check.yaml` pins, fetched into `.docs-bootstrap/` by the first run;
 `make fix` regenerates the backlog index and fills in missing coverage-map lines. The checks of this
-repository's own run under the same `make check`.
+repository's own run under the same `make check`. Only `check`, `gate`, `report`, `fix` and the
+`docs-` targets load docs-bootstrap (`DOCS_BOOTSTRAP_GOALS`, template revision 2): `make screenshots`,
+`make android` and `make site` read no pin and need no network.
 
 Both run on CI, on every push and every pull request: `make check` on Linux, `./gradlew check` on
 macOS, and the second is not a preference. The desktop suite is a rendering suite — it photographs
