@@ -80,10 +80,14 @@ version `.github/workflows/check.yaml` pins, fetched into `.docs-bootstrap/` by 
 `make fix` regenerates the backlog index and fills in missing coverage-map lines. The checks of this
 repository's own run under the same `make check`.
 
-Both run on CI, on every push and every pull request. **They do not agree yet:** the screenshot
-suite is red on the Linux runner over the Cyrillic companion — deterministically, not as a flake,
-and [B-35](backlog/B-35-cyrillic-renders-differently-on-linux.md) is open on it. A green run on a
-mac is a claim about a mac.
+Both run on CI, on every push and every pull request: `make check` on Linux, `./gradlew check` on
+macOS, and the second is not a preference. The desktop suite is a rendering suite — it photographs
+components and counts ink pixels — and FreeType gives the pixels at a glyph's edge different values
+than macOS does. That moves the goldens and the calibration tests alike, by more than any tolerance
+that would still catch a real regression, so the suite runs on the rasteriser its numbers came from
+([B-35](backlog/B-35-cyrillic-renders-differently-on-linux.md), closed on exactly that). A green
+`./gradlew check` is a claim about a mac; on Linux the rendering tests fail by construction, and
+that failure is not a new defect.
 
 The two gates also make deliberately different claims about [`components.md`](components.md).
 `make check` builds nothing, so it verifies the catalogue against the sources and prints that the

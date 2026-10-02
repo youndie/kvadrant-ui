@@ -18,16 +18,16 @@ import kotlin.test.assertTrue
 /**
  * Every preview composes, and draws something.
  *
- * This is the guard the documentation site rests on, and it is deliberately not a golden. Goldens
- * for the previews are wanted and are held back: the suite already cannot pass on the Linux runner
- * over the Cyrillic companion (B-35), and adding forty images to a set that is red makes the red
- * larger rather than the signal stronger. What can be checked today is checked today.
+ * This is the guard the documentation site rests on, and it is deliberately not a golden. The
+ * previews have goldens as well — `PreviewFixtures`, added once B-35 moved the suite onto the one
+ * rasteriser that recorded it — and the two ask different questions: a golden asks whether a
+ * preview looks as it did, this asks whether it draws at all.
  *
  * "Draws something" is a low bar and it is the *right* low bar, because the way a preview fails is
  * total: a composable that throws takes the page's canvas with it, and one that lays out to nothing
  * leaves a rectangle of background that a reader cannot tell from a component drawn in the
  * background colour. Both of those are caught here. Whether a component is drawn *correctly* is the
- * golden suite's question and is asked in `kvadrant-core`.
+ * goldens' question, asked in `kvadrant-core` and in `PreviewFixtures`.
  */
 @OptIn(ExperimentalTestApi::class)
 class PreviewRendersTest {
