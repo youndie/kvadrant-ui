@@ -1213,7 +1213,7 @@ Decision: `KvadrantMaterialAdapter { }` in `kvadrant-material-adapter` reads the
 `KvadrantTheme` and raises a `MaterialTheme` derived from it — `surfaceTint = Color.Transparent`
 (this is what kills tonal surfaces), all six `Shapes` slots `RectangleShape`, ripple off via
 `LocalRippleConfiguration provides null` and `LocalIndication provides TiltIndication`. The reverse
-direction, `KvadrantColors.fromMaterial()`, ships as a utility for embedding Kvadrant islands in a
+direction, `ColorScheme.toKvadrantColors()`, ships as a utility for embedding Kvadrant islands in a
 Material application. `AdaptiveWidget(kvadrant = {}, material = {})` follows `compose-cupertino`.
 
 Rejected: strategy A, where `KvadrantTheme` raises `MaterialTheme` itself. It buys the best
