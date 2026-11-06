@@ -33,11 +33,11 @@ jobs:
 
       # Java and Gradle in one step and at one version for the portfolio: the action installs 21
       # and 25 and leaves 25 the default, which is sborka's default toolchain.
-      - uses: youndie/sborka/.github/actions/setup-kotlin@v0.5.0.130
+      - uses: youndie/sborka/.github/actions/setup-kotlin@v0.5.0.133
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.15"
 
       # The registry, twice over: `previewIndex` runs it so the generator can read the ids, and the
       # wasm distribution contains the composables those ids mount. They come from the same compiled
