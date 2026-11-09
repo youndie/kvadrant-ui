@@ -30,7 +30,7 @@ viddik = "0.7.1.59"
 # The API reference the documentation site publishes beside the component pages (B-34). 2.x is a
 # different plugin from 1.x — one `dokkaGenerate` task on the root aggregates the modules, where 1.x
 # had a per-module task and a separate aggregator.
-dokka = "2.2.0"
+dokka = "2.3.0"
 ktlint = "1.8.0"
 ktlintPlugin = "14.2.0"
 # compileSdk is the API the library is compiled against; minSdk is what it runs on.
