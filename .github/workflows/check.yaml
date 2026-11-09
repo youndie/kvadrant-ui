@@ -39,7 +39,7 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: youndie/docs-bootstrap@v0.4.0
 
@@ -69,7 +69,7 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Java and Gradle in one step and at one version for the portfolio: the action installs 21
       # and 25 and leaves 25 the default, which is sborka's default toolchain.
@@ -79,7 +79,7 @@ jobs:
       # committed file against its source, and the component catalogue checks itself against the
       # preview registry. The runner ships a python3, so this step buys a *declared* version rather
       # than a working build; an undeclared interpreter changes under you without a diff.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.15"
 
@@ -98,7 +98,7 @@ jobs:
       # longer exists, and a reader is left with a percentage. A screenshot defect is one that can
       # only be looked at.
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: screenshot-diffs
           path: |
@@ -117,7 +117,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The code lives in this checkout, so its parent is a directory whose one subdirectory is
       # this repository - which is exactly what REPOS (`..` by default) expects.
