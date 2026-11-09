@@ -20,7 +20,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Java and Gradle in one step and at one version for the portfolio. The action installs 21
       # and 25 and leaves 25 the default, which is sborka's default toolchain.
