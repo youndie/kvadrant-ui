@@ -33,7 +33,7 @@ jobs:
 
       # Java and Gradle in one step and at one version for the portfolio: the action installs 21
       # and 25 and leaves 25 the default, which is sborka's default toolchain.
-      - uses: youndie/sborka/.github/actions/setup-kotlin@v0.5.0.135
+      - uses: youndie/sborka/.github/actions/setup-kotlin@v0.5.0.136
 
       - uses: actions/setup-python@v7
         with:
